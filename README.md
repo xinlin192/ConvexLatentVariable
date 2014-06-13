@@ -1,0 +1,4 @@
+ConvexLatentVariable
+====================
+
+Convex Latent Variable
