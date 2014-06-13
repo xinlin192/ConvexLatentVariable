@@ -4,6 +4,7 @@
 % p_1~p_{K+1}: mix prob. of clusters (K+1 is noise)
 % SIGMA: std among clusters
 % sigma1~sigmaK: std within clusters
+
 % mu1~muK: means of clusters
 
 K = 4;
