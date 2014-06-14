@@ -1,0 +1,131 @@
+% Proposal for Convex Latent Variable
+% Author: 
+%   Jimmy Lin
+%   Ian Yen
+
+\documentclass{article} % For LaTeX2e
+\usepackage{nips14submit_e,times}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amssymb,amsmath,amsfonts,latexsym,mathtext}
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+
+
+\title{Project Proposal: Convex Latent Variable}
+
+%{{{ Authors 
+\author{
+Hippocampus\thanks{ Use footnote for providing further information
+about author (webpage, alternative address)---\emph{not} for acknowledging
+funding agencies.} \\
+Department of Computer Science\\
+Cranberry-Lemon University\\
+Pittsburgh, PA 15213 \\
+\texttt{hippo@cs.cranberry-lemon.edu} \\
+\And
+Coauthor \\
+Affiliation \\
+Address \\
+\texttt{email} \\
+\AND
+Coauthor \\
+Affiliation \\
+Address \\
+\texttt{email} \\
+\And
+Coauthor \\
+Affiliation \\
+Address \\
+\texttt{email} \\
+\And
+Coauthor \\
+Affiliation \\
+Address \\
+\texttt{email} \\
+(if needed)\\
+}
+%}}}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%{{{ Macros
+\newcommand{\sumn}{\sum_{n}}
+\newcommand{\sumk}{\sum_{k}}
+\newcommand{\wnk}{w_{nk}}
+\newcommand{\wn}{\mathbf{w}_n}
+\newcommand{\wnbyn}{\mathbf{w}_{n\times n}}
+\newcommand{\x}[1]{\mathbf{x}_{#1}}
+\newcommand{\xn}{\mathbf{x}_n}
+\newcommand{\muk}{\boldsymbol{\mu}_k} 
+\newcommand{\LTwoNorm}[1]{||#1||^{2}}
+\newcommand{\maxn}{ \underset{n}{\text{max}} }
+%}}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+
+%%% TODO list:
+%% 1. reason of applying group-lasso (one or zero)
+%% 2. 
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    Add abstract here..
+\end{abstract}
+
+\section{Problem Formulation}
+\subsection{Motivation}
+Given a set of data entities $\x{1}, ..., \xn, ..., \x{N} $, we wish to
+automatically cluster these entities without specifying the number of cluster
+centroids. One possible approach is to regard these input entities as
+potential cluster candidates and evaluate the "belonging matrix" $\wnbyn$, consisting
+of latent variables $\wnk$ indicating the extent of one entity $\xn$ explained
+by one potential cluster centroid candidate $\muk$.
+
+
+\subsection{Overall Optimization Goal}
+Formally, our goal is to achieve clustering with group-lasso regularization.
+Hence, we formulate the target problem in terms of notations introduced above
+as follows:  
+
+ \begin{align}
+ & \underset{x}{\text{minimize}}
+ & & 
+    J(x) = \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+        + \lambda \sumk \maxn | \wnk |  \\ % group-lasso
+ & \text{subject to} 
+ & & 
+ \forall n,\ \sumk \wnk \leq 1 \\
+ & 
+ & &
+ \forall n,\ k,\ \wnk \geq 0
+ \end{align}
+
+Every entity must be assigned to some centroid with prob 1.
+Every entity must have non-negative belonging to each centroid candidate.
+
+Note that the group-lasso can either be one or zero in the context that we
+pick up the most promising centroid candidates from provided entities. 
+
+\subsection{Processing Techniques}
+
+
+\subsubsection*{Acknowledgments}
+
+\subsubsection*{References}
+\small{
+
+}
+
+\end{document}
