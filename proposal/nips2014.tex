@@ -58,16 +58,33 @@ Address \\
 \newcommand{\new}{\marginpar{NEW}}
 
 %{{{ Macros
+\newcommand{\LTwoNorm}[1]{||#1||^{2}}
 \newcommand{\sumn}{\sum_{n}}
 \newcommand{\sumk}{\sum_{k}}
+
 \newcommand{\wnk}{w_{nk}}
 \newcommand{\wn}{\mathbf{w}_n}
+\newcommand{\wone}{\mathbf{w}_1}
+\newcommand{\wtwo}{\mathbf{w}_2}
+\newcommand{\w}{\mathbf{w}}
 \newcommand{\wnbyn}{\mathbf{w}_{n\times n}}
+
 \newcommand{\x}[1]{\mathbf{x}_{#1}}
 \newcommand{\xn}{\mathbf{x}_n}
 \newcommand{\muk}{\boldsymbol{\mu}_k} 
-\newcommand{\LTwoNorm}[1]{||#1||^{2}}
 \newcommand{\maxn}{ \underset{n}{\text{max}} }
+
+\newcommand{\yone}{\mathbf{y}_1}
+\newcommand{\ytwo}{\mathbf{y}_2}
+\newcommand{\z}{\mathbf{z}}
+\newcommand{\quadraterm}[1]{\frac{\rho}{2}\LTwoNorm{\w_{#1}-\z}}
+\newcommand{\dualterm}[1]{\mathbf{y}_{#1}^{T}(\w_{#1}-\z)}
+
+\newcommand{\minimize}[1]{ \underset{#1}{\text{Minimize}} }
+\newcommand{\maximize}[1]{ \underset{#1}{\text{Maximize}} }
+\newcommand{\subjectto}{ \text{subject to} }
+\newcommand{\hs}{\hspace*{0.6cm}}
+
 %}}}
 
 %\nipsfinalcopy % Uncomment for camera-ready version
@@ -91,7 +108,10 @@ automatically cluster these entities without specifying the number of cluster
 centroids. One possible approach is to regard these input entities as
 potential cluster candidates and evaluate the "belonging matrix" $\wnbyn$, consisting
 of latent variables $\wnk$ indicating the extent of one entity $\xn$ explained
-by one potential cluster centroid candidate $\muk$.
+by one potential cluster centroid candidate $\muk$. In this project, we
+propose a method to compute the sparse latent variable with faster
+convergence by decomposing the objective function derived by ADMM into two
+separate optimization task. 
 
 
 \subsection{Overall Optimization Goal}
@@ -100,25 +120,90 @@ Hence, we formulate the target problem in terms of notations introduced above
 as follows:  
 
  \begin{align}
- & \underset{x}{\text{minimize}}
- & & 
-    J(x) = \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+  \minimize{\w} 
+  \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
         + \lambda \sumk \maxn | \wnk |  \\ % group-lasso
- & \text{subject to} 
- & & 
- \forall n,\ \sumk \wnk \leq 1 \\
- & 
- & &
- \forall n,\ k,\ \wnk \geq 0
+  \subjectto  
+  \hs & \forall n,\ \sumk \wnk \leq 1 \\
+  \hs & \forall n,\ k,\ \wnk \geq 0
  \end{align}
 
+The limiting conditions listed above are jointly called simplex constraint.
 Every entity must be assigned to some centroid with prob 1.
-Every entity must have non-negative belonging to each centroid candidate.
+Every entity must have non-negative belonging index to each centroid candidate.
 
 Note that the group-lasso can either be one or zero in the context that we
 pick up the most promising centroid candidates from provided entities. 
 
-\subsection{Processing Techniques}
+\subsection{ADMM}
+
+We can rewrite the initial optimization goal as the following primal problem: 
+
+ \begin{align}
+  \minimize{\wone, \wtwo, \z} 
+  \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+    + \quadraterm{1} \nonumber \\
+    & \hs + \lambda \sumk \maxn | \wnk |  
+    + \quadraterm{2}
+        \\ % group-lasso
+  \subjectto  
+  \hs & \w_{1} = \z,\ \w_{2} = \z
+ \end{align}
+
+ Note that we separate $\w$ into two variables, $\wone$ and $\wtwo$
+ respectively. This is to prepare it for latter optimization decomposition.
+
+By dual decomposition, the problem can be further transformed as follows:
+ 
+ \begin{align}
+     \minimize{\wone, \wtwo, \z} \hs  \maximize{\yone, \ytwo}
+   \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+   + \dualterm{1} + \quadraterm{1} \nonumber \\
+    & \hs + \lambda \sumk \maxn | \wnk |  % group-lasso
+   + \dualterm{2} + \quadraterm{2}
+ \end{align} 
+
+ We continue by incorporting duality and derive the following optimization
+ task:
+
+  \begin{align}
+     \maximize{\yone, \ytwo} \hs  \minimize{\wone, \wtwo, \z}
+   \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+   + \dualterm{1} + \quadraterm{1} \nonumber \\
+    & \hs + \lambda \sumk \maxn | \wnk |  % group-lasso
+   + \dualterm{2} + \quadraterm{2}
+ \end{align} 
+
+\subsection{Optimization Decomposition}
+\newcommand{\mutw}[1]{\mathbf{y}_{#1}^{T} \w_{#1}}
+
+The first optimization task:
+  \begin{align}
+   \minimize{\wone}
+   \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+   + \mutw{1} + \quadraterm{1} \\
+   \subjectto  
+   \hs & \forall n,\ \sumk \wnk \leq 1 \\
+   \hs & \forall n,\ k,\ \wnk \geq 0
+ \end{align} 
+ This subproblem can be solved by Frank-Wolf Algorithm.
+
+ The second optimization task:
+\begin{align}
+   \minimize{\wtwo}
+   \hs & \lambda \sumk \maxn | \wnk |  % group-lasso
+   + \mutw{2} + \quadraterm{2}  \\
+   \subjectto  
+   \hs & \forall n,\ \sumk \wnk \leq 1 \\
+   \hs & \forall n,\ k,\ \wnk \geq 0
+ \end{align} 
+
+ The closed-form solution of second subproblem can be found through Blockwise
+ Coordinate Descent Procedures (Han Liu.).
+
+
+\subsection{Update Rules}
+
 
 
 \subsubsection*{Acknowledgments}
