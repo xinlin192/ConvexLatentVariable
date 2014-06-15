@@ -6,9 +6,9 @@
 % sigma1~sigmaK: std within clusters
 % mu1~muK: means of clusters
 
-D = 2;
 K = 4;
-N = 1000;
+D = 2;
+N = 10000;
 p = [0.225 0.225 0.225 0.225    0.1];
 SIGMA = 4;
 sigma = ones(K,1)*1;
