@@ -17,6 +17,8 @@
 #include<vector>
 #include<map>
 #include<set>
+#include<algorithm>
+#include <cmath>    
 #include "util.h"
 
 using namespace std;

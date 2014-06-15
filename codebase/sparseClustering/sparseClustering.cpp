@@ -23,6 +23,11 @@ double ** mat_init (int nRows, int nCols) {
     return res;
 }
 
+void mat_free (double ** src) {
+
+    return ;
+}
+
 void mat_add (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
     
     for (int i = 0; i < nRows; i ++) {
@@ -53,10 +58,20 @@ void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols
 
 }
 
-void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, int N) {
+double sign (int input) {
 
-    rho = 1.0;
-    
+    if (input >= 0) return 1.0;
+    else return -1.0;
+
+}
+
+bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
+    // sort pairs by second element with decreasing order
+    return firstElem.second > secondElem.second;
+}
+
+void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double lambda, int N) {
+
     // STEP ONE: compute the optimal solution for truncated problem
     double ** wbar = mat_init (N, N);
     mat_dot (rho, ztwo, wbar, N, N); // wbar = rho * z_2
@@ -64,12 +79,53 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
     mat_dot (1.0/rho, wbar, wbar, N, N); // wbar = (rho * z_2 - y_2) / rho
 
     // STEP TWO: find the closed-form solution for second subproblem
-    // TODO: 
+    for (int j = 0; j < N; j ++) {
+        // 1. bifurcate the set of values
+        vector< pair<int,double> > alpha_vec;
+        for (int i = 0; i < N; i ++) {
+            double value = wbar[i][j];
+            alpha_vec.push_back (make_pair(i, abs(value)));
+        }
 
+        // 2. sorting
+        std::sort (alpha_vec.begin(), alpha_vec.end(), pairComparator);
+
+        // 3. find mstar
+        int mstar = 0; // number of elements support the sky
+        double separator;
+        double old_term = -INF, new_term;
+        double sum_alpha = 0.0;
+        for (int i = 0; i < N; i ++) {
+            sum_alpha += alpha_vec[i].second;
+            new_term = (sum_alpha - lambda) / (i + 1.0);
+            if ( new_term < old_term ) {
+                separator = alpha_vec[i].second;
+                break;
+            }
+            mstar ++;
+            old_term = new_term;
+        }
+        double max_term = old_term; 
+
+        // 3. assign closed-form solution to wtwo
+        for (int i = 0; i < N; i ++) {
+            // harness vector of pair
+            double value = wbar[i][j];
+            if ( abs(value) > separator ) { 
+                wtwo[i][j] = sign(wbar[i][j]) * max_term;
+            } else {
+                // its ranking is above m*, directly inherit the wbar
+                wtwo[i][j] = wbar[i][j];
+            }
+        }
+    }
+    // STEP THREE: recollect wbar
+    mat_free (wbar);
 
 }
 
 double L2norm (Instance * ins1, Instance * ins2, int N) {
+    // TODO: need to accelerate this part of codes
 
     double * vec1 = new double [N];
     double * vec2 = new double [N];
@@ -126,7 +182,9 @@ double opt_objective (vector<Instance*>& data, double lambda, int N, double ** z
 
 void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, double ** W) {
 
+    // parameter s 
     double alpha = 0.1;
+    double rho = 1;
     // iterative optimization 
     double error = INF;
     double ** wone = mat_init (N, N);
@@ -142,7 +200,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     while ( iter > 0 ) { // stopping criteria
         // STEP ONE: resolve w_1 and w_2
         // frank_wolf ();
-        // blockwise_closed_form (); 
+        blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N); 
 
         // STEP TWO: update z by w_1 and w_2
         mat_add (wone, wtwo, z, N, N);
@@ -170,7 +228,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 int main (int argc, char ** argv) {
     
     // exception control
-    if (argc < 2) {
+    if (argc < 3) {
         cerr << "Usage: sparseClustering [dataFile] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
