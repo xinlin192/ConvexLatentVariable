@@ -13,8 +13,17 @@
 
 #include "sparseClustering.h"
 
+double ** mat_init (int nRows, int nCols) {
 
-void matadd (double * src1, double * src2, double * dest, int nRows, int nCols) {
+    double ** res = new double * [nRows];
+    for (int i = 0; i < nRows; i ++) {
+        res[i] = new double [nCols];
+    }
+
+    return res;
+}
+
+void mat_add (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
     
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
@@ -24,7 +33,7 @@ void matadd (double * src1, double * src2, double * dest, int nRows, int nCols) 
 
 }
 
-void matsub (double * src1, double * src2, double * dest, int nRows, int nCols) {
+void mat_sub (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
     
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
@@ -34,7 +43,7 @@ void matsub (double * src1, double * src2, double * dest, int nRows, int nCols) 
 
 }
 
-void matdot (double scalar, double * src, double * dest, int nRows, int nCols) {
+void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols) {
 
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
@@ -44,19 +53,19 @@ void matdot (double scalar, double * src, double * dest, int nRows, int nCols) {
 
 }
 
-void blockwise_closed_form (double * ytwo, double * ztwo, double * wtwo, double rho, int N) {
+void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, int N) {
 
     rho = 1.0;
     
     // STEP ONE: compute the optimal solution for truncated problem
-    double * tmp = new double [N][N];
-    double * wbar = new double [N][N];
-    matdot (rho, ztwo, tmp);
-    matsub (tmp, ytwo, tmp);
-    matdiv (tmp, rho, wbar); // now, tmp is the 
+    double ** wbar = mat_init (N, N);
+    mat_dot (rho, ztwo, wbar, N, N); // wbar = rho * z_2
+    mat_sub (wbar, ytwo, wbar, N, N); // wbar = rho * z_2 - y_2
+    mat_dot (1.0/rho, wbar, wbar, N, N); // wbar = (rho * z_2 - y_2) / rho
 
     // STEP TWO: find the closed-form solution for second subproblem
     // TODO: 
+
 
 }
 
@@ -81,7 +90,7 @@ double L2norm (Instance * ins1, Instance * ins2, int N) {
 }
 
 
-double opt_objective (vector<Instance*>& data, double lambda, int N, double * z) {
+double opt_objective (vector<Instance*>& data, double lambda, int N, double ** z) {
     // N is number of entities in "data", and z is N by N.
     // z is current valid solution (average of w_1 and w_2)
     
@@ -96,6 +105,8 @@ double opt_objective (vector<Instance*>& data, double lambda, int N, double * z)
             normSum += z[i][j] * dist;
         }
     }
+    double loss = 0.5 * normSum;
+
     // STEP TWO: compute group-lasso regularization
     double * maxn = new double [N]; 
     for (int i = 0; i < N; i ++) {
@@ -108,38 +119,51 @@ double opt_objective (vector<Instance*>& data, double lambda, int N, double * z)
     for (int i = 0; i < N; i ++) {
         sumk = maxn[i];
     }
-    reg = lambda * sumk; 
+    double reg = lambda * sumk; 
 
     return loss + reg;
 }
 
-void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, double * W) {
+void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, double ** W) {
+
     double alpha = 0.1;
     // iterative optimization 
     double error = INF;
-    while () { 
+    double ** wone = mat_init (N, N);
+    double ** wtwo = mat_init (N, N);
+    double ** yone = mat_init (N, N);
+    double ** ytwo = mat_init (N, N);
+
+    double ** z = mat_init (N, N);
+    double ** diffone = mat_init (N, N);
+    double ** difftwo = mat_init (N, N);
+
+    int iter = 1000;
+    while ( iter > 0 ) { // stopping criteria
         // STEP ONE: resolve w_1 and w_2
         // frank_wolf ();
         // blockwise_closed_form (); 
 
         // STEP TWO: update z by w_1 and w_2
-        double * z = new double [N][N];
-        matadd (wone, wtwo, z, N, N);
-        // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
-        double * diff = new double [N][N];
-        matsub(wone, zone, diffone, N, N);
-        matdot(alpha, diffone, diffone, N, N);
-        yone = matsub (yone, diffone, yone, N, N);
+        mat_add (wone, wtwo, z, N, N);
+        mat_dot (0.5, z, z, N, N);
 
-        double * diff = new double [N][N];
-        matsub(wtwo, ztwo, diffone, N, N);
-        matdot(alpha, difftwo, difftwo, N, N);
-        ytwo = matsub (ytwo, difftwo, ytwo, N, N);
+        // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
+        mat_sub (wone, z, diffone, N, N);
+        mat_dot (alpha, diffone, diffone, N, N);
+        mat_sub (yone, diffone, yone, N, N);
+
+        mat_sub (wtwo, z, difftwo, N, N);
+        mat_dot (alpha, difftwo, difftwo, N, N);
+        mat_sub (ytwo, difftwo, ytwo, N, N);
 
         // STEP FOUR: trace the objective function
         error = opt_objective (data, lambda, N, z);
         cout << "Overall Error: " << error << endl;
+
+        iter --;
     }
+
 }
 
 // entry main function
@@ -181,8 +205,7 @@ int main (int argc, char ** argv) {
 
     // Run sparse convex clustering
     map<int, Cluster*> clusters;
-    double * W = new double [N][N];
-
+    double ** W = mat_init (N, N); 
     sparseClustering (data, D, N, lambda, W);
     // Output results
 
