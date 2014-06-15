@@ -44,6 +44,22 @@ void matdot (double scalar, double * src, double * dest, int nRows, int nCols) {
 
 }
 
+void blockwise_closed_form (double * ytwo, double * ztwo, double * wtwo, double rho, int N) {
+
+    rho = 1.0;
+    
+    // STEP ONE: compute the optimal solution for truncated problem
+    double * tmp = new double [N][N];
+    double * wbar = new double [N][N];
+    matdot (rho, ztwo, tmp);
+    matsub (tmp, ytwo, tmp);
+    matdiv (tmp, rho, wbar); // now, tmp is the 
+
+    // STEP TWO: find the closed-form solution for second subproblem
+    // TODO: 
+
+}
+
 double L2norm (Instance * ins1, Instance * ins2, int N) {
 
     double * vec1 = new double [N];
@@ -63,6 +79,7 @@ double L2norm (Instance * ins1, Instance * ins2, int N) {
 
     return norm;
 }
+
 
 double opt_objective (vector<Instance*>& data, double lambda, int N, double * z) {
     // N is number of entities in "data", and z is N by N.
@@ -102,8 +119,8 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     double error = INF;
     while () { 
         // STEP ONE: resolve w_1 and w_2
-        frank_wolf ();
-        blockwise_closed_form (); 
+        // frank_wolf ();
+        // blockwise_closed_form (); 
 
         // STEP TWO: update z by w_1 and w_2
         double * z = new double [N][N];
