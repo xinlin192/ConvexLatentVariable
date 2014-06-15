@@ -25,11 +25,13 @@ double ** mat_init (int nRows, int nCols) {
 
 void mat_free (double ** src) {
 
+    // TODO: recollect the memory
+    
     return ;
 }
 
 void mat_add (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
-    
+
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
             dest[i][j] = src1[i][j] + src2[i][j];
@@ -142,9 +144,14 @@ double L2norm (Instance * ins1, Instance * ins2, int N) {
         norm += (vec1[i] - vec2[i]) * (vec1[i] - vec2[i]);
     }
 
+    delete vec1, vec2;
+
     return norm;
 }
 
+double dist_func (Instance * ins1, Instance * ins2, int N) {
+    return L2norm(ins1, ins2, N);
+}
 
 double opt_objective (vector<Instance*>& data, double lambda, int N, double ** z) {
     // N is number of entities in "data", and z is N by N.
@@ -157,7 +164,7 @@ double opt_objective (vector<Instance*>& data, double lambda, int N, double ** z
         for (int j = 0; j < N; j ++) {
             Instance * xi = data[i] ;
             Instance * muj = data[j];
-            double dist = L2norm (xi, muj, N);
+            double dist =  dist_func (xi, muj, N);
             normSum += z[i][j] * dist;
         }
     }
@@ -182,9 +189,10 @@ double opt_objective (vector<Instance*>& data, double lambda, int N, double ** z
 
 void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, double ** W) {
 
-    // parameter s 
+    // parameters 
     double alpha = 0.1;
     double rho = 1;
+
     // iterative optimization 
     double error = INF;
     double ** wone = mat_init (N, N);
