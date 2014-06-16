@@ -3,6 +3,7 @@
 using namespace std;
 const double INF = 1e300;
 
+
 template <class T>
 void shuffle( vector<T>& vec ) {
 

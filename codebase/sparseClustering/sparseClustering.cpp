@@ -13,53 +13,6 @@
 
 #include "sparseClustering.h"
 
-double ** mat_init (int nRows, int nCols) {
-
-    double ** res = new double * [nRows];
-    for (int i = 0; i < nRows; i ++) {
-        res[i] = new double [nCols];
-    }
-
-    return res;
-}
-
-void mat_free (double ** src) {
-
-    // TODO: recollect the memory
-    
-    return ;
-}
-
-void mat_add (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
-
-    for (int i = 0; i < nRows; i ++) {
-        for (int j = 0; j < nCols; j ++) {
-            dest[i][j] = src1[i][j] + src2[i][j];
-        }
-    }
-
-}
-
-void mat_sub (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
-    
-    for (int i = 0; i < nRows; i ++) {
-        for (int j = 0; j < nCols; j ++) {
-            dest[i][j] = src1[i][j] - src2[i][j];
-        }
-    }
-
-}
-
-void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols) {
-
-    for (int i = 0; i < nRows; i ++) {
-        for (int j = 0; j < nCols; j ++) {
-            dest[i][j] = scalar * src[i][j];
-        }
-    }
-
-}
-
 double sign (int input) {
 
     if (input >= 0) return 1.0;
@@ -122,12 +75,14 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
         }
     }
     // STEP THREE: recollect temporary variable - wbar
-    mat_free (wbar);
+    mat_free (wbar, N, N);
 
 }
 
 double L2norm (Instance * ins1, Instance * ins2, int N) {
-    // TODO: need to accelerate this part of codes
+    // TODO: 
+    //   1. refine by using hash table to restore each instance
+    //   2. avoid the apply memory for vec1, vec2, make it direct computation
 
     double * vec1 = new double [N];
     double * vec2 = new double [N];
@@ -149,31 +104,25 @@ double L2norm (Instance * ins1, Instance * ins2, int N) {
     return norm;
 }
 
-double dist_func (Instance * ins1, Instance * ins2, int N) {
-    return L2norm(ins1, ins2, N);
-}
-
-double opt_objective (vector<Instance*>& data, double lambda, int N, double ** z) {
+double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
     // N is number of entities in "data", and z is N by N.
     // z is current valid solution (average of w_1 and w_2)
     
     // STEP ONE: compute loss function
-    // TODO: optimize in terms of symmetry
     double normSum = 0.0;
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
-            Instance * xi = data[i] ;
-            Instance * muj = data[j];
-            double dist =  dist_func (xi, muj, N);
-            normSum += z[i][j] * dist;
+            normSum += z[i][j] * dist_mat[i][j];
         }
     }
     double loss = 0.5 * normSum;
 
     // STEP TWO: compute group-lasso regularization
     double * maxn = new double [N]; 
-    for(int i=0;i<N;i++) //Ian: need initial 
+    for(int i = 0;i < N; i ++) { // Ian: need initial 
     	maxn[i] = -INF;
+    }
+
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
             if (z[j][i] > maxn[i])
@@ -189,11 +138,32 @@ double opt_objective (vector<Instance*>& data, double lambda, int N, double ** z
     return loss + reg;
 }
 
+/* Compute the mutual distance of input instances contained within "data" */
+void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, double (* dist_func) (Instance*,Instance*,int), bool isSym) {
+
+    for (int i = 0; i < N; i ++) {
+        for (int j = 0; j < N; j ++) {
+
+            if (j >= i || !isSym) { // invoke dist_func
+                Instance * xi = data[i];
+                Instance * muj = data[j];
+                dist_mat[i][j] = dist_func (xi, muj, N);
+            } else { // by symmetry 
+                dist_mat[i][j] = dist_mat[j][i];
+            }
+
+        }
+    }
+
+}
+
 void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, double ** W) {
 
     // parameters 
     double alpha = 0.1;
     double rho = 1;
+    double (* dist_func) (Instance*,Instance*,int);
+    dist_func = L2norm;
 
     // iterative optimization 
     double error = INF;
@@ -201,13 +171,16 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     double ** wtwo = mat_init (N, N);
     double ** yone = mat_init (N, N);
     double ** ytwo = mat_init (N, N);
-
     double ** z = mat_init (N, N);
     double ** diffone = mat_init (N, N);
     double ** difftwo = mat_init (N, N);
 
-    int iter = 0; //Ian: usually we count up (instead of count down)
+    double ** dist_mat = mat_init (N, N);
+    compute_dist_mat (data, dist_mat, N, dist_func, true); 
+
+    int iter = 0; // Ian: usually we count up (instead of count down)
     int max_iter = 1000;
+
     while ( iter < max_iter ) { // stopping criteria
         // STEP ONE: resolve w_1 and w_2
         // frank_wolf ();
@@ -227,12 +200,11 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
         mat_sub (ytwo, difftwo, ytwo, N, N);
 
         // STEP FOUR: trace the objective function
-        error = opt_objective (data, lambda, N, z);
-        cout << "iter=" << iter << " Overall Error: " << error << endl;
+        error = opt_objective (dist_mat, lambda, N, z);
+        cout << "iter=" << iter << ", Overall Error: " << error << endl;
 
         iter ++;
     }
-
 }
 
 // entry main function
@@ -265,8 +237,8 @@ int main (int argc, char ** argv) {
     }
 
     int D = dimensions;
-    cout << "D = " << D << endl;
-    cout << "N = " << N << endl;
+    cout << "D = " << D << endl; // # features
+    cout << "N = " << N << endl; // # instances
     cout << "lambda = " << lambda << endl;
     int seed = time(NULL);
     srand(seed);

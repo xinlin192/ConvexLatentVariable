@@ -20,6 +20,7 @@
 #include<algorithm>
 #include <cmath>    
 #include "util.h"
+#include "mat.h"
 
 using namespace std;
 
