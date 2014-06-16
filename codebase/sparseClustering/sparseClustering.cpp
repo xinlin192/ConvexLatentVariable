@@ -109,7 +109,7 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
         }
         double max_term = old_term; 
 
-        // 3. assign closed-form solution to wtwo
+        // 4. assign closed-form solution to wtwo
         for (int i = 0; i < N; i ++) {
             // harness vector of pair
             double value = wbar[i][j];
@@ -121,7 +121,7 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
             }
         }
     }
-    // STEP THREE: recollect wbar
+    // STEP THREE: recollect temporary variable - wbar
     mat_free (wbar);
 
 }
