@@ -1,5 +1,5 @@
 % Proposal for Convex Latent Variable
-% Author: 
+% Author:
 %   Jimmy Lin
 %   Ian Yen
 
@@ -13,7 +13,7 @@
 
 \title{Project Proposal: Convex Latent Variable}
 
-%{{{ Authors 
+%{{{ Authors
 \author{
 Hippocampus\thanks{ Use footnote for providing further information
 about author (webpage, alternative address)---\emph{not} for acknowledging
@@ -71,7 +71,7 @@ Address \\
 
 \newcommand{\x}[1]{\mathbf{x}_{#1}}
 \newcommand{\xn}{\mathbf{x}_n}
-\newcommand{\muk}{\boldsymbol{\mu}_k} 
+\newcommand{\muk}{\boldsymbol{\mu}_k}
 \newcommand{\maxn}{ \underset{n}{\text{max}} }
 
 \newcommand{\yone}{\mathbf{y}_1}
@@ -91,7 +91,7 @@ Address \\
 
 %%% TODO list:
 %% 1. reason of applying group-lasso (one or zero)
-%% 2. 
+%% 2.
 
 \begin{document}
 
@@ -111,19 +111,19 @@ of latent variables $\wnk$ indicating the extent of one entity $\xn$ explained
 by one potential cluster centroid candidate $\muk$. In this project, we
 propose a method to compute the sparse latent variable with faster
 convergence by decomposing the objective function derived by ADMM into two
-separate optimization task. 
+separate optimization task.
 
 
 \subsection{Overall Optimization Goal}
 Formally, our goal is to achieve clustering with group-lasso regularization.
 Hence, we formulate the target problem in terms of notations introduced above
-as follows:  
+as follows:
 
  \begin{align}
-  \minimize{\w} 
+  \minimize{\w}
   \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
         + \lambda \sumk \maxn | \wnk |  \\ % group-lasso
-  \subjectto  
+  \subjectto
   \hs & \forall n,\ \sumk \wnk \leq 1 \\
   \hs & \forall n,\ k,\ \wnk \geq 0
  \end{align}
@@ -133,20 +133,20 @@ Every entity must be assigned to some centroid with prob 1.
 Every entity must have non-negative belonging index to each centroid candidate.
 
 Note that the group-lasso can either be one or zero in the context that we
-pick up the most promising centroid candidates from provided entities. 
+pick up the most promising centroid candidates from provided entities.
 
 \subsection{ADMM}
 
-We can rewrite the initial optimization goal as the following primal problem: 
+We can rewrite the initial optimization goal as the following primal problem:
 
  \begin{align}
-  \minimize{\wone, \wtwo, \z} 
+  \minimize{\wone, \wtwo, \z}
   \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
     + \quadraterm{1} \nonumber \\
-    & \hs + \lambda \sumk \maxn | \wnk |  
+    & \hs + \lambda \sumk \maxn | \wnk |
     + \quadraterm{2}
         \\ % group-lasso
-  \subjectto  
+  \subjectto
   \hs & \w_{1} = \z,\ \w_{2} = \z
  \end{align}
 
@@ -154,14 +154,14 @@ We can rewrite the initial optimization goal as the following primal problem:
  respectively. This is to prepare it for latter optimization decomposition.
 
 By dual decomposition, the problem can be further transformed as follows:
- 
+
  \begin{align}
      \minimize{\wone, \wtwo, \z} \hs  \maximize{\yone, \ytwo}
    \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
    + \dualterm{1} + \quadraterm{1} \nonumber \\
     & \hs + \lambda \sumk \maxn | \wnk |  % group-lasso
    + \dualterm{2} + \quadraterm{2}
- \end{align} 
+ \end{align}
 
  We continue by incorporting duality and derive the following optimization
  task:
@@ -172,7 +172,7 @@ By dual decomposition, the problem can be further transformed as follows:
    + \dualterm{1} + \quadraterm{1} \nonumber \\
     & \hs + \lambda \sumk \maxn | \wnk |  % group-lasso
    + \dualterm{2} + \quadraterm{2}
- \end{align} 
+ \end{align}
 
 \subsection{Optimization Decomposition}
 \newcommand{\mutw}[1]{\mathbf{y}_{#1}^{T} \w_{#1}}
@@ -182,10 +182,10 @@ The first optimization task:
    \minimize{\wone}
    \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
    + \mutw{1} + \quadraterm{1} \\
-   \subjectto  
+   \subjectto
    \hs & \forall n,\ \sumk \wnk \leq 1 \\
    \hs & \forall n,\ k,\ \wnk \geq 0
- \end{align} 
+ \end{align}
  This subproblem can be solved by Frank-Wolf Algorithm.
 
  The second optimization task:
@@ -193,10 +193,7 @@ The first optimization task:
    \minimize{\wtwo}
    \hs & \lambda \sumk \maxn | \wnk |  % group-lasso
    + \mutw{2} + \quadraterm{2}  \\
-   \subjectto  
-   \hs & \forall n,\ \sumk \wnk \leq 1 \\
-   \hs & \forall n,\ k,\ \wnk \geq 0
- \end{align} 
+ \end{align}
 
  The closed-form solution of second subproblem can be found through Blockwise
  Coordinate Descent Procedures (Han Liu.).
