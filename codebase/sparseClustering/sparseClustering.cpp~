@@ -173,7 +173,7 @@ double opt_objective (vector<Instance*>& data, double lambda, int N, double ** z
     // STEP TWO: compute group-lasso regularization
     double * maxn = new double [N]; 
     for(int i=0;i<N;i++) //Ian: need initial 
-    	maxn[i] = -INF;
+    	maxn[i] = -1.0;
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
             if (z[j][i] > maxn[i])
