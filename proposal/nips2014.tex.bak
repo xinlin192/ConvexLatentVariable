@@ -1,0 +1,216 @@
+% Proposal for Convex Latent Variable
+% Author: 
+%   Jimmy Lin
+%   Ian Yen
+
+\documentclass{article} % For LaTeX2e
+\usepackage{nips14submit_e,times}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amssymb,amsmath,amsfonts,latexsym,mathtext}
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+
+
+\title{Project Proposal: Convex Latent Variable}
+
+%{{{ Authors 
+\author{
+Hippocampus\thanks{ Use footnote for providing further information
+about author (webpage, alternative address)---\emph{not} for acknowledging
+funding agencies.} \\
+Department of Computer Science\\
+Cranberry-Lemon University\\
+Pittsburgh, PA 15213 \\
+\texttt{hippo@cs.cranberry-lemon.edu} \\
+\And
+Coauthor \\
+Affiliation \\
+Address \\
+\texttt{email} \\
+\AND
+Coauthor \\
+Affiliation \\
+Address \\
+\texttt{email} \\
+\And
+Coauthor \\
+Affiliation \\
+Address \\
+\texttt{email} \\
+\And
+Coauthor \\
+Affiliation \\
+Address \\
+\texttt{email} \\
+(if needed)\\
+}
+%}}}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%{{{ Macros
+\newcommand{\LTwoNorm}[1]{||#1||^{2}}
+\newcommand{\sumn}{\sum_{n}}
+\newcommand{\sumk}{\sum_{k}}
+
+\newcommand{\wnk}{w_{nk}}
+\newcommand{\wn}{\mathbf{w}_n}
+\newcommand{\wone}{\mathbf{w}_1}
+\newcommand{\wtwo}{\mathbf{w}_2}
+\newcommand{\w}{\mathbf{w}}
+\newcommand{\wnbyn}{\mathbf{w}_{n\times n}}
+
+\newcommand{\x}[1]{\mathbf{x}_{#1}}
+\newcommand{\xn}{\mathbf{x}_n}
+\newcommand{\muk}{\boldsymbol{\mu}_k} 
+\newcommand{\maxn}{ \underset{n}{\text{max}} }
+
+\newcommand{\yone}{\mathbf{y}_1}
+\newcommand{\ytwo}{\mathbf{y}_2}
+\newcommand{\z}{\mathbf{z}}
+\newcommand{\quadraterm}[1]{\frac{\rho}{2}\LTwoNorm{\w_{#1}-\z}}
+\newcommand{\dualterm}[1]{\mathbf{y}_{#1}^{T}(\w_{#1}-\z)}
+
+\newcommand{\minimize}[1]{ \underset{#1}{\text{Minimize}} }
+\newcommand{\maximize}[1]{ \underset{#1}{\text{Maximize}} }
+\newcommand{\subjectto}{ \text{subject to} }
+\newcommand{\hs}{\hspace*{0.6cm}}
+
+%}}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+
+%%% TODO list:
+%% 1. reason of applying group-lasso (one or zero)
+%% 2. 
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    Add abstract here..
+\end{abstract}
+
+\section{Problem Formulation}
+\subsection{Motivation}
+Given a set of data entities $\x{1}, ..., \xn, ..., \x{N} $, we wish to
+automatically cluster these entities without specifying the number of cluster
+centroids. One possible approach is to regard these input entities as
+potential cluster candidates and evaluate the "belonging matrix" $\wnbyn$, consisting
+of latent variables $\wnk$ indicating the extent of one entity $\xn$ explained
+by one potential cluster centroid candidate $\muk$. In this project, we
+propose a method to compute the sparse latent variable with faster
+convergence by decomposing the objective function derived by ADMM into two
+separate optimization task. 
+
+
+\subsection{Overall Optimization Goal}
+Formally, our goal is to achieve clustering with group-lasso regularization.
+Hence, we formulate the target problem in terms of notations introduced above
+as follows:  
+
+ \begin{align}
+  \minimize{\w} 
+  \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+        + \lambda \sumk \maxn | \wnk |  \\ % group-lasso
+  \subjectto  
+  \hs & \forall n,\ \sumk \wnk \leq 1 \\
+  \hs & \forall n,\ k,\ \wnk \geq 0
+ \end{align}
+
+The limiting conditions listed above are jointly called simplex constraint.
+Every entity must be assigned to some centroid with prob 1.
+Every entity must have non-negative belonging index to each centroid candidate.
+
+Note that the group-lasso can either be one or zero in the context that we
+pick up the most promising centroid candidates from provided entities. 
+
+\subsection{ADMM}
+
+We can rewrite the initial optimization goal as the following primal problem: 
+
+ \begin{align}
+  \minimize{\wone, \wtwo, \z} 
+  \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+    + \quadraterm{1} \nonumber \\
+    & \hs + \lambda \sumk \maxn | \wnk |  
+    + \quadraterm{2}
+        \\ % group-lasso
+  \subjectto  
+  \hs & \w_{1} = \z,\ \w_{2} = \z
+ \end{align}
+
+ Note that we separate $\w$ into two variables, $\wone$ and $\wtwo$
+ respectively. This is to prepare it for latter optimization decomposition.
+
+By dual decomposition, the problem can be further transformed as follows:
+ 
+ \begin{align}
+     \minimize{\wone, \wtwo, \z} \hs  \maximize{\yone, \ytwo}
+   \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+   + \dualterm{1} + \quadraterm{1} \nonumber \\
+    & \hs + \lambda \sumk \maxn | \wnk |  % group-lasso
+   + \dualterm{2} + \quadraterm{2}
+ \end{align} 
+
+ We continue by incorporting duality and derive the following optimization
+ task:
+
+  \begin{align}
+     \maximize{\yone, \ytwo} \hs  \minimize{\wone, \wtwo, \z}
+   \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+   + \dualterm{1} + \quadraterm{1} \nonumber \\
+    & \hs + \lambda \sumk \maxn | \wnk |  % group-lasso
+   + \dualterm{2} + \quadraterm{2}
+ \end{align} 
+
+\subsection{Optimization Decomposition}
+\newcommand{\mutw}[1]{\mathbf{y}_{#1}^{T} \w_{#1}}
+
+The first optimization task:
+  \begin{align}
+   \minimize{\wone}
+   \hs & \frac{1}{2} \sumn \sumk \wnk \LTwoNorm{\xn - \muk}  % clustering loss
+   + \mutw{1} + \quadraterm{1} \\
+   \subjectto  
+   \hs & \forall n,\ \sumk \wnk \leq 1 \\
+   \hs & \forall n,\ k,\ \wnk \geq 0
+ \end{align} 
+ This subproblem can be solved by Frank-Wolf Algorithm.
+
+ The second optimization task:
+\begin{align}
+   \minimize{\wtwo}
+   \hs & \lambda \sumk \maxn | \wnk |  % group-lasso
+   + \mutw{2} + \quadraterm{2}  \\
+   \subjectto  
+   \hs & \forall n,\ \sumk \wnk \leq 1 \\
+   \hs & \forall n,\ k,\ \wnk \geq 0
+ \end{align} 
+
+ The closed-form solution of second subproblem can be found through Blockwise
+ Coordinate Descent Procedures (Han Liu.).
+
+
+\subsection{Update Rules}
+
+
+
+\subsubsection*{Acknowledgments}
+
+\subsubsection*{References}
+\small{
+
+}
+
+\end{document}
