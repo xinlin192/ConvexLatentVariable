@@ -13,6 +13,8 @@
 
 #include "sparseClustering.h"
 
+typedef double (* dist_func) (Instance*,Instance*,int);
+
 double sign (int input) {
 
     if (input >= 0) return 1.0;
@@ -139,7 +141,7 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
 }
 
 /* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, double (* dist_func) (Instance*,Instance*,int), bool isSym) {
+void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, dist_func df, bool isSym) {
 
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
@@ -147,7 +149,7 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, doubl
             if (j >= i || !isSym) { // invoke dist_func
                 Instance * xi = data[i];
                 Instance * muj = data[j];
-                dist_mat[i][j] = dist_func (xi, muj, N);
+                dist_mat[i][j] = df (xi, muj, N);
             } else { // by symmetry 
                 dist_mat[i][j] = dist_mat[j][i];
             }
