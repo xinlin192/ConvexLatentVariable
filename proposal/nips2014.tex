@@ -58,6 +58,11 @@ Address \\
 \newcommand{\new}{\marginpar{NEW}}
 
 %{{{ Macros
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newcommand{\argmax}[1]{\underset{#1}{\text{argmax} }}
+
+\newcommand{\indicator}[1]{\mathbf{1}_{#1}}
 \newcommand{\LTwoNorm}[1]{||#1||^{2}}
 \newcommand{\sumn}{\sum_{n}}
 \newcommand{\sumk}{\sum_{k}}
@@ -67,6 +72,8 @@ Address \\
 \newcommand{\wone}{\mathbf{w}_1}
 \newcommand{\wtwo}{\mathbf{w}_2}
 \newcommand{\w}{\mathbf{w}}
+\newcommand{\wbar}{\overline{\w}}
+\newcommand{\wopt}{\mathbf{w^{*}}}
 \newcommand{\wnbyn}{\mathbf{w}_{n\times n}}
 
 \newcommand{\x}[1]{\mathbf{x}_{#1}}
@@ -174,7 +181,7 @@ By dual decomposition, the problem can be further transformed as follows:
    + \dualterm{2} + \quadraterm{2}
  \end{align}
 
-\subsection{Optimization Decomposition}
+ \subsection{Optimization Decomposition} \label{separate}
 \newcommand{\mutw}[1]{\mathbf{y}_{#1}^{T} \w_{#1}}
 
 The first optimization task:
@@ -186,22 +193,58 @@ The first optimization task:
    \hs & \forall n,\ \sumk \wnk \leq 1 \\
    \hs & \forall n,\ k,\ \wnk \geq 0
  \end{align}
- This subproblem can be solved by Frank-Wolf Algorithm.
+ This subproblem can be solved by Frank-Wolf Algorithm. 
 
  The second optimization task:
-\begin{align}
+ \begin{align} \label{second}
    \minimize{\wtwo}
    \hs & \lambda \sumk \maxn | \wnk |  % group-lasso
-   + \mutw{2} + \quadraterm{2}  \\
+   + \mutw{2} + \quadraterm{2} 
  \end{align}
 
  The closed-form solution of second subproblem can be found through Blockwise
- Coordinate Descent Procedures (Han Liu.).
+ Coordinate Descent Procedures (Han Liu.). 
+
+\subsection{Overall Solution Procedure}
+Repeat
+
+1. Resolve $\wone$ and $\wtwo$ in separate subproblem formulated in section
+\ref{separate}.
+
+2. Update the combination indicator $\z$ by $\z = \frac{1}{2} (\wone + \wtwo)$
+
+3. Refine the multiplier $\yone$ and $\ytwo$ with gradient update rule: 
+\begin{align}
+\yone = \yone - \alpha \cdot (\wone - \z) \\
+\ytwo = \ytwo - \alpha \cdot (\wtwo - \z)
+\end{align}
+
+Until Convergence.
+
+\subsection{Resolve first subproblem: Frank-Wolf Algorithm} 
 
 
-\subsection{Update Rules}
+\subsection{Resolve second subproblem: Blockwise Coordinate Descent Procedures} 
+According to Blockwise Coordinate Descent Procedures (Han Liu.), the way to
+resolve the \eqref{second} optimization problem is first to seek solution $\wbar$ without
+group-lasso \eqref{noglasso} as shown below. 
 
+\begin{align} \label{noglasso}
+   \minimize{\wtwo}
+   \hs & \mutw{2} + \quadraterm{2} 
+ \end{align}
 
+\newcommand{\ms}{m^{*}}
+Then ultimately find the closed-form solution in terms of $\wbar$. In
+practice, we resolve it column by column. The formula for closed-form
+solution $\wopt$ is given as follows:
+
+\begin{align}
+    \wopt = 
+\end{align}
+
+where $\ms = \argmax{m} \frac{1}{m} \big(\sum_{i'}^{m} |\wopt^{(k_{i'})}| -
+\lambda \big)$.
 
 \subsubsection*{Acknowledgments}
 
