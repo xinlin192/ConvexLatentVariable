@@ -164,8 +164,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     // parameters 
     double alpha = 0.1;
     double rho = 1;
-    double (* dist_func) (Instance*,Instance*,int);
-    dist_func = L2norm;
+    dist_func df = L2norm;
 
     // iterative optimization 
     double error = INF;
@@ -178,7 +177,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     double ** difftwo = mat_init (N, N);
 
     double ** dist_mat = mat_init (N, N);
-    compute_dist_mat (data, dist_mat, N, dist_func, true); 
+    compute_dist_mat (data, dist_mat, N, df, true); 
 
     int iter = 0; // Ian: usually we count up (instead of count down)
     int max_iter = 1000;
@@ -207,6 +206,8 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 
         iter ++;
     }
+    // STEP FIVE: put converged solution to destination W
+    mat_copy(z, W, N, N);
 }
 
 // entry main function

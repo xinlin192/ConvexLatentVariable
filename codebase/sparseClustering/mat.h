@@ -59,6 +59,7 @@ void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols
 }
 
 void mat_print (double ** src, int nRows, int nCols) {
+
     string field_seperator = ",";
     string line_separator = "\n";
     for (int i = 0; i < nRows; i ++) {
@@ -67,6 +68,17 @@ void mat_print (double ** src, int nRows, int nCols) {
         }
         cout << line_separator;
     }
+
+}
+
+void mat_copy (double ** src, double ** dest, int nRows, int nCols) {
+
+    for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) {
+            dest[i][j] = src[i][j];
+        }
+    }
+
 }
 
 // TODO: mat_write and mat_read
