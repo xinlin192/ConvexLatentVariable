@@ -222,6 +222,28 @@ Repeat
 Until Convergence.
 
 \subsection{Resolve first subproblem: Frank-Wolf Algorithm} 
+\subsubsection{Single-variable case}
+In the context of only one input instance, the optimization problem can be written as
+\begin{align}
+   \minimize{w}
+   \hs & \frac{1}{2} w \cdot d^2 + y \cdot w +   % clustering loss
+   \frac{\rho}{2} ||w - z||^2 \\
+   \subjectto
+   \hs & 0 \leq  w \leq 1
+\end{align}
+Note that the distance $d$ above should be zero. We can further rewrite above
+optimization task as 
+\begin{align}
+   \minimize{w}
+   \hs & \frac{\rho}{2} w^2 + (- \rho  z + y + \frac{1}{2} d^2) w + z^2 \\
+   \subjectto
+   \hs & 0 \leq  w \leq 1
+\end{align}
+As we can see the critical point of objective function is 
+\begin{align}
+    -\frac{- \rho  z + y + \frac{1}{2}d^2}{\rho} 
+    = z - \frac{1}{\rho} y - \frac{d^2}{2\rho}
+\end{align}
 
 
 \subsection{Resolve second subproblem: Blockwise Coordinate Descent Procedures} 
@@ -240,7 +262,7 @@ practice, we resolve it column by column. The formula for closed-form
 solution $\wopt$ is given as follows:
 
 \begin{align}
-    \wopt = 
+    \wopt = ...
 \end{align}
 
 where $\ms = \argmax{m} \frac{1}{m} \big(\sum_{i'}^{m} |\wopt^{(k_{i'})}| -
