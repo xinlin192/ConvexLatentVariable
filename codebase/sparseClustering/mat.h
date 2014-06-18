@@ -48,6 +48,16 @@ void mat_sub (double ** src1, double ** src2, double ** dest, int nRows, int nCo
 
 }
 
+void mat_times (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
+
+    for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) {
+            dest[i][j] = src1[i][j]* src2[i][j];
+        }
+    }
+
+}
+
 void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols) {
 
     for (int i = 0; i < nRows; i ++) {
@@ -77,6 +87,36 @@ void mat_copy (double ** src, double ** dest, int nRows, int nCols) {
         for (int j = 0; j < nCols; j ++) {
             dest[i][j] = src[i][j];
         }
+    }
+
+}
+
+double mat_sum (double ** src, int nRows, int nCols) {
+
+    double sum = 0.0;
+    for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) {
+            sum += src[i][j];
+        }
+    }
+
+    return sum;
+}
+
+void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
+
+    // we assume that the given dest is all-zero mat
+
+    for (int j = 0; j < nCols; j ++) {
+        int max_index = -1;
+        int max_value = -INF;
+        for (int i = 0; i < nRows; i ++) {
+            if (src[i][j] > max_value) {
+                max_index = i;
+                max_value = src[i][j];
+            }
+        }
+        dest[max_index][j] = 1;
     }
 
 }

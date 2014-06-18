@@ -15,6 +15,44 @@
 
 typedef double (* dist_func) (Instance*,Instance*,int);
 
+void first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, int N) {
+    double ** temp = mat_init (N, N);
+    mat_times (wone, dist_mat, temp, N, N);
+    double sum1 = mat_sum (temp, N, N);
+    // mat_dot (yone, wone, temp, N, N);
+    double sum2 = mat_sum (temp, N, N);
+    mat_free (temp, N, N);
+
+    return ;
+}
+
+void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
+
+    // STEP ONE: find s minimize <s, grad f>
+    // This can be computed by using corner point. 
+    double ** gradient = mat_init (N, N);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            gradient[i][j] = dist_mat[i][j] + yone[i][j] + rho * (wone[i][j] - zone[i][j]);
+        }
+    }
+    double ** s = mat_init (N, N);
+    mat_max_col (gradient, s, N, N);
+    mat_free (gradient, N, N);
+
+    // STEP TWO: apply exact or inexact line search to find solution
+    // Here we use inexact line search
+    int K = 100, k = 0; // iteration number
+    double gamma; // step size
+    while (k < K) {
+        gamma = 2.0 / (k + 2.0);
+
+
+        k ++;
+    }
+
+}
+
 double sign (int input) {
 
     if (input >= 0) return 1.0;
@@ -121,7 +159,7 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
 
     // STEP TWO: compute group-lasso regularization
     double * maxn = new double [N]; 
-    for(int i = 0;i < N; i ++) { // Ian: need initial 
+    for (int i = 0;i < N; i ++) { // Ian: need initial 
     	maxn[i] = -INF;
     }
 
@@ -252,5 +290,5 @@ int main (int argc, char ** argv) {
     double ** W = mat_init (N, N); 
     sparseClustering (data, D, N, lambda, W);
     // Output results
-
+    
 }
