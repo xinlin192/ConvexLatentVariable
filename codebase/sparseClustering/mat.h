@@ -68,6 +68,19 @@ void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols
 
 }
 
+// tranpose first matrix and then compute dot product 
+void mat_tdot (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
+    for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) {
+            double temp;
+            for (int k = 0; k < nRows; k ++) {
+                temp += src1[k][i] * src2[k][i];
+            }
+            dest[i][j] = temp;
+        }
+    }
+}
+
 void mat_print (double ** src, int nRows, int nCols) {
 
     string field_seperator = ",";
@@ -119,6 +132,34 @@ void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
         dest[max_index][j] = 1;
     }
 
+}
+
+void mat_min_col (double ** src, double ** dest, int nRows, int nCols) {
+
+    // we assume that the given dest is all-zero mat
+
+    for (int j = 0; j < nCols; j ++) {
+        int min_index = -1;
+        int min_value = INF;
+        for (int i = 0; i < nRows; i ++) {
+            if (src[i][j] < min_value) {
+                min_index = i;
+                min_value = src[i][j];
+            }
+        }
+        dest[min_index][j] = 1;
+    }
+
+}
+
+double mat_norm2 (double ** src, int nRows, int nCols) {
+    double sum = 0.0;
+    for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) {
+            sum += src[i][j] * src[i][j];
+        }
+    }   
+    return sum;
 }
 
 // TODO: mat_write and mat_read

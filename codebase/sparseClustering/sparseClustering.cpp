@@ -15,15 +15,25 @@
 
 typedef double (* dist_func) (Instance*,Instance*,int);
 
-void first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, int N) {
+double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
+
     double ** temp = mat_init (N, N);
+
+    // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk)
     mat_times (wone, dist_mat, temp, N, N);
-    double sum1 = mat_sum (temp, N, N);
-    // mat_dot (yone, wone, temp, N, N);
+    double sum1 = 0.5 * mat_sum (temp, N, N);
+
+    // sum2 = y_1^T dot w_1
+    mat_tdot (yone, wone, temp, N, N);
     double sum2 = mat_sum (temp, N, N);
+
+    // sum3 = 0.5 * rho * || w_1 - z_1 ||^2
+    mat_sub (wone, zone, temp, N, N);
+    double sum3 = 0.5 * rho* mat_norm2 (temp, N, N);
+
     mat_free (temp, N, N);
 
-    return ;
+    return sum1 + sum2 + sum3;
 }
 
 void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
@@ -37,20 +47,31 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         }
     }
     double ** s = mat_init (N, N);
-    mat_max_col (gradient, s, N, N);
+    mat_min_col (gradient, s, N, N);
     mat_free (gradient, N, N);
 
     // STEP TWO: apply exact or inexact line search to find solution
+    // TODO: refine it by using exact line search algorithm
     // Here we use inexact line search
-    int K = 100, k = 0; // iteration number
+    int K = 100, k = 1; // iteration number
     double gamma; // step size
+    double penalty;
+    double ** tempS = mat_init(N, N);
     while (k < K) {
         gamma = 2.0 / (k + 2.0);
+        mat_dot (gamma, s, tempS, N, N);
+        mat_dot (1.0-gamma, wone, wone, N, N);
+        mat_add (wone, tempS, wone, N, N);
 
+        // compute value of objective function
+        first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
+        // report the #iter and objective function
+        cout << "iteration: " << k << ", objective: " << penalty << endl;
 
         k ++;
     }
-
+    mat_free (tempS, N, N);
+    mat_free (s, N, N);
 }
 
 double sign (int input) {
