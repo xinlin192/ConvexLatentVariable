@@ -38,38 +38,39 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
 
 void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
 
-    // STEP ONE: find s minimize <s, grad f>
     // This can be computed by using corner point. 
     double ** gradient = mat_init (N, N);
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            gradient[i][j] = dist_mat[i][j] + yone[i][j] + rho * (wone[i][j] - zone[i][j]);
-        }
-    }
     double ** s = mat_init (N, N);
-    mat_min_col (gradient, s, N, N);
-    mat_free (gradient, N, N);
-
-    // STEP TWO: apply exact or inexact line search to find solution
-    // TODO: refine it by using exact line search algorithm
-    // Here we use inexact line search
-    int K = 3, k = 1; // iteration number
+    
+    int K = 10, k = 1; // iteration number
     double gamma; // step size
     double penalty;
     double ** tempS = mat_init(N, N);
     while (k < K) {
+        // STEP ONE: find s minimize <s, grad f>
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                gradient[i][j] = dist_mat[i][j] + yone[i][j] + rho * (wone[i][j] - zone[i][j]);
+            }
+        }
+        mat_min_col (gradient, s, N, N);
+
+        // STEP TWO: apply exact or inexact line search to find solution
+        // TODO: refine it by using exact line search algorithm
+        // Here we use inexact line search
         gamma = 2.0 / (k + 2.0);
         mat_dot (gamma, s, tempS, N, N);
         mat_dot (1.0-gamma, wone, wone, N, N);
         mat_add (wone, tempS, wone, N, N);
 
         // compute value of objective function
-        first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
+        penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
         // report the #iter and objective function
-        cout << "iteration: " << k << ", objective: " << penalty << endl;
+        cout << "[Frank-Wolfe] iteration: " << k << ", first_subproblm_obj: " << penalty << endl;
 
         k ++;
     }
+    mat_free (gradient, N, N);
     mat_free (tempS, N, N);
     mat_free (s, N, N);
 }
@@ -243,10 +244,10 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 
     while ( iter < max_iter ) { // stopping criteria
         // STEP ONE: resolve w_1 and w_2
-        frank_wolf (dist_mat, yone, z, wone, rho, N);
-        blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N); 
+        frank_wolf (dist_mat, yone, z, wone, rho, N); // for w_1
+        blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N);  // for w_2
 
-        // STEP TWO: update z by w_1 and w_2
+        // STEP TWO: update z by averaging w_1 and w_2
         mat_add (wone, wtwo, z, N, N);
         mat_dot (0.5, z, z, N, N);
 
@@ -261,12 +262,19 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 
         // STEP FOUR: trace the objective function
         error = opt_objective (dist_mat, lambda, N, z);
-        cout << "iter=" << iter << ", Overall Error: " << error << endl;
+        cout << "[Overall] iter=" << iter << ", Overall Error: " << error << endl;
 
         iter ++;
     }
-    // STEP FIVE: put converged solution to destination W
-    mat_copy(z, W, N, N);
+    // STEP FIVE: memory recollection
+    mat_free (wone, N, N);
+    mat_free (wtwo, N, N);
+    mat_free (yone, N, N);
+    mat_free (ytwo, N, N);
+    mat_free (diffone, N, N);
+    mat_free (difftwo, N, N);
+    // STEP SIX: put converged solution to destination W
+    mat_copy (z, W, N, N);
 }
 
 // entry main function
