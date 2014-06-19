@@ -134,20 +134,20 @@ void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
 
 }
 
-void mat_min_col (double ** src, double ** dest, int nRows, int nCols) {
+void mat_min_row (double ** src, double ** dest, int nRows, int nCols) {
 
     // we assume that the given dest is all-zero mat
 
-    for (int j = 0; j < nCols; j ++) {
+    for (int i = 0; i < nRows; i ++) {
         int min_index = -1;
         int min_value = INF;
-        for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) {
             if (src[i][j] < min_value) {
-                min_index = i;
+                min_index = j;
                 min_value = src[i][j];
             }
         }
-        dest[min_index][j] = 1;
+        dest[i][min_index] = 1;
     }
 
 }
