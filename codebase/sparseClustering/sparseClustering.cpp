@@ -53,7 +53,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
                 gradient[i][j] = dist_mat[i][j] + yone[i][j] + rho * (wone[i][j] - zone[i][j]);
             }
         }
-        mat_min_col (gradient, s, N, N);
+        mat_min_row (gradient, s, N, N);
 
         // STEP TWO: apply exact or inexact line search to find solution
         // TODO: refine it by using exact line search algorithm

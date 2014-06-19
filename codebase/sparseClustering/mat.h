@@ -131,7 +131,6 @@ void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
         }
         dest[max_index][j] = 1;
     }
-
 }
 
 void mat_min_row (double ** src, double ** dest, int nRows, int nCols) {
