@@ -13,7 +13,7 @@
 
 #include "sparseClustering.h"
 
-typedef double (* dist_func) (Instance*,Instance*,int);
+typedef double (* dist_func) (Instance*, Instance*, int);
 
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
 
@@ -272,7 +272,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 // entry main function
 int main (int argc, char ** argv) {
     
-    // exception control
+    // exception control: illustrate the usage if get input of wrong format
     if (argc < 3) {
         cerr << "Usage: sparseClustering [dataFile] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
@@ -307,8 +307,8 @@ int main (int argc, char ** argv) {
     cout << "seed = " << seed << endl;
 
     // Run sparse convex clustering
-    map<int, Cluster*> clusters;
-    double ** W = mat_init (N, N); 
+    map<int, Cluster*> clusters; 
+    double ** W = mat_init (N, N);
     sparseClustering (data, D, N, lambda, W);
     // Output results
     
