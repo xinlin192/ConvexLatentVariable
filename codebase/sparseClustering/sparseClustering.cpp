@@ -53,7 +53,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     // STEP TWO: apply exact or inexact line search to find solution
     // TODO: refine it by using exact line search algorithm
     // Here we use inexact line search
-    int K = 100, k = 1; // iteration number
+    int K = 3, k = 1; // iteration number
     double gamma; // step size
     double penalty;
     double ** tempS = mat_init(N, N);
@@ -243,7 +243,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 
     while ( iter < max_iter ) { // stopping criteria
         // STEP ONE: resolve w_1 and w_2
-        // frank_wolf ();
+        frank_wolf (dist_mat, yone, z, wone, rho, N);
         blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N); 
 
         // STEP TWO: update z by w_1 and w_2
