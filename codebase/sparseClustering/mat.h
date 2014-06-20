@@ -161,7 +161,7 @@ void mat_min_row (double ** src, double ** dest, int nRows, int nCols) {
 
     for (int i = 0; i < nRows; i ++) {
         int min_index = -1;
-        int min_value = INF;
+        double min_value = INF;
         for (int j = 0; j < nCols; j ++) {
             if (src[i][j] < min_value) {
                 min_index = j;

@@ -56,7 +56,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         r[i] = INF;
     }
     
-    int K = 10, k = 1; // iteration number
+    int K = 5, k = 1; // iteration number
     double gamma; // step size
     double penalty;
     double ** tempS = mat_init(N, N);
@@ -99,6 +99,41 @@ double sign (int input) {
 bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
     // sort pairs by second element with decreasing order
     return firstElem.second > secondElem.second;
+}
+
+double second_subproblm_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double lambda) {
+
+    double ** temp = mat_init (N, N);
+
+    // reg = 0.5 * sum_k max_n | w_nk | 
+    double * maxn = new double [N]; 
+    for (int i = 0;i < N; i ++) { // Ian: need initial 
+    	maxn[i] = -INF;
+    }
+
+    for (int i = 0; i < N; i ++) {
+        for (int j = 0; j < N; j ++) {
+            if (z[j][i] > maxn[i])
+                maxn[i] = z[j][i];
+        }
+    }
+    double sumk = 0.0;
+    for (int i = 0; i < N; i ++) {
+        sumk = maxn[i];
+    }
+    double reg = lambda * sumk; 
+
+    // sum2 = y_2^T dot w_2
+    mat_tdot (ytwo, wtwo, temp, N, N);
+    double sum2 = mat_sum (temp, N, N);
+
+    // sum3 = 0.5 * rho * || w_2 - z_2 ||^2
+    mat_sub (wtwo, z, temp, N, N);
+    double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
+
+    mat_free (temp, N, N);
+
+    return reg + sum2 + sum3;
 }
 
 void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double lambda, int N) {
@@ -150,6 +185,12 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
             }
         }
     }
+
+    // compute value of objective function
+    double penalty = second_subproblm_obj (ytwo, ztwo, wtwo, rho, N, lambda);
+    // report the #iter and objective function
+    cout << "[Blockwise]  second_subproblem_obj: " << penalty << endl;
+
     // STEP THREE: recollect temporary variable - wbar
     mat_free (wbar, N, N);
 
@@ -267,16 +308,20 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         mat_sub (wone, z, diffone, N, N);
+        double trace_wone_minus_z = mat_norm2 (diffone, N, N); 
         mat_dot (alpha, diffone, diffone, N, N);
         mat_sub (yone, diffone, yone, N, N);
 
         mat_sub (wtwo, z, difftwo, N, N);
+        double trace_wtwo_minus_z = mat_norm2 (diffone, N, N); 
         mat_dot (alpha, difftwo, difftwo, N, N);
         mat_sub (ytwo, difftwo, ytwo, N, N);
 
         // STEP FOUR: trace the objective function
         error = opt_objective (dist_mat, lambda, N, z);
-        cout << "[Overall] iter =" << iter << ", Overall Error: " << error << endl;
+        cout << "[Overall] iter = " << iter << ", Overall Error: " << error << endl;
+        cout << "[Overall] || w_1 - z || ^2 = " << trace_wone_minus_z << endl;
+        cout << "[Overall] || w_2 - z || ^2 = " << trace_wtwo_minus_z << endl;
 
         iter ++;
     }
