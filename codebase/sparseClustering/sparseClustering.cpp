@@ -15,7 +15,7 @@
 
 typedef double (* dist_func) (Instance*, Instance*, int);
 
-double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
+double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, double * r) {
 
     double ** temp = mat_init (N, N);
 
@@ -31,9 +31,19 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     mat_sub (wone, zone, temp, N, N);
     double sum3 = 0.5 * rho* mat_norm2 (temp, N, N);
 
-    mat_free (temp, N, N);
+    // sum4 = r dot (1 - sum_k w_nk)
+    double * temp_vec = new double [N];
+    mat_sum_row (wone, temp_vec, N, N);
+    for (int i = 0; i < N; i ++) {
+        temp_vec[i] = 1 - temp_vec[i];
+    }
+    double sum4 = mat_dot (temp_vec, r, N);
+    cout << "dummy term: " << sum4 << endl;
 
-    return sum1 + sum2 + sum3;
+    mat_free (temp, N, N);
+    delete temp_vec;
+
+    return sum1 + sum2 + sum3 + sum4;
 }
 
 void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
@@ -41,6 +51,10 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     // This can be computed by using corner point. 
     double ** gradient = mat_init (N, N);
     double ** s = mat_init (N, N);
+    double * r = new double [N];
+    for (int i = 0; i < N; i ++) {
+        r[i] = INF;
+    }
     
     int K = 10, k = 1; // iteration number
     double gamma; // step size
@@ -50,7 +64,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // STEP ONE: find s minimize <s, grad f>
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                gradient[i][j] = dist_mat[i][j] + yone[i][j] + rho * (wone[i][j] - zone[i][j]);
+                gradient[i][j] = 0.5 * dist_mat[i][j] + yone[i][j] + rho * (wone[i][j] - zone[i][j]) - r[i] * wone[i][j];
             }
         }
         mat_min_row (gradient, s, N, N);
@@ -64,7 +78,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         mat_add (wone, tempS, wone, N, N);
 
         // compute value of objective function
-        penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
+        penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N, r);
         // report the #iter and objective function
         cout << "[Frank-Wolfe] iteration: " << k << ", first_subproblm_obj: " << penalty << endl;
 
@@ -262,7 +276,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 
         // STEP FOUR: trace the objective function
         error = opt_objective (dist_mat, lambda, N, z);
-        cout << "[Overall] iter=" << iter << ", Overall Error: " << error << endl;
+        cout << "[Overall] iter =" << iter << ", Overall Error: " << error << endl;
 
         iter ++;
     }

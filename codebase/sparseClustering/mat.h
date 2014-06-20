@@ -81,6 +81,28 @@ void mat_tdot (double ** src1, double ** src2, double ** dest, int nRows, int nC
     }
 }
 
+void mat_sum_row (double ** src, double * dest, int nRows, int nCols) {
+    
+    for (int i = 0; i < nRows; i ++) {
+        double sum = 0.0;
+        for (int j = 0; j < nCols; j ++) {
+            sum += src[i][j];
+        }
+        dest[i] = sum;
+    }
+
+}
+
+double mat_dot (double * vec1, double * vec2, int N) {
+
+    double sum = 0.0;
+    for (int i = 0; i < N; i ++) {
+        sum += vec1[i] * vec2[i];
+    }
+
+    return sum;
+}
+
 void mat_print (double ** src, int nRows, int nCols) {
 
     string field_seperator = ",";
