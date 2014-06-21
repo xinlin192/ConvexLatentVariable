@@ -39,6 +39,9 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     }
 
     double sum4 = mat_dot (temp_vec, r, N);
+    cout << "sum1: " << sum1 << endl;
+    cout << "sum2: " << sum2 << endl;
+    cout << "sum3: " << sum3 << endl;
     cout << "dummy term: " << sum4 << endl;
 
     mat_free (temp, N, N);
