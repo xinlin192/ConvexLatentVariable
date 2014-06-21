@@ -35,7 +35,6 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     double * temp_vec = new double [N];
     mat_sum_row (wone, temp_vec, N, N);
     for (int i = 0; i < N; i ++) {
-	cerr << temp_vec[i] << endl;
         temp_vec[i] = 1 - temp_vec[i];
     }
 

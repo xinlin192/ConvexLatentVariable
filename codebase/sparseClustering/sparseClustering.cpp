@@ -57,7 +57,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         r[i] = 100;
     }
     
-    int K = 5, k = 0; // iteration number
+    int K = 100, k = 0; // iteration number
     double gamma; // step size
     double penalty;
     double ** tempS = mat_init(N, N);
@@ -279,7 +279,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 
     // parameters 
     double alpha = 0.1;
-    double rho = 10.0;
+    double rho = 1.0;
     dist_func df = L2norm;
 
     // iterative optimization 
