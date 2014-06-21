@@ -18,7 +18,7 @@ typedef double (* dist_func) (Instance*, Instance*, int);
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, double * r) {
 
     double ** temp = mat_init (N, N);
-
+    
     // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk)
     mat_times (wone, dist_mat, temp, N, N);
     double sum1 = 0.5 * mat_sum (temp, N, N);
