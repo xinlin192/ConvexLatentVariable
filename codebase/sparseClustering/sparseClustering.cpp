@@ -30,13 +30,14 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     // sum3 = 0.5 * rho * || w_1 - z_1 ||^2
     mat_sub (wone, zone, temp, N, N);
     double sum3 = 0.5 * rho* mat_norm2 (temp, N, N);
-
+    
     // sum4 = r dot (1 - sum_k w_nk)
     double * temp_vec = new double [N];
     mat_sum_row (wone, temp_vec, N, N);
     for (int i = 0; i < N; i ++) {
         temp_vec[i] = 1 - temp_vec[i];
     }
+
     double sum4 = mat_dot (temp_vec, r, N);
     cout << "dummy term: " << sum4 << endl;
 
@@ -53,10 +54,10 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     double ** s = mat_init (N, N);
     double * r = new double [N];
     for (int i = 0; i < N; i ++) {
-        r[i] = INF;
+        r[i] = 100;
     }
     
-    int K = 5, k = 1; // iteration number
+    int K = 5, k = 0; // iteration number
     double gamma; // step size
     double penalty;
     double ** tempS = mat_init(N, N);
@@ -64,11 +65,11 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // STEP ONE: find s minimize <s, grad f>
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                gradient[i][j] = 0.5 * dist_mat[i][j] + yone[i][j] + rho * (wone[i][j] - zone[i][j]) - r[i] * wone[i][j];
+                gradient[i][j] = 0.5 * dist_mat[i][j] + yone[i][j] + rho * (wone[i][j] - zone[i][j]) ;//- r[i];
             }
         }
         mat_min_row (gradient, s, N, N);
-
+	
         // STEP TWO: apply exact or inexact line search to find solution
         // TODO: refine it by using exact line search algorithm
         // Here we use inexact line search
@@ -76,7 +77,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         mat_dot (gamma, s, tempS, N, N);
         mat_dot (1.0-gamma, wone, wone, N, N);
         mat_add (wone, tempS, wone, N, N);
-
+	
         // compute value of objective function
         penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N, r);
         // report the #iter and objective function
@@ -278,7 +279,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
 
     // parameters 
     double alpha = 0.1;
-    double rho = 1;
+    double rho = 10.0;
     dist_func df = L2norm;
 
     // iterative optimization 
@@ -290,7 +291,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     double ** z = mat_init (N, N);
     double ** diffone = mat_init (N, N);
     double ** difftwo = mat_init (N, N);
-
+    
     double ** dist_mat = mat_init (N, N);
     compute_dist_mat (data, dist_mat, N, df, true); 
 
