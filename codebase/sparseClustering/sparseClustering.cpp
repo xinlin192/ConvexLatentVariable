@@ -29,7 +29,7 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
 
     // sum3 = 0.5 * rho * || w_1 - z_1 ||^2
     mat_sub (wone, zone, temp, N, N);
-    double sum3 = 0.5 * rho* mat_norm2 (temp, N, N);
+    double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
     
     // sum4 = r dot (1 - sum_k w_nk)
     double * temp_vec = new double [N];
@@ -39,10 +39,10 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     }
 
     double sum4 = mat_dot (temp_vec, r, N);
-    cout << "sum1: " << sum1 << endl;
-    cout << "sum2: " << sum2 << endl;
-    cout << "sum3: " << sum3 << endl;
-    cout << "dummy term: " << sum4 << endl;
+    cout << "[frank_wolfe] sum1: " << sum1 << endl;
+    cout << "[frank_wolfe] sum2: " << sum2 << endl;
+    cout << "[frank_wolfe] sum3: " << sum3 << endl;
+    cout << "[frank_wolfe] sum4: " << sum4 << endl;
 
     mat_free (temp, N, N);
     delete temp_vec;
