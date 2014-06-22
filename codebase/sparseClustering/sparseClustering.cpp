@@ -46,7 +46,6 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     cout << "[frank_wolfe] sum2: " << sum2 << endl;
     cout << "[frank_wolfe] sum3: " << sum3 << endl;
     cout << "[frank_wolfe] sum4: " << sum4 << endl;
-    cout << endl;
 
     mat_free (temp, N, N);
     delete temp_vec;
@@ -66,7 +65,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         r[i] = 100;
     }
     
-    int K = 100, k = 0; // iteration number
+    int K = 20, k = 0; // iteration number
     double gamma; // step size
     double penalty;
     double ** tempS = mat_init(N, N);
@@ -92,6 +91,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N, r);
         // report the #iter and objective function
         cout << "[Frank-Wolfe] iteration: " << k << ", first_subproblm_obj: " << penalty << endl;
+        cout << endl;
 
         k ++;
     }
@@ -190,7 +190,7 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
         for (int i = 0; i < N; i ++) {
             // harness vector of pair
             double value = wbar[i][j];
-            if ( abs(value) > separator ) { 
+            if ( abs(value) > separator ) {
                 wtwo[i][j] = sign(wbar[i][j]) * max_term;
             } else {
                 // its ranking is above m*, directly inherit the wbar
@@ -331,12 +331,12 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
         mat_sub (wone, z, diffone, N, N);
         double trace_wone_minus_z = mat_norm2 (diffone, N, N); 
         mat_dot (alpha, diffone, diffone, N, N);
-        mat_sub (yone, diffone, yone, N, N);
+        mat_add (yone, diffone, yone, N, N);
 
         mat_sub (wtwo, z, difftwo, N, N);
         double trace_wtwo_minus_z = mat_norm2 (diffone, N, N); 
         mat_dot (alpha, difftwo, difftwo, N, N);
-        mat_sub (ytwo, difftwo, ytwo, N, N);
+        mat_add (ytwo, difftwo, ytwo, N, N);
 
         // STEP FOUR: trace the objective function
         error = opt_objective (dist_mat, lambda, N, z);

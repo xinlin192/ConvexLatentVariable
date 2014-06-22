@@ -82,9 +82,9 @@ void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols
 void mat_tdot (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
-            double temp;
+            double temp = 0;
             for (int k = 0; k < nRows; k ++) {
-                temp += src1[k][i] * src2[k][i];
+                temp += src1[k][i] * src2[k][j];
             }
             dest[i][j] = temp;
         }
@@ -151,7 +151,6 @@ double mat_sum (double ** src, int nRows, int nCols) {
 void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
 
     // we assume that the given dest is all-zero mat
-
     for (int j = 0; j < nCols; j ++) {
         int max_index = -1;
         int max_value = -INF;
@@ -169,7 +168,6 @@ void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
 void mat_min_row (double ** src, double ** dest, int nRows, int nCols) {
 
     // we assume that the given dest is all-zero mat
-
     for (int i = 0; i < nRows; i ++) {
         int min_index = -1;
         double min_value = INF;
@@ -191,7 +189,7 @@ double mat_norm2 (double ** src, int nRows, int nCols) {
         for (int j = 0; j < nCols; j ++) {
             sum += src[i][j] * src[i][j];
         }
-    }   
+    }
     return sum;
 }
 
