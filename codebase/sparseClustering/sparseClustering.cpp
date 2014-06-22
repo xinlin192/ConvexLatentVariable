@@ -21,23 +21,23 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     double ** diffone =mat_init (N, N);
     mat_zeros (diffone, N, N);
     
-    // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk)
+    // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk) -> loss
     mat_zeros (temp, N, N);
     mat_times (wone, dist_mat, temp, N, N);
     double sum1 = 0.5 * mat_sum (temp, N, N);
 
-    // sum2 = y_1^T dot w_1
+    // sum2 = y_1^T dot (w_1 - z) -> linear
     mat_zeros (temp, N, N);
     mat_sub (wone, zone, diffone, N, N); // temp = w_1 - z_1
     mat_tdot (yone, diffone, temp, N, N);
     double sum2 = mat_sum (temp, N, N);
 
-    // sum3 = 0.5 * rho * || w_1 - z_1 ||^2
+    // sum3 = 0.5 * rho * || w_1 - z_1 ||^2 -> quadratic
     mat_zeros (temp, N, N);
     mat_sub (wone, zone, temp, N, N);
     double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
     
-    // sum4 = r dot (1 - sum_k w_nk)
+    // sum4 = r dot (1 - sum_k w_nk) -> dummy
     double * temp_vec = new double [N];
     mat_sum_row (wone, temp_vec, N, N);
     for (int i = 0; i < N; i ++) {
@@ -45,10 +45,10 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     }
 
     double sum4 = mat_dot (temp_vec, r, N);
-    cout << "[frank_wolfe] sum1: " << sum1 << endl;
-    cout << "[frank_wolfe] sum2: " << sum2 << endl;
-    cout << "[frank_wolfe] sum3: " << sum3 << endl;
-    cout << "[frank_wolfe] sum4: " << sum4 << endl;
+    cout << "[frank_wolfe] sum1 (loss): " << sum1 << endl;
+    cout << "[frank_wolfe] sum2 (linear): " << sum2 << endl;
+    cout << "[frank_wolfe] sum3 (quadratic): " << sum3 << endl;
+    cout << "[frank_wolfe] sum4 (dummy): " << sum4 << endl;
 
     mat_free (temp, N, N);
     mat_free (diffone, N, N);
@@ -122,7 +122,7 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     double ** difftwo = mat_init (N, N);
     mat_zeros (difftwo, N, N);
 
-    // reg = 0.5 * sum_k max_n | w_nk | 
+    // reg = 0.5 * sum_k max_n | w_nk |  -> group-lasso
     mat_zeros (temp, N, N);
     double * maxn = new double [N]; 
     for (int i = 0; i < N; i ++) { // Ian: need initial 
@@ -141,13 +141,13 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     }
     double group_lasso = lambda * sumk; 
 
-    // sum2 = y_2^T dot (w_2 - z)
+    // sum2 = y_2^T dot (w_2 - z) -> linear
     mat_zeros (temp, N, N);
     mat_sub (ytwo, z, difftwo, N, N);
     mat_tdot (ytwo, difftwo, temp, N, N);
     double sum2 = mat_sum (temp, N, N);
 
-    // sum3 = 0.5 * rho * || w_2 - z_2 ||^2
+    // sum3 = 0.5 * rho * || w_2 - z_2 ||^2 -> quadratic
     mat_zeros (temp, N, N);
     mat_sub (wtwo, z, temp, N, N);
     double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
@@ -155,9 +155,9 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     mat_free (temp, N, N);
 
     // ouput values of each components
-    cout << "[Blockwise] group_lasso: " << group_lasso << endl; 
-    cout << "[Blockwise] sum2: " << sum2 << endl;
-    cout << "[Blockwise] sum3: " << sum3 << endl;
+    cout << "[Blockwise] reg (group_lasso): " << group_lasso << endl; 
+    cout << "[Blockwise] sum2 (linear): " << sum2 << endl;
+    cout << "[Blockwise] sum3 (quadratic): " << sum3 << endl;
 
     return group_lasso + sum2 + sum3;
 }
