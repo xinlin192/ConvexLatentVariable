@@ -15,12 +15,19 @@ double ** mat_init (int nRows, int nCols) {
     double ** res = new double * [nRows];
     for (int i = 0; i < nRows; i ++) {
         res[i] = new double [nCols];
-        for (int j = 0; j < nCols; j ++) {
-            res[i][j] = 0;
-        }
     }
 
     return res;
+}
+
+void mat_zeros (double ** src, int nRows, int nCols) {
+
+    for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) {
+            src[i][j] = 0;
+        }
+    }
+
 }
 
 void mat_free (double ** src, int nRows, int nCols) {

@@ -20,14 +20,17 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     double ** temp = mat_init (N, N);
     
     // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk)
+    mat_zeros (temp, N, N);
     mat_times (wone, dist_mat, temp, N, N);
     double sum1 = 0.5 * mat_sum (temp, N, N);
 
     // sum2 = y_1^T dot w_1
+    mat_zeros (temp, N, N);
     mat_tdot (yone, wone, temp, N, N);
     double sum2 = mat_sum (temp, N, N);
 
     // sum3 = 0.5 * rho * || w_1 - z_1 ||^2
+    mat_zeros (temp, N, N);
     mat_sub (wone, zone, temp, N, N);
     double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
     
@@ -43,6 +46,7 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     cout << "[frank_wolfe] sum2: " << sum2 << endl;
     cout << "[frank_wolfe] sum3: " << sum3 << endl;
     cout << "[frank_wolfe] sum4: " << sum4 << endl;
+    cout << endl;
 
     mat_free (temp, N, N);
     delete temp_vec;
@@ -56,6 +60,8 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     double ** gradient = mat_init (N, N);
     double ** s = mat_init (N, N);
     double * r = new double [N];
+    mat_zeros (gradient, N, N);
+    mat_zeros (s, N, N);
     for (int i = 0; i < N; i ++) {
         r[i] = 100;
     }
@@ -64,6 +70,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     double gamma; // step size
     double penalty;
     double ** tempS = mat_init(N, N);
+    mat_zeros (tempS, N, N);
     while (k < K) {
         // STEP ONE: find s minimize <s, grad f>
         for (int i = 0; i < N; i++) {
@@ -108,10 +115,11 @@ bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<in
 double second_subproblm_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double lambda) {
 
     double ** temp = mat_init (N, N);
+    mat_zeros (temp, N, N);
 
     // reg = 0.5 * sum_k max_n | w_nk | 
     double * maxn = new double [N]; 
-    for (int i = 0;i < N; i ++) { // Ian: need initial 
+    for (int i = 0; i < N; i ++) { // Ian: need initial 
     	maxn[i] = -INF;
     }
 
@@ -144,6 +152,7 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
 
     // STEP ONE: compute the optimal solution for truncated problem
     double ** wbar = mat_init (N, N);
+    mat_zeros (wbar, N, N);
     mat_dot (rho, ztwo, wbar, N, N); // wbar = rho * z_2
     mat_sub (wbar, ytwo, wbar, N, N); // wbar = rho * z_2 - y_2
     mat_dot (1.0/rho, wbar, wbar, N, N); // wbar = (rho * z_2 - y_2) / rho
@@ -294,8 +303,16 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     double ** z = mat_init (N, N);
     double ** diffone = mat_init (N, N);
     double ** difftwo = mat_init (N, N);
+    mat_zeros (wone, N, N);
+    mat_zeros (wtwo, N, N);
+    mat_zeros (yone, N, N);
+    mat_zeros (ytwo, N, N);
+    mat_zeros (z, N, N);
+    mat_zeros (diffone, N, N);
+    mat_zeros (difftwo, N, N);
     
     double ** dist_mat = mat_init (N, N);
+    mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, df, true); 
 
     int iter = 0; // Ian: usually we count up (instead of count down)
@@ -380,6 +397,7 @@ int main (int argc, char ** argv) {
     // Run sparse convex clustering
     map<int, Cluster*> clusters; 
     double ** W = mat_init (N, N);
+    mat_zeros (W, N, N);
     sparseClustering (data, D, N, lambda, W);
     // Output results
     
