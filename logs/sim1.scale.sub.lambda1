@@ -1,0 +1,4322 @@
+D = 2
+N = 500
+lambda = 1
+seed = 1403455000
+[frank_wolfe] sum1: 0
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 250
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 250
+
+[frank_wolfe] sum1: 0.336538
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 138.889
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 139.225
+
+[frank_wolfe] sum1: 0.631412
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 97.2222
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 97.8536
+
+[frank_wolfe] sum1: 0.897811
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 75
+[frank_wolfe] sum4: 1.23235e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 75.8978
+
+[frank_wolfe] sum1: 1.15324
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 61.1111
+[frank_wolfe] sum4: -8.21565e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 62.2643
+
+[frank_wolfe] sum1: 1.33672
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 51.6417
+[frank_wolfe] sum4: -4.77396e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 52.9784
+
+[frank_wolfe] sum1: 1.53862
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 44.727
+[frank_wolfe] sum4: -2.88658e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 46.2657
+
+[frank_wolfe] sum1: 1.70086
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 39.4769
+[frank_wolfe] sum4: 8.88178e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 41.1777
+
+[frank_wolfe] sum1: 1.84743
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 35.3496
+[frank_wolfe] sum4: -1.4988e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 37.1971
+
+[frank_wolfe] sum1: 2.03562
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 31.9845
+[frank_wolfe] sum4: -5.66214e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 34.0201
+
+[frank_wolfe] sum1: 2.14889
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 29.2594
+[frank_wolfe] sum4: 1.15463e-12
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 31.4083
+
+[frank_wolfe] sum1: 2.31071
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 26.9352
+[frank_wolfe] sum4: -2.33147e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 29.246
+
+[frank_wolfe] sum1: 2.38928
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 25.0168
+[frank_wolfe] sum4: -1.70974e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 27.4061
+
+[frank_wolfe] sum1: 2.48803
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 23.3491
+[frank_wolfe] sum4: -5.41789e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 25.8371
+
+[frank_wolfe] sum1: 2.61007
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 21.8829
+[frank_wolfe] sum4: -5.70655e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 24.493
+
+[frank_wolfe] sum1: 2.72247
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 20.6043
+[frank_wolfe] sum4: -9.32587e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 23.3268
+
+[frank_wolfe] sum1: 2.81741
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 19.4848
+[frank_wolfe] sum4: 2.94209e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 22.3022
+
+[frank_wolfe] sum1: 2.92011
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 18.4777
+[frank_wolfe] sum4: -2.05391e-12
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 21.3978
+
+[frank_wolfe] sum1: 2.97355
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 17.6143
+[frank_wolfe] sum4: -1.02141e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 20.5878
+
+[frank_wolfe] sum1: 3.00716
+[frank_wolfe] sum2: 0
+[frank_wolfe] sum3: 16.8552
+[frank_wolfe] sum4: -5.88418e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 19.8624
+
+[Blockwise]  second_subproblem_obj: 0
+[Overall] iter = 0, Overall Error: 1.54882
+[Overall] || w_1 - z || ^2 = 8.42761
+[Overall] || w_2 - z || ^2 = 0.0842761
+[frank_wolfe] sum1: 0.597336
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 251.316
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 276.914
+
+[frank_wolfe] sum1: 0.985982
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 125.783
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 151.769
+
+[frank_wolfe] sum1: 1.78809
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 81.369
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 108.157
+
+[frank_wolfe] sum1: 2.37551
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 58.4802
+[frank_wolfe] sum4: 1.46549e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 85.8557
+
+[frank_wolfe] sum1: 2.83845
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 44.547
+[frank_wolfe] sum4: -6.43929e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 72.3854
+
+[frank_wolfe] sum1: 3.02564
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 35.4318
+[frank_wolfe] sum4: -5.55112e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 63.4575
+
+[frank_wolfe] sum1: 3.14516
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 29.1204
+[frank_wolfe] sum4: 1.11022e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 57.2655
+
+[frank_wolfe] sum1: 3.07725
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 24.5618
+[frank_wolfe] sum4: 1.9984e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 52.6391
+
+[frank_wolfe] sum1: 3.04758
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 21.1223
+[frank_wolfe] sum4: -1.4877e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 49.1698
+
+[frank_wolfe] sum1: 3.10773
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 18.4378
+[frank_wolfe] sum4: -1.02141e-12
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 46.5455
+
+[frank_wolfe] sum1: 3.10684
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 16.3826
+[frank_wolfe] sum4: 1.45439e-12
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 44.4894
+
+[frank_wolfe] sum1: 3.00907
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 14.7847
+[frank_wolfe] sum4: 9.99201e-14
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 42.7938
+
+[frank_wolfe] sum1: 2.86074
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 13.472
+[frank_wolfe] sum4: -7.99361e-13
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 41.3327
+
+[frank_wolfe] sum1: 2.81845
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 12.0858
+[frank_wolfe] sum4: -4.57412e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 39.9043
+
+[frank_wolfe] sum1: 2.72458
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 11.1648
+[frank_wolfe] sum4: -5.26246e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 38.8894
+
+[frank_wolfe] sum1: 2.62426
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 10.4627
+[frank_wolfe] sum4: -2.08722e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 38.087
+
+[frank_wolfe] sum1: 2.663
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 9.41661
+[frank_wolfe] sum4: 3.14193e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 37.0796
+
+[frank_wolfe] sum1: 2.6092
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 8.88303
+[frank_wolfe] sum4: -1.86517e-12
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 36.4922
+
+[frank_wolfe] sum1: 2.68404
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 8.15387
+[frank_wolfe] sum4: -2.83107e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 35.8379
+
+[frank_wolfe] sum1: 2.69726
+[frank_wolfe] sum2: 25
+[frank_wolfe] sum3: 7.67673
+[frank_wolfe] sum4: -1.69864e-12
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 35.374
+
+[Blockwise]  second_subproblem_obj: 4.01334
+[Overall] iter = 1, Overall Error: 1.41982
+[Overall] || w_1 - z || ^2 = 9.1144
+[Overall] || w_2 - z || ^2 = 0.091144
+[frank_wolfe] sum1: 1.1482
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 252.237
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 303.134
+
+[frank_wolfe] sum1: 1.32558
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 124.498
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 175.572
+
+[frank_wolfe] sum1: 1.55405
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 80.0044
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 131.307
+
+[frank_wolfe] sum1: 1.66317
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 57.5891
+[frank_wolfe] sum4: 1.19904e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 109
+
+[frank_wolfe] sum1: 2.0028
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 43.5846
+[frank_wolfe] sum4: -7.77156e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 95.3355
+
+[frank_wolfe] sum1: 2.11341
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 34.6508
+[frank_wolfe] sum4: -2.9976e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 86.5124
+
+[frank_wolfe] sum1: 2.0944
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 28.4799
+[frank_wolfe] sum4: -2.44249e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 80.3224
+
+[frank_wolfe] sum1: 2.20411
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 23.7764
+[frank_wolfe] sum4: 2.55351e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 75.7286
+
+[frank_wolfe] sum1: 2.20575
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 20.3982
+[frank_wolfe] sum4: -1.79856e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 72.352
+
+[frank_wolfe] sum1: 2.27864
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 17.8634
+[frank_wolfe] sum4: -1.02141e-12
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 69.8902
+
+[frank_wolfe] sum1: 2.35591
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 15.8717
+[frank_wolfe] sum4: 6.77236e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 67.9757
+
+[frank_wolfe] sum1: 2.36622
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 14.3567
+[frank_wolfe] sum4: -3.44169e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 66.471
+
+[frank_wolfe] sum1: 2.42131
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 12.7594
+[frank_wolfe] sum4: -1.05471e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 64.9288
+
+[frank_wolfe] sum1: 2.49556
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 11.6213
+[frank_wolfe] sum4: -4.17444e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 63.865
+
+[frank_wolfe] sum1: 2.5207
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 10.5483
+[frank_wolfe] sum4: -3.81917e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 62.8171
+
+[frank_wolfe] sum1: 2.59604
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 9.66743
+[frank_wolfe] sum4: -3.77476e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 62.0116
+
+[frank_wolfe] sum1: 2.63034
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 8.98778
+[frank_wolfe] sum4: 2.79776e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 61.3662
+
+[frank_wolfe] sum1: 2.59314
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 8.39169
+[frank_wolfe] sum4: -3.44169e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 60.7329
+
+[frank_wolfe] sum1: 2.61956
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 7.92319
+[frank_wolfe] sum4: -1.63203e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 60.2909
+
+[frank_wolfe] sum1: 2.68791
+[frank_wolfe] sum2: 49.7481
+[frank_wolfe] sum3: 7.32524
+[frank_wolfe] sum4: -5.55112e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 59.7613
+
+[Blockwise]  second_subproblem_obj: 5.23459
+[Overall] iter = 2, Overall Error: 1.38845
+[Overall] || w_1 - z || ^2 = 9.86666
+[Overall] || w_2 - z || ^2 = 0.0986666
+[frank_wolfe] sum1: 1.37578
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 253.926
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 330.227
+
+[frank_wolfe] sum1: 1.32419
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 124.22
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 200.469
+
+[frank_wolfe] sum1: 1.66875
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 78.869
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 155.463
+
+[frank_wolfe] sum1: 1.8822
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 56.6858
+[frank_wolfe] sum4: 1.34337e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 133.493
+
+[frank_wolfe] sum1: 2.08257
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 43.2498
+[frank_wolfe] sum4: -7.77156e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 120.257
+
+[frank_wolfe] sum1: 2.23491
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 34.4767
+[frank_wolfe] sum4: -5.88418e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 111.637
+
+[frank_wolfe] sum1: 2.38731
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 28.227
+[frank_wolfe] sum4: 1.44329e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 105.539
+
+[frank_wolfe] sum1: 2.60761
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 23.6519
+[frank_wolfe] sum4: 1.33227e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 101.185
+
+[frank_wolfe] sum1: 2.65568
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 20.2769
+[frank_wolfe] sum4: -1.80966e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 97.8576
+
+[frank_wolfe] sum1: 2.67734
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 17.8566
+[frank_wolfe] sum4: -1.04361e-12
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 95.459
+
+[frank_wolfe] sum1: 2.71952
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 15.9421
+[frank_wolfe] sum4: 1.15463e-12
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 93.5867
+
+[frank_wolfe] sum1: 2.65181
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 14.2744
+[frank_wolfe] sum4: -2.22045e-14
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 91.8513
+
+[frank_wolfe] sum1: 2.62264
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 12.6108
+[frank_wolfe] sum4: -9.21485e-13
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 90.1585
+
+[frank_wolfe] sum1: 2.59105
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 11.5605
+[frank_wolfe] sum4: -3.35287e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 89.0767
+
+[frank_wolfe] sum1: 2.57823
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 10.3356
+[frank_wolfe] sum4: -4.69624e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 87.8389
+
+[frank_wolfe] sum1: 2.53555
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 9.53226
+[frank_wolfe] sum4: 4.10783e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 86.9929
+
+[frank_wolfe] sum1: 2.46187
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 8.95831
+[frank_wolfe] sum4: 2.83107e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 86.3453
+
+[frank_wolfe] sum1: 2.44837
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 8.29896
+[frank_wolfe] sum4: -4.88498e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 85.6724
+
+[frank_wolfe] sum1: 2.44914
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 7.82479
+[frank_wolfe] sum4: -1.65423e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 85.199
+
+[frank_wolfe] sum1: 2.47118
+[frank_wolfe] sum2: 74.9251
+[frank_wolfe] sum3: 7.42207
+[frank_wolfe] sum4: -3.10862e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 84.8183
+
+[Blockwise]  second_subproblem_obj: 4.7002
+[Overall] iter = 3, Overall Error: 1.30032
+[Overall] || w_1 - z || ^2 = 9.68363
+[Overall] || w_2 - z || ^2 = 0.0968363
+[frank_wolfe] sum1: 1.73713
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 253.669
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 355.257
+
+[frank_wolfe] sum1: 1.2618
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 124.466
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 225.579
+
+[frank_wolfe] sum1: 1.61749
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 78.9539
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 180.423
+
+[frank_wolfe] sum1: 1.72375
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 56.7218
+[frank_wolfe] sum4: 1.31006e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 158.297
+
+[frank_wolfe] sum1: 1.83353
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 43.3745
+[frank_wolfe] sum4: -5.32907e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 145.059
+
+[frank_wolfe] sum1: 1.98804
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 34.4337
+[frank_wolfe] sum4: -3.44169e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 136.273
+
+[frank_wolfe] sum1: 1.97635
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 28.3277
+[frank_wolfe] sum4: -1.66533e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 130.155
+
+[frank_wolfe] sum1: 2.05561
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 23.9142
+[frank_wolfe] sum4: 2.22045e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 125.821
+
+[frank_wolfe] sum1: 2.10302
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 20.3684
+[frank_wolfe] sum4: -1.64313e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 122.323
+
+[frank_wolfe] sum1: 2.18478
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 17.8052
+[frank_wolfe] sum4: -8.54872e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 119.841
+
+[frank_wolfe] sum1: 2.25868
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 15.8495
+[frank_wolfe] sum4: 8.88178e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 117.959
+
+[frank_wolfe] sum1: 2.22781
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 14.1522
+[frank_wolfe] sum4: 2.33147e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 116.231
+
+[frank_wolfe] sum1: 2.28959
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 12.6145
+[frank_wolfe] sum4: -1.25455e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 114.755
+
+[frank_wolfe] sum1: 2.3592
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 11.529
+[frank_wolfe] sum4: -3.16414e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 113.74
+
+[frank_wolfe] sum1: 2.40447
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 10.3444
+[frank_wolfe] sum4: -5.10703e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 112.6
+
+[frank_wolfe] sum1: 2.41459
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 9.59603
+[frank_wolfe] sum4: 7.99361e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 111.862
+
+[frank_wolfe] sum1: 2.44991
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 8.98981
+[frank_wolfe] sum4: 2.91989e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 111.291
+
+[frank_wolfe] sum1: 2.42815
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 8.47673
+[frank_wolfe] sum4: -1.40998e-12
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 110.756
+
+[frank_wolfe] sum1: 2.4242
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 8.14397
+[frank_wolfe] sum4: -1.4766e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 110.42
+
+[frank_wolfe] sum1: 2.43684
+[frank_wolfe] sum2: 99.8513
+[frank_wolfe] sum3: 7.71436
+[frank_wolfe] sum4: 2.22045e-14
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 110.003
+
+[Blockwise]  second_subproblem_obj: 4.5139
+[Overall] iter = 4, Overall Error: 1.27675
+[Overall] || w_1 - z || ^2 = 9.59514
+[Overall] || w_2 - z || ^2 = 0.0959514
+[frank_wolfe] sum1: 2.60576
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 254.001
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 381.363
+
+[frank_wolfe] sum1: 1.4386
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 125.242
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 251.437
+
+[frank_wolfe] sum1: 1.40584
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 80.0563
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 206.219
+
+[frank_wolfe] sum1: 1.56917
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 56.9797
+[frank_wolfe] sum4: 1.31006e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 183.306
+
+[frank_wolfe] sum1: 1.79967
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 43.6019
+[frank_wolfe] sum4: -7.54952e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 170.158
+
+[frank_wolfe] sum1: 1.92941
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 34.6266
+[frank_wolfe] sum4: -5.66214e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 161.313
+
+[frank_wolfe] sum1: 2.10799
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 28.1971
+[frank_wolfe] sum4: -2.10942e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 155.062
+
+[frank_wolfe] sum1: 2.34037
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 23.5666
+[frank_wolfe] sum4: 1.33227e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 150.664
+
+[frank_wolfe] sum1: 2.4051
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 20.1717
+[frank_wolfe] sum4: -1.4766e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 147.334
+
+[frank_wolfe] sum1: 2.47975
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 17.5279
+[frank_wolfe] sum4: -7.10543e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 144.764
+
+[frank_wolfe] sum1: 2.48144
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 15.6975
+[frank_wolfe] sum4: 9.88098e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 142.936
+
+[frank_wolfe] sum1: 2.43027
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 14.0485
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 141.236
+
+[frank_wolfe] sum1: 2.42431
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 12.6967
+[frank_wolfe] sum4: -1.56541e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 139.878
+
+[frank_wolfe] sum1: 2.39013
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 11.6637
+[frank_wolfe] sum4: -2.81997e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 138.811
+
+[frank_wolfe] sum1: 2.37747
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 10.5641
+[frank_wolfe] sum4: -4.52971e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 137.698
+
+[frank_wolfe] sum1: 2.33305
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 9.84478
+[frank_wolfe] sum4: 5.55112e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 136.935
+
+[frank_wolfe] sum1: 2.28449
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 9.21152
+[frank_wolfe] sum4: 3.05311e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 136.253
+
+[frank_wolfe] sum1: 2.25529
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 8.61231
+[frank_wolfe] sum4: -1.43219e-12
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 135.624
+
+[frank_wolfe] sum1: 2.20467
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 8.24149
+[frank_wolfe] sum4: -1.27676e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 135.203
+
+[frank_wolfe] sum1: 2.19797
+[frank_wolfe] sum2: 124.757
+[frank_wolfe] sum3: 7.94859
+[frank_wolfe] sum4: 1.55431e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 134.903
+
+[Blockwise]  second_subproblem_obj: 2.61819
+[Overall] iter = 5, Overall Error: 1.16744
+[Overall] || w_1 - z || ^2 = 9.40268
+[Overall] || w_2 - z || ^2 = 0.0940268
+[frank_wolfe] sum1: 3.57487
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 253.966
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 406.883
+
+[frank_wolfe] sum1: 1.67951
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 125.662
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 276.684
+
+[frank_wolfe] sum1: 1.47273
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 80.6375
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 231.452
+
+[frank_wolfe] sum1: 1.53976
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 57.4153
+[frank_wolfe] sum4: 1.42109e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 208.297
+
+[frank_wolfe] sum1: 1.62987
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 43.62
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 194.592
+
+[frank_wolfe] sum1: 1.7453
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 34.4273
+[frank_wolfe] sum4: -6.32827e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 185.515
+
+[frank_wolfe] sum1: 1.83284
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 28.0412
+[frank_wolfe] sum4: -2.10942e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 179.216
+
+[frank_wolfe] sum1: 1.90993
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 23.4227
+[frank_wolfe] sum4: 1.77636e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 174.675
+
+[frank_wolfe] sum1: 1.93429
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 20.0002
+[frank_wolfe] sum4: -2.0095e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 171.277
+
+[frank_wolfe] sum1: 2.03429
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 17.3389
+[frank_wolfe] sum4: -7.88258e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 168.715
+
+[frank_wolfe] sum1: 2.04111
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 15.513
+[frank_wolfe] sum4: 1.02141e-12
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 166.896
+
+[frank_wolfe] sum1: 2.08583
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 14.0015
+[frank_wolfe] sum4: 5.55112e-14
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 165.43
+
+[frank_wolfe] sum1: 2.10343
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 12.6521
+[frank_wolfe] sum4: -1.17684e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 164.098
+
+[frank_wolfe] sum1: 2.14841
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 11.6218
+[frank_wolfe] sum4: -3.0087e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 163.112
+
+[frank_wolfe] sum1: 2.19209
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 10.6087
+[frank_wolfe] sum4: -4.64073e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 162.143
+
+[frank_wolfe] sum1: 2.20024
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 9.82527
+[frank_wolfe] sum4: 1.13243e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 161.368
+
+[frank_wolfe] sum1: 2.22944
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 9.084
+[frank_wolfe] sum4: 3.4639e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 160.656
+
+[frank_wolfe] sum1: 2.25021
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 8.57749
+[frank_wolfe] sum4: -1.39888e-12
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 160.17
+
+[frank_wolfe] sum1: 2.25082
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 8.11225
+[frank_wolfe] sum4: -1.03251e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 159.705
+
+[frank_wolfe] sum1: 2.28928
+[frank_wolfe] sum2: 149.342
+[frank_wolfe] sum3: 7.91815
+[frank_wolfe] sum4: 2.22045e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 159.55
+
+[Blockwise]  second_subproblem_obj: 0.235097
+[Overall] iter = 6, Overall Error: 1.23049
+[Overall] || w_1 - z || ^2 = 9.3814
+[Overall] || w_2 - z || ^2 = 0.093814
+[frank_wolfe] sum1: 4.86678
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 254.548
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 433.021
+
+[frank_wolfe] sum1: 2.32305
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 125.436
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 301.365
+
+[frank_wolfe] sum1: 1.98931
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 80.4836
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 256.079
+
+[frank_wolfe] sum1: 1.87021
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 57.3916
+[frank_wolfe] sum4: 1.29896e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 232.868
+
+[frank_wolfe] sum1: 1.80199
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 43.7098
+[frank_wolfe] sum4: -5.32907e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 219.118
+
+[frank_wolfe] sum1: 1.88724
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 34.5122
+[frank_wolfe] sum4: -3.55271e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 210.005
+
+[frank_wolfe] sum1: 2.06412
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 28.0093
+[frank_wolfe] sum4: -1.44329e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 203.679
+
+[frank_wolfe] sum1: 2.17719
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 23.2619
+[frank_wolfe] sum4: 1.11022e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 199.045
+
+[frank_wolfe] sum1: 2.26495
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 19.7387
+[frank_wolfe] sum4: -1.42109e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 195.61
+
+[frank_wolfe] sum1: 2.36244
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 17.1009
+[frank_wolfe] sum4: -8.10463e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 193.069
+
+[frank_wolfe] sum1: 2.30305
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 15.3549
+[frank_wolfe] sum4: 5.9952e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 191.264
+
+[frank_wolfe] sum1: 2.37425
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 13.7189
+[frank_wolfe] sum4: 3.66374e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 189.699
+
+[frank_wolfe] sum1: 2.3871
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 12.3832
+[frank_wolfe] sum4: -1.14353e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 188.376
+
+[frank_wolfe] sum1: 2.3618
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 11.3728
+[frank_wolfe] sum4: -3.38618e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 187.341
+
+[frank_wolfe] sum1: 2.37924
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 10.3289
+[frank_wolfe] sum4: -3.66374e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 186.314
+
+[frank_wolfe] sum1: 2.34123
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 9.61472
+[frank_wolfe] sum4: 6.55032e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 185.562
+
+[frank_wolfe] sum1: 2.32666
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 8.91939
+[frank_wolfe] sum4: 3.23075e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 184.852
+
+[frank_wolfe] sum1: 2.32012
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 8.44664
+[frank_wolfe] sum4: -9.76996e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 184.373
+
+[frank_wolfe] sum1: 2.33966
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 8.14189
+[frank_wolfe] sum4: -1.43219e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 184.088
+
+[frank_wolfe] sum1: 2.3638
+[frank_wolfe] sum2: 173.606
+[frank_wolfe] sum3: 7.92031
+[frank_wolfe] sum4: 1.33227e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 183.89
+
+[Blockwise]  second_subproblem_obj: -5.95341
+[Overall] iter = 7, Overall Error: 1.30048
+[Overall] || w_1 - z || ^2 = 9.02591
+[Overall] || w_2 - z || ^2 = 0.0902591
+[frank_wolfe] sum1: 5.30593
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 254.795
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 457.202
+
+[frank_wolfe] sum1: 2.70513
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 125.193
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 325
+
+[frank_wolfe] sum1: 2.61568
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 80.451
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 280.169
+
+[frank_wolfe] sum1: 2.48555
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 57.525
+[frank_wolfe] sum4: 1.25455e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 257.112
+
+[frank_wolfe] sum1: 2.33708
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 43.7356
+[frank_wolfe] sum4: -8.21565e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 243.175
+
+[frank_wolfe] sum1: 2.28322
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 34.5494
+[frank_wolfe] sum4: -4.66294e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 233.935
+
+[frank_wolfe] sum1: 2.24928
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 27.941
+[frank_wolfe] sum4: -1.44329e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 227.292
+
+[frank_wolfe] sum1: 2.19578
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 23.2282
+[frank_wolfe] sum4: 6.66134e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 222.526
+
+[frank_wolfe] sum1: 2.16223
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 19.7231
+[frank_wolfe] sum4: -1.66533e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 218.987
+
+[frank_wolfe] sum1: 2.16497
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 17.0699
+[frank_wolfe] sum4: -8.21565e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 216.337
+
+[frank_wolfe] sum1: 2.19507
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 15.1837
+[frank_wolfe] sum4: 5.9952e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 214.481
+
+[frank_wolfe] sum1: 2.26768
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 13.5682
+[frank_wolfe] sum4: 1.88738e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 212.938
+
+[frank_wolfe] sum1: 2.30964
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 12.2275
+[frank_wolfe] sum4: -6.99441e-13
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 211.639
+
+[frank_wolfe] sum1: 2.38392
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 11.2494
+[frank_wolfe] sum4: -3.05311e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 210.735
+
+[frank_wolfe] sum1: 2.44607
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 10.3176
+[frank_wolfe] sum4: -4.08562e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 209.866
+
+[frank_wolfe] sum1: 2.52708
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 9.64687
+[frank_wolfe] sum4: 6.32827e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 209.276
+
+[frank_wolfe] sum1: 2.56693
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 9.07904
+[frank_wolfe] sum4: 3.4972e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 208.748
+
+[frank_wolfe] sum1: 2.6114
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 8.59719
+[frank_wolfe] sum4: -1.21014e-12
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 208.311
+
+[frank_wolfe] sum1: 2.67018
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 8.30051
+[frank_wolfe] sum4: -9.10383e-13
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 208.073
+
+[frank_wolfe] sum1: 2.70225
+[frank_wolfe] sum2: 197.102
+[frank_wolfe] sum3: 7.99489
+[frank_wolfe] sum4: 5.44009e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 207.799
+
+[Blockwise]  second_subproblem_obj: -13.9797
+[Overall] iter = 8, Overall Error: 1.49842
+[Overall] || w_1 - z || ^2 = 8.73219
+[Overall] || w_2 - z || ^2 = 0.0873219
+[frank_wolfe] sum1: 5.60201
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 254.861
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 480.233
+
+[frank_wolfe] sum1: 3.35279
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 125.052
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 348.175
+
+[frank_wolfe] sum1: 3.28706
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 80.2595
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 303.317
+
+[frank_wolfe] sum1: 3.23698
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 57.3776
+[frank_wolfe] sum4: 1.42109e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 280.385
+
+[frank_wolfe] sum1: 3.1607
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 43.5161
+[frank_wolfe] sum4: -7.32747e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 266.447
+
+[frank_wolfe] sum1: 2.99548
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 34.2682
+[frank_wolfe] sum4: -4.66294e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 257.034
+
+[frank_wolfe] sum1: 2.82823
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 27.822
+[frank_wolfe] sum4: -9.99201e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 250.421
+
+[frank_wolfe] sum1: 2.69573
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 23.093
+[frank_wolfe] sum4: 1.11022e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 245.559
+
+[frank_wolfe] sum1: 2.64093
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 19.5653
+[frank_wolfe] sum4: -1.56541e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 241.977
+
+[frank_wolfe] sum1: 2.60369
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 16.841
+[frank_wolfe] sum4: -9.32587e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 239.215
+
+[frank_wolfe] sum1: 2.58562
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 14.9555
+[frank_wolfe] sum4: 3.55271e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 237.312
+
+[frank_wolfe] sum1: 2.66479
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 13.3275
+[frank_wolfe] sum4: 4.21885e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 235.763
+
+[frank_wolfe] sum1: 2.7081
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 11.965
+[frank_wolfe] sum4: -1.02141e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 234.444
+
+[frank_wolfe] sum1: 2.75149
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 10.9927
+[frank_wolfe] sum4: -3.17524e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 233.515
+
+[frank_wolfe] sum1: 2.80915
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 10.0811
+[frank_wolfe] sum4: -4.26326e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 232.661
+
+[frank_wolfe] sum1: 2.86647
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 9.37668
+[frank_wolfe] sum4: 2.77556e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 232.014
+
+[frank_wolfe] sum1: 2.90451
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 8.80219
+[frank_wolfe] sum4: 3.9968e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 231.477
+
+[frank_wolfe] sum1: 2.93885
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 8.32512
+[frank_wolfe] sum4: -3.9968e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 231.035
+
+[frank_wolfe] sum1: 2.98414
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 7.96571
+[frank_wolfe] sum4: -1.38778e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 230.72
+
+[frank_wolfe] sum1: 3.01922
+[frank_wolfe] sum2: 219.771
+[frank_wolfe] sum3: 7.67368
+[frank_wolfe] sum4: 3.77476e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 230.463
+
+[Blockwise]  second_subproblem_obj: -26.8528
+[Overall] iter = 9, Overall Error: 1.71104
+[Overall] || w_1 - z || ^2 = 8.39859
+[Overall] || w_2 - z || ^2 = 0.0839859
+[frank_wolfe] sum1: 5.70625
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 255.049
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 501.981
+
+[frank_wolfe] sum1: 3.9201
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 124.274
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 369.42
+
+[frank_wolfe] sum1: 3.80685
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 79.6342
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 324.667
+
+[frank_wolfe] sum1: 3.86626
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 57.0579
+[frank_wolfe] sum4: 1.56541e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 302.15
+
+[frank_wolfe] sum1: 3.76828
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 43.3483
+[frank_wolfe] sum4: -7.99361e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 288.342
+
+[frank_wolfe] sum1: 3.55182
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 34.1841
+[frank_wolfe] sum4: -4.996e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 278.962
+
+[frank_wolfe] sum1: 3.31275
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 27.8348
+[frank_wolfe] sum4: -3.33067e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 272.373
+
+[frank_wolfe] sum1: 3.06188
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 23.1403
+[frank_wolfe] sum4: 1.55431e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 267.428
+
+[frank_wolfe] sum1: 2.91655
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 19.5284
+[frank_wolfe] sum4: -1.72085e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 263.671
+
+[frank_wolfe] sum1: 2.80032
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 16.8004
+[frank_wolfe] sum4: -1.05471e-12
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 260.827
+
+[frank_wolfe] sum1: 2.82609
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 14.6974
+[frank_wolfe] sum4: 6.88338e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 258.749
+
+[frank_wolfe] sum1: 2.88741
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 12.9629
+[frank_wolfe] sum4: 3.55271e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 257.076
+
+[frank_wolfe] sum1: 2.88961
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 11.6529
+[frank_wolfe] sum4: -9.99201e-13
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 255.768
+
+[frank_wolfe] sum1: 2.97801
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 10.6766
+[frank_wolfe] sum4: -3.38618e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 254.88
+
+[frank_wolfe] sum1: 3.0046
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 9.73235
+[frank_wolfe] sum4: -3.4972e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 253.963
+
+[frank_wolfe] sum1: 3.10398
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 9.04054
+[frank_wolfe] sum4: 4.55191e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 253.37
+
+[frank_wolfe] sum1: 3.1732
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 8.48483
+[frank_wolfe] sum4: 3.5083e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 252.884
+
+[frank_wolfe] sum1: 3.26354
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 8.05676
+[frank_wolfe] sum4: -8.32667e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 252.546
+
+[frank_wolfe] sum1: 3.29501
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 7.6729
+[frank_wolfe] sum4: -1.05471e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 252.194
+
+[frank_wolfe] sum1: 3.37255
+[frank_wolfe] sum2: 241.226
+[frank_wolfe] sum3: 7.38272
+[frank_wolfe] sum4: 1.44329e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 251.981
+
+[Blockwise]  second_subproblem_obj: -43.7135
+[Overall] iter = 10, Overall Error: 1.95122
+[Overall] || w_1 - z || ^2 = 7.94094
+[Overall] || w_2 - z || ^2 = 0.0794094
+[frank_wolfe] sum1: 5.79139
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 254.984
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 522.017
+
+[frank_wolfe] sum1: 4.35876
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 123.895
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 389.495
+
+[frank_wolfe] sum1: 4.24722
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 79.4059
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 344.895
+
+[frank_wolfe] sum1: 4.2408
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 56.804
+[frank_wolfe] sum4: 1.43219e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 322.287
+
+[frank_wolfe] sum1: 4.28797
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 43.0635
+[frank_wolfe] sum4: -6.88338e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 308.593
+
+[frank_wolfe] sum1: 4.10827
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 33.8679
+[frank_wolfe] sum4: -5.88418e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 299.218
+
+[frank_wolfe] sum1: 3.88342
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 27.4445
+[frank_wolfe] sum4: -8.88178e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 292.57
+
+[frank_wolfe] sum1: 3.66725
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 22.8104
+[frank_wolfe] sum4: 1.11022e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 287.719
+
+[frank_wolfe] sum1: 3.3789
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 19.3436
+[frank_wolfe] sum4: -1.39888e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 283.964
+
+[frank_wolfe] sum1: 3.23085
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 16.5911
+[frank_wolfe] sum4: -7.32747e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 281.064
+
+[frank_wolfe] sum1: 3.19491
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 14.4791
+[frank_wolfe] sum4: 8.77076e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 278.916
+
+[frank_wolfe] sum1: 3.23871
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 12.7077
+[frank_wolfe] sum4: 1.22125e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 277.188
+
+[frank_wolfe] sum1: 3.23258
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 11.3413
+[frank_wolfe] sum4: -4.32987e-13
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 275.816
+
+[frank_wolfe] sum1: 3.30377
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 10.3345
+[frank_wolfe] sum4: -3.05311e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 274.88
+
+[frank_wolfe] sum1: 3.3512
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 9.39648
+[frank_wolfe] sum4: -3.9746e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 273.989
+
+[frank_wolfe] sum1: 3.43726
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 8.77181
+[frank_wolfe] sum4: 1.9984e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 273.451
+
+[frank_wolfe] sum1: 3.48749
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 8.17664
+[frank_wolfe] sum4: 3.83027e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 272.906
+
+[frank_wolfe] sum1: 3.56969
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 7.73175
+[frank_wolfe] sum4: -7.32747e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 272.543
+
+[frank_wolfe] sum1: 3.61851
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 7.40883
+[frank_wolfe] sum4: -1.76525e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 272.269
+
+[frank_wolfe] sum1: 3.67321
+[frank_wolfe] sum2: 261.242
+[frank_wolfe] sum3: 7.1907
+[frank_wolfe] sum4: 3.21965e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 272.106
+
+[Blockwise]  second_subproblem_obj: -63.7767
+[Overall] iter = 11, Overall Error: 2.18994
+[Overall] || w_1 - z || ^2 = 7.53539
+[Overall] || w_2 - z || ^2 = 0.0753539
+[frank_wolfe] sum1: 5.73006
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 254.703
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 540.137
+
+[frank_wolfe] sum1: 4.52301
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 123.261
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 407.488
+
+[frank_wolfe] sum1: 4.57054
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 78.7999
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 363.075
+
+[frank_wolfe] sum1: 4.61575
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 56.2813
+[frank_wolfe] sum4: 1.28786e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 340.601
+
+[frank_wolfe] sum1: 4.57228
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 42.6975
+[frank_wolfe] sum4: -7.32747e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 326.974
+
+[frank_wolfe] sum1: 4.49295
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 33.6278
+[frank_wolfe] sum4: -8.77076e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 317.825
+
+[frank_wolfe] sum1: 4.26043
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 27.3048
+[frank_wolfe] sum4: 1.33227e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 311.269
+
+[frank_wolfe] sum1: 3.95928
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 22.7081
+[frank_wolfe] sum4: 7.77156e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 306.372
+
+[frank_wolfe] sum1: 3.72743
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 19.2581
+[frank_wolfe] sum4: -1.75415e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 302.69
+
+[frank_wolfe] sum1: 3.55818
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 16.4422
+[frank_wolfe] sum4: -7.21645e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 299.705
+
+[frank_wolfe] sum1: 3.5163
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 14.2547
+[frank_wolfe] sum4: 3.66374e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 297.475
+
+[frank_wolfe] sum1: 3.5352
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 12.4898
+[frank_wolfe] sum4: 2.55351e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 295.729
+
+[frank_wolfe] sum1: 3.48647
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 11.0506
+[frank_wolfe] sum4: -9.88098e-13
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 294.241
+
+[frank_wolfe] sum1: 3.5597
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 9.98597
+[frank_wolfe] sum4: -3.34177e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 293.25
+
+[frank_wolfe] sum1: 3.58976
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 9.04253
+[frank_wolfe] sum4: -3.57492e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 292.336
+
+[frank_wolfe] sum1: 3.66177
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 8.32688
+[frank_wolfe] sum4: 2.66454e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 291.693
+
+[frank_wolfe] sum1: 3.73415
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 7.76706
+[frank_wolfe] sum4: 3.28626e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 291.205
+
+[frank_wolfe] sum1: 3.79098
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 7.32352
+[frank_wolfe] sum4: -8.99281e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 290.819
+
+[frank_wolfe] sum1: 3.85159
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 6.99141
+[frank_wolfe] sum4: -1.4988e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 290.547
+
+[frank_wolfe] sum1: 3.91216
+[frank_wolfe] sum2: 279.704
+[frank_wolfe] sum3: 6.75863
+[frank_wolfe] sum4: 2.33147e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 290.375
+
+[Blockwise]  second_subproblem_obj: -87.4937
+[Overall] iter = 12, Overall Error: 2.42309
+[Overall] || w_1 - z || ^2 = 7.14585
+[Overall] || w_2 - z || ^2 = 0.0714585
+[frank_wolfe] sum1: 5.51031
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 254.098
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 556.044
+
+[frank_wolfe] sum1: 4.49223
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 122.49
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 423.417
+
+[frank_wolfe] sum1: 4.68521
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 78.2102
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 379.33
+
+[frank_wolfe] sum1: 4.74613
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 55.9645
+[frank_wolfe] sum4: 1.21014e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 357.146
+
+[frank_wolfe] sum1: 4.78875
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 42.43
+[frank_wolfe] sum4: -7.32747e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 343.654
+
+[frank_wolfe] sum1: 4.67848
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 33.365
+[frank_wolfe] sum4: -4.77396e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 334.478
+
+[frank_wolfe] sum1: 4.56344
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 27.023
+[frank_wolfe] sum4: 1.11022e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 328.021
+
+[frank_wolfe] sum1: 4.34074
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 22.4062
+[frank_wolfe] sum4: 3.33067e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 323.182
+
+[frank_wolfe] sum1: 4.1088
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 18.9406
+[frank_wolfe] sum4: -1.92069e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 319.484
+
+[frank_wolfe] sum1: 3.8388
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 16.1643
+[frank_wolfe] sum4: -8.10463e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 316.438
+
+[frank_wolfe] sum1: 3.81695
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 13.9223
+[frank_wolfe] sum4: 6.21725e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 314.174
+
+[frank_wolfe] sum1: 3.76659
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 12.1565
+[frank_wolfe] sum4: 3.77476e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 312.358
+
+[frank_wolfe] sum1: 3.74489
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 10.7339
+[frank_wolfe] sum4: -7.43849e-13
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 310.914
+
+[frank_wolfe] sum1: 3.7866
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 9.65872
+[frank_wolfe] sum4: -3.14193e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 309.88
+
+[frank_wolfe] sum1: 3.82569
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 8.7585
+[frank_wolfe] sum4: -3.93019e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 309.019
+
+[frank_wolfe] sum1: 3.88354
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 8.01829
+[frank_wolfe] sum4: 2.33147e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 308.337
+
+[frank_wolfe] sum1: 3.92268
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 7.43181
+[frank_wolfe] sum4: 3.36398e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 307.789
+
+[frank_wolfe] sum1: 4.00335
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 7.06668
+[frank_wolfe] sum4: -5.88418e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 307.505
+
+[frank_wolfe] sum1: 4.05561
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 6.76165
+[frank_wolfe] sum4: -1.76525e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 307.252
+
+[frank_wolfe] sum1: 4.09785
+[frank_wolfe] sum2: 296.435
+[frank_wolfe] sum3: 6.51104
+[frank_wolfe] sum4: 5.32907e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 307.044
+
+[Blockwise]  second_subproblem_obj: -110.254
+[Overall] iter = 13, Overall Error: 2.59486
+[Overall] || w_1 - z || ^2 = 6.74598
+[Overall] || w_2 - z || ^2 = 0.0674598
+[frank_wolfe] sum1: 5.70044
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 253.948
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 571.31
+
+[frank_wolfe] sum1: 4.72726
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 121.938
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 438.327
+
+[frank_wolfe] sum1: 4.85197
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 77.6682
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 394.182
+
+[frank_wolfe] sum1: 4.92677
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 55.341
+[frank_wolfe] sum4: 1.36557e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 371.93
+
+[frank_wolfe] sum1: 4.92322
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 42.0553
+[frank_wolfe] sum4: -8.21565e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 358.64
+
+[frank_wolfe] sum1: 4.81723
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 33.0569
+[frank_wolfe] sum4: -7.21645e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 349.536
+
+[frank_wolfe] sum1: 4.71287
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 26.8192
+[frank_wolfe] sum4: -1.66533e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 343.194
+
+[frank_wolfe] sum1: 4.49143
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 22.2991
+[frank_wolfe] sum4: 9.99201e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 338.452
+
+[frank_wolfe] sum1: 4.29504
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 18.8057
+[frank_wolfe] sum4: -1.96509e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 334.763
+
+[frank_wolfe] sum1: 4.06549
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 15.9831
+[frank_wolfe] sum4: -6.32827e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 331.711
+
+[frank_wolfe] sum1: 3.98861
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 13.7495
+[frank_wolfe] sum4: 5.77316e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 329.4
+
+[frank_wolfe] sum1: 3.9614
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 11.9186
+[frank_wolfe] sum4: 1.11022e-14
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 327.542
+
+[frank_wolfe] sum1: 3.9545
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 10.4552
+[frank_wolfe] sum4: -1.36557e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 326.072
+
+[frank_wolfe] sum1: 3.98432
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 9.35463
+[frank_wolfe] sum4: -4.13003e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 325.001
+
+[frank_wolfe] sum1: 3.99974
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 8.41014
+[frank_wolfe] sum4: -4.01901e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 324.072
+
+[frank_wolfe] sum1: 4.05547
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 7.68729
+[frank_wolfe] sum4: 2.10942e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 323.405
+
+[frank_wolfe] sum1: 4.10587
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 7.1314
+[frank_wolfe] sum4: 3.4861e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 322.899
+
+[frank_wolfe] sum1: 4.17817
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 6.66774
+[frank_wolfe] sum4: -1.07692e-12
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 322.508
+
+[frank_wolfe] sum1: 4.19343
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 6.36518
+[frank_wolfe] sum4: -1.24345e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 322.221
+
+[frank_wolfe] sum1: 4.21813
+[frank_wolfe] sum2: 311.662
+[frank_wolfe] sum3: 6.13837
+[frank_wolfe] sum4: 1.22125e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 322.018
+
+[Blockwise]  second_subproblem_obj: -134.922
+[Overall] iter = 14, Overall Error: 2.767
+[Overall] || w_1 - z || ^2 = 6.37651
+[Overall] || w_2 - z || ^2 = 0.0637651
+[frank_wolfe] sum1: 5.42057
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 253.379
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 584.121
+
+[frank_wolfe] sum1: 4.85508
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 121.088
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 451.265
+
+[frank_wolfe] sum1: 4.88547
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 76.8118
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 407.019
+
+[frank_wolfe] sum1: 4.9291
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 54.7221
+[frank_wolfe] sum4: 1.14353e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 384.973
+
+[frank_wolfe] sum1: 4.97909
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 41.5015
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 371.802
+
+[frank_wolfe] sum1: 4.95675
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 32.6889
+[frank_wolfe] sum4: -5.88418e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 362.967
+
+[frank_wolfe] sum1: 4.83214
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 26.5295
+[frank_wolfe] sum4: 6.66134e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 356.684
+
+[frank_wolfe] sum1: 4.63154
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 22.044
+[frank_wolfe] sum4: 7.77156e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 351.997
+
+[frank_wolfe] sum1: 4.3977
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 18.5731
+[frank_wolfe] sum4: -1.57652e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 348.293
+
+[frank_wolfe] sum1: 4.2085
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 15.7075
+[frank_wolfe] sum4: -8.21565e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 345.238
+
+[frank_wolfe] sum1: 4.1921
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 13.4565
+[frank_wolfe] sum4: 4.10783e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 342.97
+
+[frank_wolfe] sum1: 4.11912
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 11.6122
+[frank_wolfe] sum4: 1.9984e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 341.053
+
+[frank_wolfe] sum1: 4.06972
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 10.1941
+[frank_wolfe] sum4: -1.34337e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 339.586
+
+[frank_wolfe] sum1: 4.10908
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 9.04016
+[frank_wolfe] sum4: -3.57492e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 338.471
+
+[frank_wolfe] sum1: 4.09396
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 8.12201
+[frank_wolfe] sum4: -3.77476e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 337.538
+
+[frank_wolfe] sum1: 4.15821
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 7.41826
+[frank_wolfe] sum4: -2.10942e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 336.898
+
+[frank_wolfe] sum1: 4.19655
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 6.81743
+[frank_wolfe] sum4: 2.95319e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 336.336
+
+[frank_wolfe] sum1: 4.26744
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 6.38342
+[frank_wolfe] sum4: -7.77156e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 335.973
+
+[frank_wolfe] sum1: 4.31042
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 6.04478
+[frank_wolfe] sum4: -1.4988e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 335.677
+
+[frank_wolfe] sum1: 4.34887
+[frank_wolfe] sum2: 325.322
+[frank_wolfe] sum3: 5.8283
+[frank_wolfe] sum4: 1.66533e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 335.499
+
+[Blockwise]  second_subproblem_obj: -161.833
+[Overall] iter = 15, Overall Error: 2.93322
+[Overall] || w_1 - z || ^2 = 5.99121
+[Overall] || w_2 - z || ^2 = 0.0599121
+[frank_wolfe] sum1: 4.82344
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 252.71
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 594.86
+
+[frank_wolfe] sum1: 4.76885
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 120.053
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 462.149
+
+[frank_wolfe] sum1: 4.92105
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 75.895
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 418.142
+
+[frank_wolfe] sum1: 4.9504
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 54.0181
+[frank_wolfe] sum4: 1.43219e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 396.295
+
+[frank_wolfe] sum1: 4.94923
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 40.9301
+[frank_wolfe] sum4: -7.99361e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 383.206
+
+[frank_wolfe] sum1: 4.86243
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 32.3114
+[frank_wolfe] sum4: -3.9968e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 374.5
+
+[frank_wolfe] sum1: 4.81489
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 26.3044
+[frank_wolfe] sum4: -1.9984e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 368.446
+
+[frank_wolfe] sum1: 4.69825
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 21.8742
+[frank_wolfe] sum4: 9.99201e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 363.899
+
+[frank_wolfe] sum1: 4.52541
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 18.3588
+[frank_wolfe] sum4: -1.58762e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 360.211
+
+[frank_wolfe] sum1: 4.39034
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 15.4477
+[frank_wolfe] sum4: -6.32827e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 357.164
+
+[frank_wolfe] sum1: 4.33165
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 13.1885
+[frank_wolfe] sum4: -8.88178e-14
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 354.846
+
+[frank_wolfe] sum1: 4.27505
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 11.4145
+[frank_wolfe] sum4: 1.88738e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 353.016
+
+[frank_wolfe] sum1: 4.26106
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 9.96579
+[frank_wolfe] sum4: -1.09912e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 351.553
+
+[frank_wolfe] sum1: 4.23532
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 8.80808
+[frank_wolfe] sum4: -4.14113e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 350.37
+
+[frank_wolfe] sum1: 4.2251
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 7.83083
+[frank_wolfe] sum4: -3.84137e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 349.382
+
+[frank_wolfe] sum1: 4.26266
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 7.16786
+[frank_wolfe] sum4: -1.66533e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 348.757
+
+[frank_wolfe] sum1: 4.28914
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 6.56432
+[frank_wolfe] sum4: 3.29736e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 348.18
+
+[frank_wolfe] sum1: 4.33336
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 6.0925
+[frank_wolfe] sum4: -6.99441e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 347.752
+
+[frank_wolfe] sum1: 4.4047
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 5.73427
+[frank_wolfe] sum4: -1.5099e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 347.465
+
+[frank_wolfe] sum1: 4.42871
+[frank_wolfe] sum2: 337.326
+[frank_wolfe] sum3: 5.49792
+[frank_wolfe] sum4: 1.11022e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 347.253
+
+[Blockwise]  second_subproblem_obj: -188.179
+[Overall] iter = 16, Overall Error: 3.09653
+[Overall] || w_1 - z || ^2 = 5.5975
+[Overall] || w_2 - z || ^2 = 0.055975
+[frank_wolfe] sum1: 4.65127
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 252.817
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 605.232
+
+[frank_wolfe] sum1: 4.82835
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 119.054
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 471.646
+
+[frank_wolfe] sum1: 4.83213
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 75.1641
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 427.76
+
+[frank_wolfe] sum1: 4.85293
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 53.3259
+[frank_wolfe] sum4: 1.23235e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 405.943
+
+[frank_wolfe] sum1: 5.00705
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 40.3705
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 393.141
+
+[frank_wolfe] sum1: 4.97356
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 31.8107
+[frank_wolfe] sum4: -4.32987e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 384.548
+
+[frank_wolfe] sum1: 4.87031
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 25.8258
+[frank_wolfe] sum4: 3.33067e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 378.46
+
+[frank_wolfe] sum1: 4.71133
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 21.4878
+[frank_wolfe] sum4: 4.44089e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 373.963
+
+[frank_wolfe] sum1: 4.56603
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 17.9848
+[frank_wolfe] sum4: -1.58762e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 370.315
+
+[frank_wolfe] sum1: 4.46154
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 15.1345
+[frank_wolfe] sum4: -6.99441e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 367.36
+
+[frank_wolfe] sum1: 4.39756
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 12.9118
+[frank_wolfe] sum4: -8.88178e-14
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 365.073
+
+[frank_wolfe] sum1: 4.36752
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 11.113
+[frank_wolfe] sum4: -2.55351e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 363.244
+
+[frank_wolfe] sum1: 4.35671
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 9.67981
+[frank_wolfe] sum4: -1.29896e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 361.8
+
+[frank_wolfe] sum1: 4.33724
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 8.53205
+[frank_wolfe] sum4: -3.93019e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 360.633
+
+[frank_wolfe] sum1: 4.31757
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 7.5844
+[frank_wolfe] sum4: -3.9968e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 359.666
+
+[frank_wolfe] sum1: 4.353
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 6.87904
+[frank_wolfe] sum4: -3.21965e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 358.996
+
+[frank_wolfe] sum1: 4.39611
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 6.33179
+[frank_wolfe] sum4: 3.21965e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 358.492
+
+[frank_wolfe] sum1: 4.40871
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 5.85003
+[frank_wolfe] sum4: -1.33227e-12
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 358.022
+
+[frank_wolfe] sum1: 4.45181
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 5.5087
+[frank_wolfe] sum4: -1.15463e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 357.724
+
+[frank_wolfe] sum1: 4.45736
+[frank_wolfe] sum2: 347.764
+[frank_wolfe] sum3: 5.1808
+[frank_wolfe] sum4: 6.99441e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 357.402
+
+[Blockwise]  second_subproblem_obj: -216.879
+[Overall] iter = 17, Overall Error: 3.24012
+[Overall] || w_1 - z || ^2 = 5.22293
+[Overall] || w_2 - z || ^2 = 0.0522293
+[frank_wolfe] sum1: 4.45272
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 252.552
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 613.511
+
+[frank_wolfe] sum1: 4.81841
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 118.068
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 479.393
+
+[frank_wolfe] sum1: 4.7384
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 74.0548
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 435.299
+
+[frank_wolfe] sum1: 4.73879
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 52.3534
+[frank_wolfe] sum4: 1.45439e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 413.598
+
+[frank_wolfe] sum1: 4.83075
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 39.5467
+[frank_wolfe] sum4: -6.88338e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 400.883
+
+[frank_wolfe] sum1: 4.84079
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 31.2209
+[frank_wolfe] sum4: -3.66374e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 392.568
+
+[frank_wolfe] sum1: 4.79175
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 25.3899
+[frank_wolfe] sum4: -6.66134e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 386.688
+
+[frank_wolfe] sum1: 4.72741
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 21.1458
+[frank_wolfe] sum4: 1.22125e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 382.379
+
+[frank_wolfe] sum1: 4.62399
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 17.7358
+[frank_wolfe] sum4: -1.4988e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 378.866
+
+[frank_wolfe] sum1: 4.51655
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 14.816
+[frank_wolfe] sum4: -8.99281e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 375.839
+
+[frank_wolfe] sum1: 4.48429
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 12.5699
+[frank_wolfe] sum4: -2.88658e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 373.56
+
+[frank_wolfe] sum1: 4.4658
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 10.7672
+[frank_wolfe] sum4: -1.9984e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 371.739
+
+[frank_wolfe] sum1: 4.41701
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 9.3934
+[frank_wolfe] sum4: -1.43219e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 370.316
+
+[frank_wolfe] sum1: 4.36276
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 8.22902
+[frank_wolfe] sum4: -4.30767e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 369.098
+
+[frank_wolfe] sum1: 4.32543
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 7.3184
+[frank_wolfe] sum4: -4.14113e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 368.15
+
+[frank_wolfe] sum1: 4.32702
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 6.60068
+[frank_wolfe] sum4: -1.88738e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 367.434
+
+[frank_wolfe] sum1: 4.36722
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 6.01999
+[frank_wolfe] sum4: 3.13083e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 366.893
+
+[frank_wolfe] sum1: 4.39122
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 5.54319
+[frank_wolfe] sum4: -9.99201e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 366.44
+
+[frank_wolfe] sum1: 4.42972
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 5.16885
+[frank_wolfe] sum4: -1.65423e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 366.105
+
+[frank_wolfe] sum1: 4.48137
+[frank_wolfe] sum2: 356.506
+[frank_wolfe] sum3: 4.93624
+[frank_wolfe] sum4: 4.10783e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 365.924
+
+[Blockwise]  second_subproblem_obj: -232.839
+[Overall] iter = 18, Overall Error: 3.31494
+[Overall] || w_1 - z || ^2 = 4.83984
+[Overall] || w_2 - z || ^2 = 0.0483984
+[frank_wolfe] sum1: 4.66366
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 253.035
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 622.124
+
+[frank_wolfe] sum1: 4.85799
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 117.292
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 486.575
+
+[frank_wolfe] sum1: 4.87077
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 73.4148
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 442.711
+
+[frank_wolfe] sum1: 4.84229
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 51.6371
+[frank_wolfe] sum4: 1.38778e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 420.905
+
+[frank_wolfe] sum1: 4.87174
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 38.8892
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 408.187
+
+[frank_wolfe] sum1: 4.82743
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 30.5884
+[frank_wolfe] sum4: -6.10623e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 399.841
+
+[frank_wolfe] sum1: 4.73453
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 24.9466
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 394.107
+
+[frank_wolfe] sum1: 4.61265
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 20.854
+[frank_wolfe] sum4: 6.66134e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 389.892
+
+[frank_wolfe] sum1: 4.56321
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 17.4202
+[frank_wolfe] sum4: -1.56541e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 386.409
+
+[frank_wolfe] sum1: 4.51929
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 14.4883
+[frank_wolfe] sum4: -6.77236e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 383.433
+
+[frank_wolfe] sum1: 4.47896
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 12.3072
+[frank_wolfe] sum4: -2.33147e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 381.212
+
+[frank_wolfe] sum1: 4.44049
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 10.571
+[frank_wolfe] sum4: -1.33227e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 379.437
+
+[frank_wolfe] sum1: 4.4482
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 9.16235
+[frank_wolfe] sum4: -1.56541e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 378.036
+
+[frank_wolfe] sum1: 4.39462
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 7.99935
+[frank_wolfe] sum4: -4.15223e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 376.82
+
+[frank_wolfe] sum1: 4.39584
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 7.06447
+[frank_wolfe] sum4: -3.56382e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 375.886
+
+[frank_wolfe] sum1: 4.42286
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 6.32949
+[frank_wolfe] sum4: -6.88338e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 375.178
+
+[frank_wolfe] sum1: 4.43397
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 5.77306
+[frank_wolfe] sum4: 3.07532e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 374.633
+
+[frank_wolfe] sum1: 4.45703
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 5.29305
+[frank_wolfe] sum4: -8.10463e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 374.176
+
+[frank_wolfe] sum1: 4.50025
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 4.91556
+[frank_wolfe] sum4: -1.59872e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 373.841
+
+[frank_wolfe] sum1: 4.54265
+[frank_wolfe] sum2: 364.426
+[frank_wolfe] sum3: 4.66922
+[frank_wolfe] sum4: 2.33147e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 373.637
+
+[Blockwise]  second_subproblem_obj: -269.583
+[Overall] iter = 19, Overall Error: 3.5035
+[Overall] || w_1 - z || ^2 = 4.60247
+[Overall] || w_2 - z || ^2 = 0.0460247
+[frank_wolfe] sum1: 3.9228
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 252.881
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 626.954
+
+[frank_wolfe] sum1: 4.48413
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 116.413
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 491.048
+
+[frank_wolfe] sum1: 4.5544
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 72.4686
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 447.174
+
+[frank_wolfe] sum1: 4.59924
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 50.8169
+[frank_wolfe] sum4: 1.32117e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 425.567
+
+[frank_wolfe] sum1: 4.70804
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 38.1881
+[frank_wolfe] sum4: -8.43769e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 413.047
+
+[frank_wolfe] sum1: 4.81418
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 29.9888
+[frank_wolfe] sum4: -3.10862e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 404.954
+
+[frank_wolfe] sum1: 4.84521
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 24.441
+[frank_wolfe] sum4: 4.44089e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 399.437
+
+[frank_wolfe] sum1: 4.7504
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 20.5346
+[frank_wolfe] sum4: 1.11022e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 395.436
+
+[frank_wolfe] sum1: 4.70613
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 17.1536
+[frank_wolfe] sum4: -1.64313e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 392.011
+
+[frank_wolfe] sum1: 4.64693
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 14.1745
+[frank_wolfe] sum4: -7.99361e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 388.972
+
+[frank_wolfe] sum1: 4.54015
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 12.0278
+[frank_wolfe] sum4: -2.10942e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 386.719
+
+[frank_wolfe] sum1: 4.51237
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 10.3125
+[frank_wolfe] sum4: -3.55271e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 384.976
+
+[frank_wolfe] sum1: 4.47256
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 8.93646
+[frank_wolfe] sum4: -1.68754e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 383.56
+
+[frank_wolfe] sum1: 4.43988
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 7.77158
+[frank_wolfe] sum4: -4.54081e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 382.362
+
+[frank_wolfe] sum1: 4.38576
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 6.87518
+[frank_wolfe] sum4: -3.43059e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 381.412
+
+[frank_wolfe] sum1: 4.38709
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 6.14758
+[frank_wolfe] sum4: -9.88098e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 380.686
+
+[frank_wolfe] sum1: 4.42342
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 5.60316
+[frank_wolfe] sum4: 2.85327e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 380.178
+
+[frank_wolfe] sum1: 4.46458
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 5.08754
+[frank_wolfe] sum4: -5.44009e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 379.703
+
+[frank_wolfe] sum1: 4.4989
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 4.63852
+[frank_wolfe] sum4: -1.67644e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 379.288
+
+[frank_wolfe] sum1: 4.53158
+[frank_wolfe] sum2: 370.151
+[frank_wolfe] sum3: 4.34795
+[frank_wolfe] sum4: 1.66533e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 379.031
+
+[Blockwise]  second_subproblem_obj: -277.53
+[Overall] iter = 20, Overall Error: 3.53334
+[Overall] || w_1 - z || ^2 = 4.28345
+[Overall] || w_2 - z || ^2 = 0.0428345
+[frank_wolfe] sum1: 4.45808
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 253.607
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 633.58
+
+[frank_wolfe] sum1: 4.62781
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 115.592
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 495.735
+
+[frank_wolfe] sum1: 4.76919
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 71.6433
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 451.928
+
+[frank_wolfe] sum1: 4.69963
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 49.9468
+[frank_wolfe] sum4: 1.39888e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 430.162
+
+[frank_wolfe] sum1: 4.78734
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 37.3821
+[frank_wolfe] sum4: -8.65974e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 417.685
+
+[frank_wolfe] sum1: 4.78044
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 29.2692
+[frank_wolfe] sum4: -5.88418e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 409.565
+
+[frank_wolfe] sum1: 4.71491
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 23.9246
+[frank_wolfe] sum4: -2.10942e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 404.155
+
+[frank_wolfe] sum1: 4.59072
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 20.1805
+[frank_wolfe] sum4: 1.22125e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 400.286
+
+[frank_wolfe] sum1: 4.54285
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 16.787
+[frank_wolfe] sum4: -1.68754e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 396.845
+
+[frank_wolfe] sum1: 4.54749
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 13.7919
+[frank_wolfe] sum4: -6.43929e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 393.855
+
+[frank_wolfe] sum1: 4.5059
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 11.6725
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 391.694
+
+[frank_wolfe] sum1: 4.44287
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 10.0342
+[frank_wolfe] sum4: -4.10783e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 389.992
+
+[frank_wolfe] sum1: 4.45802
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 8.6599
+[frank_wolfe] sum4: -1.94289e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 388.633
+
+[frank_wolfe] sum1: 4.42872
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 7.55678
+[frank_wolfe] sum4: -4.74065e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 387.501
+
+[frank_wolfe] sum1: 4.41582
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 6.63781
+[frank_wolfe] sum4: -3.73035e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 386.569
+
+[frank_wolfe] sum1: 4.45523
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 5.88745
+[frank_wolfe] sum4: -8.99281e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 385.858
+
+[frank_wolfe] sum1: 4.44932
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 5.2695
+[frank_wolfe] sum4: 2.90878e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 385.234
+
+[frank_wolfe] sum1: 4.49869
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 4.79368
+[frank_wolfe] sum4: -9.4369e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 384.807
+
+[frank_wolfe] sum1: 4.51451
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 4.35271
+[frank_wolfe] sum4: -1.56541e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 384.382
+
+[frank_wolfe] sum1: 4.5565
+[frank_wolfe] sum2: 375.515
+[frank_wolfe] sum3: 4.08784
+[frank_wolfe] sum4: -1.9984e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 384.159
+
+[Blockwise]  second_subproblem_obj: -302.013
+[Overall] iter = 21, Overall Error: 3.6758
+[Overall] || w_1 - z || ^2 = 4.02757
+[Overall] || w_2 - z || ^2 = 0.0402757
+[frank_wolfe] sum1: 4.23871
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 253.868
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 637.588
+
+[frank_wolfe] sum1: 4.5797
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 114.74
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 498.8
+
+[frank_wolfe] sum1: 4.57983
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 70.5428
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 454.603
+
+[frank_wolfe] sum1: 4.58817
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 49.0786
+[frank_wolfe] sum4: 1.43219e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 433.147
+
+[frank_wolfe] sum1: 4.63812
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 36.6088
+[frank_wolfe] sum4: -7.99361e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 420.728
+
+[frank_wolfe] sum1: 4.74092
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 28.6614
+[frank_wolfe] sum4: -4.77396e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 412.883
+
+[frank_wolfe] sum1: 4.78223
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 23.4901
+[frank_wolfe] sum4: -5.55112e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 407.753
+
+[frank_wolfe] sum1: 4.71517
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 19.87
+[frank_wolfe] sum4: 9.99201e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 404.066
+
+[frank_wolfe] sum1: 4.6351
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 16.4485
+[frank_wolfe] sum4: -1.94289e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 400.564
+
+[frank_wolfe] sum1: 4.59101
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 13.5041
+[frank_wolfe] sum4: -4.996e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 397.576
+
+[frank_wolfe] sum1: 4.53349
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 11.4345
+[frank_wolfe] sum4: -8.54872e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 395.449
+
+[frank_wolfe] sum1: 4.49853
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 9.79708
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 393.776
+
+[frank_wolfe] sum1: 4.47567
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 8.46155
+[frank_wolfe] sum4: -1.87628e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 392.418
+
+[frank_wolfe] sum1: 4.4647
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 7.38044
+[frank_wolfe] sum4: -4.92939e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 391.326
+
+[frank_wolfe] sum1: 4.44234
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 6.47292
+[frank_wolfe] sum4: -3.91909e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 390.396
+
+[frank_wolfe] sum1: 4.41285
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 5.77578
+[frank_wolfe] sum4: -1.14353e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 389.669
+
+[frank_wolfe] sum1: 4.43527
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 5.16611
+[frank_wolfe] sum4: 2.74225e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 389.082
+
+[frank_wolfe] sum1: 4.44374
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 4.62285
+[frank_wolfe] sum4: -7.43849e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 388.547
+
+[frank_wolfe] sum1: 4.49856
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 4.12595
+[frank_wolfe] sum4: -1.85407e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 388.105
+
+[frank_wolfe] sum1: 4.53243
+[frank_wolfe] sum2: 379.481
+[frank_wolfe] sum3: 3.77668
+[frank_wolfe] sum4: -1.9984e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 387.79
+
+[Blockwise]  second_subproblem_obj: -313.621
+[Overall] iter = 22, Overall Error: 3.73848
+[Overall] || w_1 - z || ^2 = 3.8456
+[Overall] || w_2 - z || ^2 = 0.038456
+[frank_wolfe] sum1: 4.36562
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 253.778
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 640.968
+
+[frank_wolfe] sum1: 4.55239
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 113.87
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 501.248
+
+[frank_wolfe] sum1: 4.63121
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 69.9172
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 457.373
+
+[frank_wolfe] sum1: 4.69574
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 48.5673
+[frank_wolfe] sum4: 1.22125e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 436.088
+
+[frank_wolfe] sum1: 4.74234
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 36.0772
+[frank_wolfe] sum4: -5.9952e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 423.644
+
+[frank_wolfe] sum1: 4.75594
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 28.1534
+[frank_wolfe] sum4: -4.88498e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 415.734
+
+[frank_wolfe] sum1: 4.69566
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 23.0972
+[frank_wolfe] sum4: 3.33067e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 410.618
+
+[frank_wolfe] sum1: 4.58905
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 19.5133
+[frank_wolfe] sum4: 6.66134e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 406.927
+
+[frank_wolfe] sum1: 4.56815
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 16.1017
+[frank_wolfe] sum4: -2.05391e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 403.495
+
+[frank_wolfe] sum1: 4.53507
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 13.2119
+[frank_wolfe] sum4: -5.32907e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 400.572
+
+[frank_wolfe] sum1: 4.4694
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 11.1882
+[frank_wolfe] sum4: -5.10703e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 398.483
+
+[frank_wolfe] sum1: 4.43025
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 9.66435
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 396.92
+
+[frank_wolfe] sum1: 4.4166
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 8.33801
+[frank_wolfe] sum4: -1.83187e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 395.58
+
+[frank_wolfe] sum1: 4.44002
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 7.26604
+[frank_wolfe] sum4: -5.07372e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 394.531
+
+[frank_wolfe] sum1: 4.4378
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 6.38822
+[frank_wolfe] sum4: -3.51941e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 393.651
+
+[frank_wolfe] sum1: 4.42876
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 5.62007
+[frank_wolfe] sum4: -1.4877e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 392.874
+
+[frank_wolfe] sum1: 4.45367
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 4.99624
+[frank_wolfe] sum4: 2.78666e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 392.275
+
+[frank_wolfe] sum1: 4.48845
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 4.38977
+[frank_wolfe] sum4: -6.55032e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 391.703
+
+[frank_wolfe] sum1: 4.51452
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 3.92628
+[frank_wolfe] sum4: -1.86517e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 391.266
+
+[frank_wolfe] sum1: 4.55314
+[frank_wolfe] sum2: 382.825
+[frank_wolfe] sum3: 3.64177
+[frank_wolfe] sum4: 1.66533e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 391.02
+
+[Blockwise]  second_subproblem_obj: -332.302
+[Overall] iter = 23, Overall Error: 3.85963
+[Overall] || w_1 - z || ^2 = 3.53288
+[Overall] || w_2 - z || ^2 = 0.0353288
+[frank_wolfe] sum1: 4.18927
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 253.727
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 643.047
+
+[frank_wolfe] sum1: 4.49948
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 113.249
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 502.879
+
+[frank_wolfe] sum1: 4.63158
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 69.1529
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 458.915
+
+[frank_wolfe] sum1: 4.60626
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 47.8428
+[frank_wolfe] sum4: 1.55431e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 437.58
+
+[frank_wolfe] sum1: 4.55165
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 35.3236
+[frank_wolfe] sum4: -4.44089e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 425.006
+
+[frank_wolfe] sum1: 4.60348
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 27.6001
+[frank_wolfe] sum4: -2.22045e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 417.334
+
+[frank_wolfe] sum1: 4.77912
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 22.6122
+[frank_wolfe] sum4: -1.11022e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 412.522
+
+[frank_wolfe] sum1: 4.67852
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 19.1562
+[frank_wolfe] sum4: -7.77156e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 408.965
+
+[frank_wolfe] sum1: 4.64341
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 15.7941
+[frank_wolfe] sum4: -1.65423e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 405.568
+
+[frank_wolfe] sum1: 4.59401
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 12.8865
+[frank_wolfe] sum4: -9.21485e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 402.611
+
+[frank_wolfe] sum1: 4.56562
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 10.9113
+[frank_wolfe] sum4: -1.23235e-12
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 400.608
+
+[frank_wolfe] sum1: 4.51564
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 9.43119
+[frank_wolfe] sum4: -7.10543e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 399.078
+
+[frank_wolfe] sum1: 4.50355
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 8.1668
+[frank_wolfe] sum4: -2.34257e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 397.801
+
+[frank_wolfe] sum1: 4.47674
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 7.13849
+[frank_wolfe] sum4: -5.34017e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 396.746
+
+[frank_wolfe] sum1: 4.4361
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 6.26088
+[frank_wolfe] sum4: -3.56382e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 395.828
+
+[frank_wolfe] sum1: 4.43488
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 5.54586
+[frank_wolfe] sum4: -1.36557e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 395.111
+
+[frank_wolfe] sum1: 4.45367
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 4.93087
+[frank_wolfe] sum4: 2.66454e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 394.515
+
+[frank_wolfe] sum1: 4.47111
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 4.34783
+[frank_wolfe] sum4: -7.54952e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 393.95
+
+[frank_wolfe] sum1: 4.5105
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 3.79643
+[frank_wolfe] sum4: -1.5099e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 393.438
+
+[frank_wolfe] sum1: 4.49384
+[frank_wolfe] sum2: 385.131
+[frank_wolfe] sum3: 3.44989
+[frank_wolfe] sum4: 1.44329e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 393.074
+
+[Blockwise]  second_subproblem_obj: -347.985
+[Overall] iter = 24, Overall Error: 3.8967
+[Overall] || w_1 - z || ^2 = 3.38101
+[Overall] || w_2 - z || ^2 = 0.0338101
+[frank_wolfe] sum1: 3.85713
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 254.351
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 644.706
+
+[frank_wolfe] sum1: 4.34282
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 112.841
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 503.682
+
+[frank_wolfe] sum1: 4.52619
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 68.9369
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 459.961
+
+[frank_wolfe] sum1: 4.55394
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 47.4735
+[frank_wolfe] sum4: 1.23235e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 438.525
+
+[frank_wolfe] sum1: 4.58604
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 35.0516
+[frank_wolfe] sum4: -9.10383e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 426.136
+
+[frank_wolfe] sum1: 4.55904
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 27.3112
+[frank_wolfe] sum4: -5.77316e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 418.368
+
+[frank_wolfe] sum1: 4.54502
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 22.2989
+[frank_wolfe] sum4: 1.55431e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 413.342
+
+[frank_wolfe] sum1: 4.5369
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 18.9837
+[frank_wolfe] sum4: 1.11022e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 410.019
+
+[frank_wolfe] sum1: 4.52333
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 15.5749
+[frank_wolfe] sum4: -1.68754e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 406.596
+
+[frank_wolfe] sum1: 4.52738
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 12.701
+[frank_wolfe] sum4: -6.77236e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 403.726
+
+[frank_wolfe] sum1: 4.49753
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 10.7344
+[frank_wolfe] sum4: -7.66054e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 401.73
+
+[frank_wolfe] sum1: 4.46603
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 9.30132
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 400.265
+
+[frank_wolfe] sum1: 4.42395
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 8.0903
+[frank_wolfe] sum4: -2.63123e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 399.012
+
+[frank_wolfe] sum1: 4.41017
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 7.03962
+[frank_wolfe] sum4: -4.87388e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 397.948
+
+[frank_wolfe] sum1: 4.4145
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 6.15179
+[frank_wolfe] sum4: -4.03011e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 397.064
+
+[frank_wolfe] sum1: 4.42431
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 5.41469
+[frank_wolfe] sum4: -1.85407e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 396.337
+
+[frank_wolfe] sum1: 4.42219
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 4.74885
+[frank_wolfe] sum4: 2.4869e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 395.669
+
+[frank_wolfe] sum1: 4.44506
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 4.08793
+[frank_wolfe] sum4: -5.66214e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 395.031
+
+[frank_wolfe] sum1: 4.43903
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 3.52732
+[frank_wolfe] sum4: -1.89848e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 394.464
+
+[frank_wolfe] sum1: 4.49661
+[frank_wolfe] sum2: 386.498
+[frank_wolfe] sum3: 3.23324
+[frank_wolfe] sum4: 1.55431e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 394.228
+
+[Blockwise]  second_subproblem_obj: -365.381
+[Overall] iter = 25, Overall Error: 3.99178
+[Overall] || w_1 - z || ^2 = 3.29588
+[Overall] || w_2 - z || ^2 = 0.0329588
+[frank_wolfe] sum1: 4.04641
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 254.916
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 645.761
+
+[frank_wolfe] sum1: 4.35016
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 112.501
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 503.65
+
+[frank_wolfe] sum1: 4.48098
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 68.5997
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 459.879
+
+[frank_wolfe] sum1: 4.52869
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 47.2338
+[frank_wolfe] sum4: 1.63203e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 438.561
+
+[frank_wolfe] sum1: 4.56565
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 34.7105
+[frank_wolfe] sum4: -7.99361e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 426.075
+
+[frank_wolfe] sum1: 4.5424
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 26.9337
+[frank_wolfe] sum4: -2.55351e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 418.275
+
+[frank_wolfe] sum1: 4.61334
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 21.9132
+[frank_wolfe] sum4: -1.11022e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 413.325
+
+[frank_wolfe] sum1: 4.56681
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 18.6867
+[frank_wolfe] sum4: 6.66134e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 410.052
+
+[frank_wolfe] sum1: 4.58373
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 15.3513
+[frank_wolfe] sum4: -1.54321e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 406.734
+
+[frank_wolfe] sum1: 4.49857
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 12.4572
+[frank_wolfe] sum4: -7.10543e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 403.755
+
+[frank_wolfe] sum1: 4.48192
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 10.5539
+[frank_wolfe] sum4: -6.21725e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 401.835
+
+[frank_wolfe] sum1: 4.48525
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 9.21451
+[frank_wolfe] sum4: -5.10703e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 400.499
+
+[frank_wolfe] sum1: 4.45128
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 8.05126
+[frank_wolfe] sum4: -2.65343e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 399.301
+
+[frank_wolfe] sum1: 4.44506
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 7.06395
+[frank_wolfe] sum4: -5.28466e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 398.308
+
+[frank_wolfe] sum1: 4.4359
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 6.17356
+[frank_wolfe] sum4: -3.90799e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 397.408
+
+[frank_wolfe] sum1: 4.41961
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 5.39466
+[frank_wolfe] sum4: -1.66533e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 396.613
+
+[frank_wolfe] sum1: 4.4807
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 4.69761
+[frank_wolfe] sum4: 2.81997e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 395.977
+
+[frank_wolfe] sum1: 4.46029
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 4.05964
+[frank_wolfe] sum4: -5.9952e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 395.319
+
+[frank_wolfe] sum1: 4.45033
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 3.52694
+[frank_wolfe] sum4: -1.43219e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 394.776
+
+[frank_wolfe] sum1: 4.50304
+[frank_wolfe] sum2: 386.799
+[frank_wolfe] sum3: 3.15057
+[frank_wolfe] sum4: -2.55351e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 394.452
+
+[Blockwise]  second_subproblem_obj: -375.158
+[Overall] iter = 26, Overall Error: 4.12239
+[Overall] || w_1 - z || ^2 = 3.08107
+[Overall] || w_2 - z || ^2 = 0.0308107
+[frank_wolfe] sum1: 3.79363
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 254.615
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 644.974
+
+[frank_wolfe] sum1: 4.21569
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 112.279
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 503.061
+
+[frank_wolfe] sum1: 4.41025
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 68.0911
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 459.067
+
+[frank_wolfe] sum1: 4.44987
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 46.8829
+[frank_wolfe] sum4: 1.38778e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 437.899
+
+[frank_wolfe] sum1: 4.43566
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 34.41
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 425.411
+
+[frank_wolfe] sum1: 4.53351
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 26.4629
+[frank_wolfe] sum4: -3.66374e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 417.562
+
+[frank_wolfe] sum1: 4.6092
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 21.5548
+[frank_wolfe] sum4: 2.22045e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 412.73
+
+[frank_wolfe] sum1: 4.64026
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 18.3928
+[frank_wolfe] sum4: 1.33227e-13
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 409.599
+
+[frank_wolfe] sum1: 4.62262
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 15.0979
+[frank_wolfe] sum4: -2.04281e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 406.286
+
+[frank_wolfe] sum1: 4.59971
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 12.2513
+[frank_wolfe] sum4: -4.55191e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 403.417
+
+[frank_wolfe] sum1: 4.48987
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 10.3421
+[frank_wolfe] sum4: -9.32587e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 401.398
+
+[frank_wolfe] sum1: 4.49578
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 8.94021
+[frank_wolfe] sum4: -5.77316e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 400.002
+
+[frank_wolfe] sum1: 4.48662
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 7.80744
+[frank_wolfe] sum4: -2.15383e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 398.86
+
+[frank_wolfe] sum1: 4.45763
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 6.87099
+[frank_wolfe] sum4: -5.22915e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 397.894
+
+[frank_wolfe] sum1: 4.42185
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 6.02685
+[frank_wolfe] sum4: -3.95239e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 397.014
+
+[frank_wolfe] sum1: 4.42523
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 5.26697
+[frank_wolfe] sum4: -1.45439e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 396.258
+
+[frank_wolfe] sum1: 4.41226
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 4.58158
+[frank_wolfe] sum4: 2.23155e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 395.56
+
+[frank_wolfe] sum1: 4.40006
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 3.9436
+[frank_wolfe] sum4: -3.33067e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 394.909
+
+[frank_wolfe] sum1: 4.43777
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 3.34387
+[frank_wolfe] sum4: -1.4766e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 394.347
+
+[frank_wolfe] sum1: 4.46556
+[frank_wolfe] sum2: 386.566
+[frank_wolfe] sum3: 2.97195
+[frank_wolfe] sum4: -2.10942e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 394.003
+
+[Blockwise]  second_subproblem_obj: -376.549
+[Overall] iter = 27, Overall Error: 4.11182
+[Overall] || w_1 - z || ^2 = 3.00003
+[Overall] || w_2 - z || ^2 = 0.0300003
+[frank_wolfe] sum1: 3.80505
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 255.428
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 645.424
+
+[frank_wolfe] sum1: 4.26645
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 111.917
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 502.374
+
+[frank_wolfe] sum1: 4.42665
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 67.7595
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 458.378
+
+[frank_wolfe] sum1: 4.47126
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 46.454
+[frank_wolfe] sum4: 1.77636e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 437.117
+
+[frank_wolfe] sum1: 4.49911
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 34.0634
+[frank_wolfe] sum4: -6.88338e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 424.754
+
+[frank_wolfe] sum1: 4.5071
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 26.2331
+[frank_wolfe] sum4: -2.9976e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 416.932
+
+[frank_wolfe] sum1: 4.53889
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 21.2867
+[frank_wolfe] sum4: -4.44089e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 412.017
+
+[frank_wolfe] sum1: 4.52465
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 18.0846
+[frank_wolfe] sum4: 6.66134e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 408.801
+
+[frank_wolfe] sum1: 4.46787
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 14.732
+[frank_wolfe] sum4: -1.72085e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 405.391
+
+[frank_wolfe] sum1: 4.46243
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 12.0625
+[frank_wolfe] sum4: -4.88498e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 402.716
+
+[frank_wolfe] sum1: 4.47054
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 10.2136
+[frank_wolfe] sum4: -7.32747e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 400.876
+
+[frank_wolfe] sum1: 4.4744
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 8.9007
+[frank_wolfe] sum4: -6.99441e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 399.566
+
+[frank_wolfe] sum1: 4.48404
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 7.78976
+[frank_wolfe] sum4: -1.94289e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 398.465
+
+[frank_wolfe] sum1: 4.45657
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 6.81681
+[frank_wolfe] sum4: -4.91829e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 397.465
+
+[frank_wolfe] sum1: 4.43173
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 5.97115
+[frank_wolfe] sum4: -3.68594e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 396.594
+
+[frank_wolfe] sum1: 4.38375
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 5.23582
+[frank_wolfe] sum4: -1.26565e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 395.811
+
+[frank_wolfe] sum1: 4.40474
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 4.51885
+[frank_wolfe] sum4: 2.93099e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 395.115
+
+[frank_wolfe] sum1: 4.40937
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 3.82083
+[frank_wolfe] sum4: -6.66134e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 394.422
+
+[frank_wolfe] sum1: 4.43222
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 3.22457
+[frank_wolfe] sum4: -1.56541e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 393.848
+
+[frank_wolfe] sum1: 4.48421
+[frank_wolfe] sum2: 386.191
+[frank_wolfe] sum3: 2.92929
+[frank_wolfe] sum4: -1.9984e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 393.605
+
+[Blockwise]  second_subproblem_obj: -383.093
+[Overall] iter = 28, Overall Error: 4.14816
+[Overall] || w_1 - z || ^2 = 2.91626
+[Overall] || w_2 - z || ^2 = 0.0291626
+[frank_wolfe] sum1: 3.91347
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 254.893
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 644.097
+
+[frank_wolfe] sum1: 4.29413
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 111.839
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 501.424
+
+[frank_wolfe] sum1: 4.37435
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 67.2176
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 456.882
+
+[frank_wolfe] sum1: 4.46456
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 46.2146
+[frank_wolfe] sum4: 1.26565e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 435.97
+
+[frank_wolfe] sum1: 4.41434
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 33.7646
+[frank_wolfe] sum4: -7.32747e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 423.469
+
+[frank_wolfe] sum1: 4.41858
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 25.9655
+[frank_wolfe] sum4: -3.77476e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 415.675
+
+[frank_wolfe] sum1: 4.49151
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 21.0662
+[frank_wolfe] sum4: 2.22045e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 410.848
+
+[frank_wolfe] sum1: 4.51804
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 17.9471
+[frank_wolfe] sum4: 6.66134e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 407.756
+
+[frank_wolfe] sum1: 4.54456
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 14.5815
+[frank_wolfe] sum4: -2.06501e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 404.416
+
+[frank_wolfe] sum1: 4.59234
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 11.911
+[frank_wolfe] sum4: -5.9952e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 401.794
+
+[frank_wolfe] sum1: 4.57584
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 10.0194
+[frank_wolfe] sum4: -9.10383e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 399.886
+
+[frank_wolfe] sum1: 4.52284
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 8.76133
+[frank_wolfe] sum4: -7.43849e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 398.575
+
+[frank_wolfe] sum1: 4.49737
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 7.66744
+[frank_wolfe] sum4: -2.32037e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 397.455
+
+[frank_wolfe] sum1: 4.44821
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 6.80633
+[frank_wolfe] sum4: -5.02931e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 396.545
+
+[frank_wolfe] sum1: 4.43287
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 5.97515
+[frank_wolfe] sum4: -4.15223e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 395.698
+
+[frank_wolfe] sum1: 4.3954
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 5.20954
+[frank_wolfe] sum4: -9.76996e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 394.895
+
+[frank_wolfe] sum1: 4.39752
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 4.4612
+[frank_wolfe] sum4: 2.37588e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 394.149
+
+[frank_wolfe] sum1: 4.38244
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 3.77655
+[frank_wolfe] sum4: 1.33227e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 393.449
+
+[frank_wolfe] sum1: 4.42116
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 3.17385
+[frank_wolfe] sum4: -1.25455e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 392.885
+
+[frank_wolfe] sum1: 4.45528
+[frank_wolfe] sum2: 385.29
+[frank_wolfe] sum3: 2.86045
+[frank_wolfe] sum4: -2.10942e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 392.606
+
+[Blockwise]  second_subproblem_obj: -395.175
+[Overall] iter = 29, Overall Error: 4.25917
+[Overall] || w_1 - z || ^2 = 2.89116
+[Overall] || w_2 - z || ^2 = 0.0289116
+[frank_wolfe] sum1: 3.47682
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 255.975
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 643.109
+
+[frank_wolfe] sum1: 4.19581
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 111.901
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 499.754
+
+[frank_wolfe] sum1: 4.27092
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 67.0617
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 454.99
+
+[frank_wolfe] sum1: 4.41541
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 45.8111
+[frank_wolfe] sum4: 1.5099e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 433.884
+
+[frank_wolfe] sum1: 4.43805
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 33.4033
+[frank_wolfe] sum4: -8.88178e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 421.499
+
+[frank_wolfe] sum1: 4.44654
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 25.6645
+[frank_wolfe] sum4: -5.21805e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 413.768
+
+[frank_wolfe] sum1: 4.42034
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 20.715
+[frank_wolfe] sum4: -1.77636e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 408.793
+
+[frank_wolfe] sum1: 4.44927
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 17.636
+[frank_wolfe] sum4: 7.77156e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 405.742
+
+[frank_wolfe] sum1: 4.47933
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 14.3256
+[frank_wolfe] sum4: -1.74305e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 402.462
+
+[frank_wolfe] sum1: 4.47826
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 11.7919
+[frank_wolfe] sum4: -9.76996e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 399.927
+
+[frank_wolfe] sum1: 4.44878
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 9.96005
+[frank_wolfe] sum4: -7.77156e-13
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 398.066
+
+[frank_wolfe] sum1: 4.46295
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 8.73173
+[frank_wolfe] sum4: -4.996e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 396.852
+
+[frank_wolfe] sum1: 4.45241
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 7.67774
+[frank_wolfe] sum4: -2.26485e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 395.787
+
+[frank_wolfe] sum1: 4.4264
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 6.76885
+[frank_wolfe] sum4: -5.02931e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 394.852
+
+[frank_wolfe] sum1: 4.42137
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 5.94595
+[frank_wolfe] sum4: -3.87468e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 394.025
+
+[frank_wolfe] sum1: 4.42175
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 5.18743
+[frank_wolfe] sum4: -1.33227e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 393.266
+
+[frank_wolfe] sum1: 4.41606
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 4.45521
+[frank_wolfe] sum4: 2.76446e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 392.528
+
+[frank_wolfe] sum1: 4.41946
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 3.76213
+[frank_wolfe] sum4: -1.44329e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 391.839
+
+[frank_wolfe] sum1: 4.42562
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 3.1969
+[frank_wolfe] sum4: -1.5099e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 391.28
+
+[frank_wolfe] sum1: 4.43218
+[frank_wolfe] sum2: 383.657
+[frank_wolfe] sum3: 2.88425
+[frank_wolfe] sum4: -2.9976e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 390.974
+
+[Blockwise]  second_subproblem_obj: -387.144
+[Overall] iter = 30, Overall Error: 4.2357
+[Overall] || w_1 - z || ^2 = 2.77591
+[Overall] || w_2 - z || ^2 = 0.0277591
+[frank_wolfe] sum1: 3.61536
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 255.615
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 641.589
+
+[frank_wolfe] sum1: 4.22771
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 111.639
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 498.224
+
+[frank_wolfe] sum1: 4.41275
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 66.3384
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 453.109
+
+[frank_wolfe] sum1: 4.37547
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 45.5562
+[frank_wolfe] sum4: 1.21014e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 432.29
+
+[frank_wolfe] sum1: 4.40393
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 33.1823
+[frank_wolfe] sum4: -7.99361e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 419.944
+
+[frank_wolfe] sum1: 4.45802
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 25.2604
+[frank_wolfe] sum4: -2.33147e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 412.077
+
+[frank_wolfe] sum1: 4.4575
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 20.3701
+[frank_wolfe] sum4: -1.22125e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 407.186
+
+[frank_wolfe] sum1: 4.45092
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 17.3533
+[frank_wolfe] sum4: -1.11022e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 404.162
+
+[frank_wolfe] sum1: 4.53619
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 14.0356
+[frank_wolfe] sum4: -1.9762e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 400.93
+
+[frank_wolfe] sum1: 4.53319
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 11.6647
+[frank_wolfe] sum4: -5.55112e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 398.556
+
+[frank_wolfe] sum1: 4.5215
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 9.76304
+[frank_wolfe] sum4: -1.31006e-12
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 396.643
+
+[frank_wolfe] sum1: 4.46303
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 8.52942
+[frank_wolfe] sum4: -4.66294e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 395.351
+
+[frank_wolfe] sum1: 4.45873
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 7.5422
+[frank_wolfe] sum4: -2.14273e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 394.359
+
+[frank_wolfe] sum1: 4.42736
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 6.73469
+[frank_wolfe] sum4: -4.89608e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 393.52
+
+[frank_wolfe] sum1: 4.41511
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 5.95264
+[frank_wolfe] sum4: -3.85247e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 392.726
+
+[frank_wolfe] sum1: 4.39052
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 5.15055
+[frank_wolfe] sum4: -1.27676e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 391.899
+
+[frank_wolfe] sum1: 4.38703
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 4.33759
+[frank_wolfe] sum4: 2.4647e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 391.083
+
+[frank_wolfe] sum1: 4.37832
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 3.65629
+[frank_wolfe] sum4: -1.44329e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 390.393
+
+[frank_wolfe] sum1: 4.38147
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 3.10477
+[frank_wolfe] sum4: -1.29896e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 389.844
+
+[frank_wolfe] sum1: 4.4016
+[frank_wolfe] sum2: 382.358
+[frank_wolfe] sum3: 2.68703
+[frank_wolfe] sum4: -3.44169e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 389.447
+
+[Blockwise]  second_subproblem_obj: -388.323
+[Overall] iter = 31, Overall Error: 4.23634
+[Overall] || w_1 - z || ^2 = 2.71783
+[Overall] || w_2 - z || ^2 = 0.0271783
+[frank_wolfe] sum1: 3.57277
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 255.738
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 640.181
+
+[frank_wolfe] sum1: 4.30352
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 111.582
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 496.756
+
+[frank_wolfe] sum1: 4.31013
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 65.9444
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 451.125
+
+[frank_wolfe] sum1: 4.41196
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 45.1351
+[frank_wolfe] sum4: 1.34337e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 430.417
+
+[frank_wolfe] sum1: 4.42805
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 32.8332
+[frank_wolfe] sum4: -8.43769e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 418.132
+
+[frank_wolfe] sum1: 4.44141
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 25.109
+[frank_wolfe] sum4: -4.996e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 410.421
+
+[frank_wolfe] sum1: 4.4562
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 20.1691
+[frank_wolfe] sum4: -6.66134e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 405.496
+
+[frank_wolfe] sum1: 4.49378
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 17.0659
+[frank_wolfe] sum4: 3.33067e-14
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 402.43
+
+[frank_wolfe] sum1: 4.53137
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 13.8735
+[frank_wolfe] sum4: -1.73195e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 399.275
+
+[frank_wolfe] sum1: 4.45748
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 11.5514
+[frank_wolfe] sum4: -8.32667e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 396.879
+
+[frank_wolfe] sum1: 4.41399
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 9.66838
+[frank_wolfe] sum4: -1.16573e-12
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 394.953
+
+[frank_wolfe] sum1: 4.37242
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 8.4729
+[frank_wolfe] sum4: -7.88258e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 393.716
+
+[frank_wolfe] sum1: 4.38351
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 7.53298
+[frank_wolfe] sum4: -2.10942e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 392.787
+
+[frank_wolfe] sum1: 4.36239
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 6.66206
+[frank_wolfe] sum4: -4.57412e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 391.895
+
+[frank_wolfe] sum1: 4.35425
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 5.8623
+[frank_wolfe] sum4: -4.18554e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 391.087
+
+[frank_wolfe] sum1: 4.36584
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 5.09423
+[frank_wolfe] sum4: -9.76996e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 390.33
+
+[frank_wolfe] sum1: 4.37998
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 4.3801
+[frank_wolfe] sum4: 2.81997e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 389.63
+
+[frank_wolfe] sum1: 4.38012
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 3.63752
+[frank_wolfe] sum4: 8.88178e-14
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 388.888
+
+[frank_wolfe] sum1: 4.39354
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 3.04642
+[frank_wolfe] sum4: -8.88178e-13
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 388.31
+
+[frank_wolfe] sum1: 4.37684
+[frank_wolfe] sum2: 380.87
+[frank_wolfe] sum3: 2.66298
+[frank_wolfe] sum4: -5.88418e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 387.91
+
+[Blockwise]  second_subproblem_obj: -395.29
+[Overall] iter = 32, Overall Error: 4.3373
+[Overall] || w_1 - z || ^2 = 2.73536
+[Overall] || w_2 - z || ^2 = 0.0273536
+[frank_wolfe] sum1: 3.61687
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 256.305
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 638.879
+
+[frank_wolfe] sum1: 4.22991
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 111.746
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 494.933
+
+[frank_wolfe] sum1: 4.34848
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 65.7693
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 449.075
+
+[frank_wolfe] sum1: 4.3954
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 45.1067
+[frank_wolfe] sum4: 1.31006e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 428.459
+
+[frank_wolfe] sum1: 4.39816
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 32.7703
+[frank_wolfe] sum4: -6.21725e-13
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 416.126
+
+[frank_wolfe] sum1: 4.42424
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 24.8745
+[frank_wolfe] sum4: -2.55351e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 408.256
+
+[frank_wolfe] sum1: 4.416
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 19.9757
+[frank_wolfe] sum4: -2.9976e-13
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 403.349
+
+[frank_wolfe] sum1: 4.44666
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 16.9923
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 400.396
+
+[frank_wolfe] sum1: 4.46547
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 13.806
+[frank_wolfe] sum4: -1.84297e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 397.229
+
+[frank_wolfe] sum1: 4.47487
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 11.4462
+[frank_wolfe] sum4: -8.32667e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 394.878
+
+[frank_wolfe] sum1: 4.45041
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 9.56336
+[frank_wolfe] sum4: -1.0103e-12
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 392.971
+
+[frank_wolfe] sum1: 4.4278
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 8.40169
+[frank_wolfe] sum4: -6.32827e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 391.787
+
+[frank_wolfe] sum1: 4.41882
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 7.50365
+[frank_wolfe] sum4: -1.80966e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 390.88
+
+[frank_wolfe] sum1: 4.41617
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 6.67969
+[frank_wolfe] sum4: -4.86278e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 390.053
+
+[frank_wolfe] sum1: 4.37874
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 5.95428
+[frank_wolfe] sum4: -3.9968e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 389.29
+
+[frank_wolfe] sum1: 4.36013
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 5.14484
+[frank_wolfe] sum4: -1.15463e-12
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 388.462
+
+[frank_wolfe] sum1: 4.36894
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 4.35676
+[frank_wolfe] sum4: 2.79776e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 387.683
+
+[frank_wolfe] sum1: 4.33704
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 3.64196
+[frank_wolfe] sum4: 3.55271e-13
+[Frank-Wolfe] iteration: 17, first_subproblm_obj: 386.936
+
+[frank_wolfe] sum1: 4.37596
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 3.001
+[frank_wolfe] sum4: -1.25455e-12
+[Frank-Wolfe] iteration: 18, first_subproblm_obj: 386.334
+
+[frank_wolfe] sum1: 4.39095
+[frank_wolfe] sum2: 378.957
+[frank_wolfe] sum3: 2.63022
+[frank_wolfe] sum4: -4.996e-13
+[Frank-Wolfe] iteration: 19, first_subproblm_obj: 385.978
+
+[Blockwise]  second_subproblem_obj: -390.695
+[Overall] iter = 33, Overall Error: 4.31629
+[Overall] || w_1 - z || ^2 = 2.72022
+[Overall] || w_2 - z || ^2 = 0.0272022
+[frank_wolfe] sum1: 3.39371
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 255.779
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 0, first_subproblm_obj: 636.317
+
+[frank_wolfe] sum1: 4.19494
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 111.357
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 1, first_subproblm_obj: 492.696
+
+[frank_wolfe] sum1: 4.29817
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 65.293
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 2, first_subproblm_obj: 446.735
+
+[frank_wolfe] sum1: 4.32008
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 44.5846
+[frank_wolfe] sum4: 1.31006e-12
+[Frank-Wolfe] iteration: 3, first_subproblm_obj: 426.049
+
+[frank_wolfe] sum1: 4.46823
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 32.4575
+[frank_wolfe] sum4: -1.02141e-12
+[Frank-Wolfe] iteration: 4, first_subproblm_obj: 414.07
+
+[frank_wolfe] sum1: 4.46121
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 24.6665
+[frank_wolfe] sum4: -3.21965e-13
+[Frank-Wolfe] iteration: 5, first_subproblm_obj: 406.272
+
+[frank_wolfe] sum1: 4.39385
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 19.6829
+[frank_wolfe] sum4: -6.66134e-14
+[Frank-Wolfe] iteration: 6, first_subproblm_obj: 401.221
+
+[frank_wolfe] sum1: 4.43674
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 16.7802
+[frank_wolfe] sum4: 0
+[Frank-Wolfe] iteration: 7, first_subproblm_obj: 398.361
+
+[frank_wolfe] sum1: 4.47203
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 13.594
+[frank_wolfe] sum4: -1.80966e-12
+[Frank-Wolfe] iteration: 8, first_subproblm_obj: 395.21
+
+[frank_wolfe] sum1: 4.44085
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 11.4048
+[frank_wolfe] sum4: -6.77236e-13
+[Frank-Wolfe] iteration: 9, first_subproblm_obj: 392.99
+
+[frank_wolfe] sum1: 4.40423
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 9.49768
+[frank_wolfe] sum4: -1.21014e-12
+[Frank-Wolfe] iteration: 10, first_subproblm_obj: 391.046
+
+[frank_wolfe] sum1: 4.35895
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 8.34409
+[frank_wolfe] sum4: -7.77156e-13
+[Frank-Wolfe] iteration: 11, first_subproblm_obj: 389.847
+
+[frank_wolfe] sum1: 4.35106
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 7.40667
+[frank_wolfe] sum4: -1.82077e-12
+[Frank-Wolfe] iteration: 12, first_subproblm_obj: 388.902
+
+[frank_wolfe] sum1: 4.3758
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 6.6201
+[frank_wolfe] sum4: -4.78506e-12
+[Frank-Wolfe] iteration: 13, first_subproblm_obj: 388.14
+
+[frank_wolfe] sum1: 4.37298
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 5.86671
+[frank_wolfe] sum4: -4.06342e-12
+[Frank-Wolfe] iteration: 14, first_subproblm_obj: 387.384
+
+[frank_wolfe] sum1: 4.3737
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 5.10344
+[frank_wolfe] sum4: -7.88258e-13
+[Frank-Wolfe] iteration: 15, first_subproblm_obj: 386.621
+
+[frank_wolfe] sum1: 4.40151
+[frank_wolfe] sum2: 377.144
+[frank_wolfe] sum3: 4.32673
+[frank_wolfe] sum4: 2.9754e-12
+[Frank-Wolfe] iteration: 16, first_subproblm_obj: 385.873
+
