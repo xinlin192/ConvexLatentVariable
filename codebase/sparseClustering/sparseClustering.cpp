@@ -18,6 +18,8 @@ typedef double (* dist_func) (Instance*, Instance*, int);
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, double * r) {
 
     double ** temp = mat_init (N, N);
+    double ** diffone =mat_init (N, N);
+    mat_zeros (diffone, N, N);
     
     // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk)
     mat_zeros (temp, N, N);
@@ -26,7 +28,8 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
 
     // sum2 = y_1^T dot w_1
     mat_zeros (temp, N, N);
-    mat_tdot (yone, wone, temp, N, N);
+    mat_sub (wone, zone, diffone, N, N); // temp = w_1 - z_1
+    mat_tdot (yone, diffone, temp, N, N);
     double sum2 = mat_sum (temp, N, N);
 
     // sum3 = 0.5 * rho * || w_1 - z_1 ||^2
@@ -48,6 +51,7 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     cout << "[frank_wolfe] sum4: " << sum4 << endl;
 
     mat_free (temp, N, N);
+    mat_free (diffone, N, N);
     delete temp_vec;
 
     return sum1 + sum2 + sum3 + sum4;
@@ -112,12 +116,14 @@ bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<in
     return firstElem.second > secondElem.second;
 }
 
-double second_subproblm_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double lambda) {
+double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double lambda) {
 
     double ** temp = mat_init (N, N);
-    mat_zeros (temp, N, N);
+    double ** difftwo = mat_init (N, N);
+    mat_zeros (difftwo, N, N);
 
     // reg = 0.5 * sum_k max_n | w_nk | 
+    mat_zeros (temp, N, N);
     double * maxn = new double [N]; 
     for (int i = 0; i < N; i ++) { // Ian: need initial 
     	maxn[i] = -INF;
@@ -133,19 +139,27 @@ double second_subproblm_obj (double ** ytwo, double ** z, double ** wtwo, double
     for (int i = 0; i < N; i ++) {
         sumk = maxn[i];
     }
-    double reg = lambda * sumk; 
+    double group_lasso = lambda * sumk; 
 
-    // sum2 = y_2^T dot w_2
-    mat_tdot (ytwo, wtwo, temp, N, N);
+    // sum2 = y_2^T dot (w_2 - z)
+    mat_zeros (temp, N, N);
+    mat_sub (ytwo, z, difftwo, N, N);
+    mat_tdot (ytwo, difftwo, temp, N, N);
     double sum2 = mat_sum (temp, N, N);
 
     // sum3 = 0.5 * rho * || w_2 - z_2 ||^2
+    mat_zeros (temp, N, N);
     mat_sub (wtwo, z, temp, N, N);
     double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
 
     mat_free (temp, N, N);
 
-    return reg + sum2 + sum3;
+    // ouput values of each components
+    cout << "[Blockwise] group_lasso: " << group_lasso << endl; 
+    cout << "[Blockwise] sum2: " << sum2 << endl;
+    cout << "[Blockwise] sum3: " << sum3 << endl;
+
+    return group_lasso + sum2 + sum3;
 }
 
 void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double lambda, int N) {
@@ -168,6 +182,12 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
 
         // 2. sorting
         std::sort (alpha_vec.begin(), alpha_vec.end(), pairComparator);
+        /*
+        for (int i = 0; i < N; i ++) {
+            if (alpha_vec[i].second != 0)
+                cout << alpha_vec[i].second << endl;
+        }
+        */
 
         // 3. find mstar
         int mstar = 0; // number of elements support the sky
@@ -200,9 +220,10 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
     }
 
     // compute value of objective function
-    double penalty = second_subproblm_obj (ytwo, ztwo, wtwo, rho, N, lambda);
+    double penalty = second_subproblem_obj (ytwo, ztwo, wtwo, rho, N, lambda);
     // report the #iter and objective function
-    cout << "[Blockwise]  second_subproblem_obj: " << penalty << endl;
+    cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
+    cout << endl;
 
     // STEP THREE: recollect temporary variable - wbar
     mat_free (wbar, N, N);
@@ -301,6 +322,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     double ** yone = mat_init (N, N);
     double ** ytwo = mat_init (N, N);
     double ** z = mat_init (N, N);
+    double ** diffzero = mat_init (N, N);
     double ** diffone = mat_init (N, N);
     double ** difftwo = mat_init (N, N);
     mat_zeros (wone, N, N);
@@ -308,6 +330,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     mat_zeros (yone, N, N);
     mat_zeros (ytwo, N, N);
     mat_zeros (z, N, N);
+    mat_zeros (diffzero, N, N);
     mat_zeros (diffone, N, N);
     mat_zeros (difftwo, N, N);
     
@@ -322,6 +345,8 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N); // for w_1
         blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N);  // for w_2
+        mat_sub (wone, wtwo, diffzero, N, N);
+        double trace_wone_minus_wtwo = mat_norm2 (diffzero, N, N);
 
         // STEP TWO: update z by averaging w_1 and w_2
         mat_add (wone, wtwo, z, N, N);
@@ -334,15 +359,17 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
         mat_add (yone, diffone, yone, N, N);
 
         mat_sub (wtwo, z, difftwo, N, N);
-        double trace_wtwo_minus_z = mat_norm2 (diffone, N, N); 
+        double trace_wtwo_minus_z = mat_norm2 (difftwo, N, N); 
         mat_dot (alpha, difftwo, difftwo, N, N);
         mat_add (ytwo, difftwo, ytwo, N, N);
 
         // STEP FOUR: trace the objective function
         error = opt_objective (dist_mat, lambda, N, z);
         cout << "[Overall] iter = " << iter << ", Overall Error: " << error << endl;
+        cout << "[Overall] || w_1 - w_2 || ^2 = " << trace_wone_minus_wtwo << endl;
         cout << "[Overall] || w_1 - z || ^2 = " << trace_wone_minus_z << endl;
         cout << "[Overall] || w_2 - z || ^2 = " << trace_wtwo_minus_z << endl;
+        cout << endl;
 
         iter ++;
     }
