@@ -167,7 +167,7 @@ void mat_min_row (double ** src, double ** dest, int nRows, int nCols) {
     for (int i = 0; i < nRows; i ++) {
         int min_index = -1;
         double min_value = INF;
-        for (int j = 0; j < nCols; j ++) {
+        for (int j = i; j < nCols; j ++) {
             if (src[i][j] < min_value) {
                 min_index = j;
                 min_value = src[i][j];
@@ -190,3 +190,13 @@ double mat_norm2 (double ** src, int nRows, int nCols) {
 }
 
 // TODO: mat_write and mat_read
+
+void trim(double** mat, int R, int C){
+	
+	for(int i=0;i<R;i++){
+		for(int j=0;j<C;j++){
+			if( fabs(mat[i][j]) < 1e-5 )
+				mat[i][j] = 0.0;
+		}
+	}
+}

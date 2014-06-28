@@ -15,7 +15,9 @@
 
 typedef double (* dist_func) (Instance*, Instance*, int);
 
-double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, double * r) {
+const double r = 10000.0;
+
+double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
 
     double ** temp = mat_init (N, N);
     double ** diffone =mat_init (N, N);
@@ -40,11 +42,10 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
     double * temp_vec = new double [N];
     mat_sum_row (wone, temp_vec, N, N);
+    double dummy_penalty=0.0;
     for (int i = 0; i < N; i ++) {
-        temp_vec[i] = 1 - temp_vec[i];
+        dummy_penalty += r*(1 - temp_vec[i]);
     }
-
-    double sum4 = mat_dot (temp_vec, r, N);
     /*cout << "[frank_wolfe] sum1 (loss): " << sum1 << endl;
     cout << "[frank_wolfe] sum2 (linear): " << sum2 << endl;
     cout << "[frank_wolfe] sum3 (quadratic): " << sum3 << endl;
@@ -54,7 +55,7 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     mat_free (diffone, N, N);
     delete temp_vec;
 
-    return sum1 + sum2 + sum3 + sum4;
+    return sum1 + sum2 + sum3 + dummy_penalty;
 }
 
 void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
@@ -62,19 +63,15 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     // This can be computed by using corner point. 
     double ** gradient = mat_init (N, N);
     double ** s = mat_init (N, N);
-    double * r = new double [N];
     mat_zeros (gradient, N, N);
     mat_zeros (s, N, N);
-    for (int i = 0; i < N; i ++) {
-        r[i] = 100;
-    }
     
-    int K = 10, k = 0; // iteration number
+    int K = 1000, k = 0; // iteration number
     double gamma; // step size
     double penalty;
     double ** tempS = mat_init(N, N);
     mat_zeros (tempS, N, N);
-    //mat_zeros (wone, N, N);
+    mat_zeros (wone, N, N);
     while (k < K) {
         // STEP ONE: find s minimize <s, grad f>
         for (int i = 0; i < N; i++) {
@@ -93,7 +90,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         mat_add (wone, tempS, wone, N, N);
 	
         // compute value of objective function
-        penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N, r);
+        penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
         // report the #iter and objective function
         //cout << "[Frank-Wolfe] iteration: " << k << ", first_subproblm_obj: " << penalty << endl;
         //cout << endl;
@@ -107,8 +104,9 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 
 double sign (int input) {
 
-    if (input >= 0) return 1.0;
-    else return -1.0;
+    if (input > 0) return 1.0;
+    else if ( input < 0 ) return -1.0;
+    else return 0.0;
 
 }
 
@@ -129,11 +127,11 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     for (int i = 0; i < N; i ++) { // Ian: need initial 
     	maxn[i] = -INF;
     }
-
+    
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
-            if (z[i][j] > maxn[j])
-                maxn[j] = z[i][j];
+            if (wtwo[i][j] > maxn[j])
+                maxn[j] = wtwo[i][j];
         }
     }
     double sumk = 0.0;
@@ -154,12 +152,13 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
 
     mat_free (temp, N, N);
-
+    
     // ouput values of each components
     /*cout << "[Blockwise] reg (group_lasso): " << group_lasso << endl; 
     cout << "[Blockwise] sum2 (linear): " << sum2 << endl;
     cout << "[Blockwise] sum3 (quadratic): " << sum3 << endl;*/
-
+	
+    //cerr << group_lasso << ", " << sum2 << ", " << sum3 << endl;
     return group_lasso + sum2 + sum3;
 }
 
@@ -178,10 +177,10 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
         vector< pair<int,double> > alpha_vec;
         for (int i = 0; i < N; i ++) {
             double value = wbar[i][j];
-		if( wbar[i][j] < 0 ){
-			cerr << "wbar" << endl;
+		/*if( wbar[i][j] < 0 ){
+			cerr << "wbar[" << i << "][" << j << "]" << endl;
 			exit(0);
-		}
+		}*/
             alpha_vec.push_back (make_pair(i, abs(value)));
         }
 
@@ -220,14 +219,14 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
             // harness vector of pair
             double value = wbar[i][j];
             if ( abs(value) >= separator ) {
-                wtwo[i][j] = sign(wbar[i][j]) * max_term;
+                wtwo[i][j] = max_term;
             } else {
                 // its ranking is above m*, directly inherit the wbar
-                wtwo[i][j] = wbar[i][j];
+                wtwo[i][j] = max(wbar[i][j],0.0);
             }
         }
     }
-
+    
     // compute value of objective function
     double penalty = second_subproblem_obj (ytwo, ztwo, wtwo, rho, N, lambda);
     // report the #iter and objective function
@@ -274,8 +273,20 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
             normSum += z[i][j] * dist_mat[i][j];
         }
     }
-    double loss = 0.5 * normSum;
-    cout << "loss=" << loss << endl;
+    
+    // sum4 = r dot (1 - sum_k w_nk) -> dummy
+    /*double * temp_vec = new double [N];
+    mat_sum_row (z, temp_vec, N, N);
+    double dummy_penalty=0.0;
+    double avg=0.0;
+    for (int i = 0; i < N; i ++) {
+	avg += temp_vec[i];
+        dummy_penalty += r* max(1 - temp_vec[i],0.0) ;
+    }
+    cerr << "avg=" << avg/N << endl;*/
+    
+    double loss = 0.5 * (normSum/*+dummy_penalty*/);
+    //cout << "loss=" << loss << endl;
     // STEP TWO: compute group-lasso regularization
     double * maxn = new double [N]; 
     for (int i = 0;i < N; i ++) { // Ian: need initial 
@@ -284,8 +295,8 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
 
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
-            if (z[i][j] > maxn[j])
-                maxn[j] = z[i][j];
+            if ( fabs(z[i][j]) > maxn[j])
+                maxn[j] = fabs(z[i][j]);
         }
     }
     double sumk = 0.0;
@@ -293,8 +304,9 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
         sumk += maxn[i];
     }
     double reg = lambda * sumk; 
-    cout << "reg=" << reg << endl;
+    //cout << "reg=" << reg << endl;
 
+    //delete[] temp_vec;
     return loss + reg;
 }
 
@@ -320,10 +332,10 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, dist_
 void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, double ** W) {
 
     // parameters 
-    double alpha = 0.1;
+    double alpha = 0.5;
     double rho = 1.0;
     dist_func df = L2norm;
-
+    
     // iterative optimization 
     double error = INF;
     double ** wone = mat_init (N, N);
@@ -356,28 +368,68 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
         blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N);  // for w_2
         mat_sub (wone, wtwo, diffzero, N, N);
         double trace_wone_minus_wtwo = mat_norm2 (diffzero, N, N);
+	/*for(int i=0;i<N;i++){
+		for(int j=0;j<N;j++){
+			if(wone[i][j] < z[i][j] ){
+				cerr << wone[i][j] << ", " << z[i][j] << endl;
+			}
+		}
+	}*/
         // STEP TWO: update z by averaging w_1 and w_2
         mat_add (wone, wtwo, z, N, N);
         mat_dot (0.5, z, z, N, N);
+        
+	/*for(int i=0;i<N;i++)
+		cerr << difftwo[4][i] << ", ";
+	cerr << endl;*/
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
-        mat_sub (wone, z, diffone, N, N);
-        double trace_wone_minus_z = mat_norm2 (diffone, N, N); 
+	double * temp_vec = new double [N];
+	mat_sum_row (z, temp_vec, N, N);
+	double dummy_penalty=0.0;
+	for (int i = 0; i < N; i ++) {
+		/*if( temp_vec[i] > 1 ){
+			cerr << "tmp_vec[i]=" << temp_vec[i] << endl;
+			mat_sum_row(ytwo, temp_vec, N, N);
+			cerr << "y1_sum[i]=" << temp_vec[i] << endl;
+			mat_sum_row(wtwo, temp_vec, N, N);
+			cerr << "w2_sum[i]=" << temp_vec[i] << endl;
+			exit(0);
+		}*/
+		dummy_penalty += r*( 1 - temp_vec[i] );
+	}
+	delete[] temp_vec;
+        
+	mat_sub (wone, z, diffone, N, N);
+        //double trace_wone_minus_z = mat_norm2 (diffone, N, N); 
         mat_dot (alpha, diffone, diffone, N, N);
         mat_add (yone, diffone, yone, N, N);
-	
-        mat_sub (wtwo, z, difftwo, N, N);
-        double trace_wtwo_minus_z = mat_norm2 (difftwo, N, N); 
+
+	mat_sub (wtwo, z, difftwo, N, N);
+        //double trace_wtwo_minus_z = mat_norm2 (difftwo, N, N); 
         mat_dot (alpha, difftwo, difftwo, N, N);
         mat_add (ytwo, difftwo, ytwo, N, N);
-        // STEP FOUR: trace the objective function
-        error = opt_objective (dist_mat, lambda, N, z);
-        cout << "[Overall] iter = " << iter << ", Overall Error: " << error << endl;
+	
+	// STEP FOUR: trace the objective function
+        if(iter%10==0){
+        	error = opt_objective (dist_mat, lambda, N, z);
+		cout << "[Overall] iter = " << iter << ", Overall Error: " << error << endl;
+	}
+	/*cout << "w1" << endl;
+        error = opt_objective (dist_mat, lambda, N, wone);
+	cout << "w2" << endl;
+        error = opt_objective (dist_mat, lambda, N, wtwo);*/
         /*cout << "[Overall] || w_1 - w_2 || ^2 = " << trace_wone_minus_wtwo << endl;
         cout << "[Overall] || w_1 - z || ^2 = " << trace_wone_minus_z << endl;
         cout << "[Overall] || w_2 - z || ^2 = " << trace_wtwo_minus_z << endl;
         cout << endl;*/
+	
 
         iter ++;
+    }
+    for(int i=0;i<N;i++){
+	    for(int j=0;j<N;j++)
+	    	cerr << z[i][j] << ", ";
+    	    cerr << endl;
     }
     // STEP FIVE: memory recollection
     mat_free (wone, N, N);
