@@ -15,7 +15,7 @@
 
 typedef double (* dist_func) (Instance*, Instance*, int);
 
-const double r = 10000.0;
+const double r = 100.0;
 
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
 
@@ -275,7 +275,7 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
     }
     
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
-    /*double * temp_vec = new double [N];
+    double * temp_vec = new double [N];
     mat_sum_row (z, temp_vec, N, N);
     double dummy_penalty=0.0;
     double avg=0.0;
@@ -283,9 +283,8 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
 	avg += temp_vec[i];
         dummy_penalty += r* max(1 - temp_vec[i],0.0) ;
     }
-    cerr << "avg=" << avg/N << endl;*/
     
-    double loss = 0.5 * (normSum/*+dummy_penalty*/);
+    double loss = 0.5 * (normSum+dummy_penalty);
     //cout << "loss=" << loss << endl;
     // STEP TWO: compute group-lasso regularization
     double * maxn = new double [N]; 
@@ -360,7 +359,7 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     compute_dist_mat (data, dist_mat, N, df, true); 
 
     int iter = 0; // Ian: usually we count up (instead of count down)
-    int max_iter = 3000;
+    int max_iter = 300;
 
     while ( iter < max_iter ) { // stopping criteria
         // STEP ONE: resolve w_1 and w_2
