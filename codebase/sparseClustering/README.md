@@ -19,6 +19,7 @@ DEVELOPMENT LOGS
    belonging of instances is fuzzier than our expectation. (**why???**) Furthermore, we
    trace the number of cluster centroids varies with regard to the **Overall iteration number** as follows:  
 
+
     iter  nCentroid
     100   about 60
     200   about 40
