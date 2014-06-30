@@ -13,11 +13,36 @@
 
 #include "sparseClustering.h"
 
+/* algorithmic options */
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
-typedef double (* dist_func) (Instance*, Instance*, int);
+/* dumping options */
+// #define FRANK_WOLFE_DUMP
+// #define EXACT_LINE_SEARCH_DUMP
+// #define BLOCKWISE_DUMP
+#define NCENTROID_DUMP
 
+
+typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 100.0;
+
+int get_nCentroids (double ** W, int nRows, int nCols) {
+
+    int nCentroids = 0;
+    double * sum_belonging = new double [nCols];
+    for (int i = 0; i < nCols; i ++) {
+        sum_belonging[i] = 0.0;
+    }
+
+    mat_sum_col (W, sum_belonging, nRows, nCols);
+    for (int i = 0; i < nCols; i ++ ) {
+        if (sum_belonging[i] > 1) { 
+            nCentroids ++;
+        }
+    }
+
+    return nCentroids;
+}
 
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
 
@@ -48,15 +73,12 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     for (int i = 0; i < N; i ++) {
         dummy_penalty += r*(1 - temp_vec[i]);
     }
-    /*cout << "[frank_wolfe] sum1 (loss): " << sum1 << endl;
-      cout << "[frank_wolfe] sum2 (linear): " << sum2 << endl;
-      cout << "[frank_wolfe] sum3 (quadratic): " << sum3 << endl;
-      cout << "[frank_wolfe] sum4 (dummy): " << sum4 << endl;*/
-
     double total = sum1+sum2+sum3+dummy_penalty;
+#ifdef FRANK_WOLFE_DUMP
     cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
          << sum1 << ", " << sum2 << ", " << sum3 << ", " << dummy_penalty << ", " << total
          <<  ")" << endl;
+#endif
 
     mat_free (temp, N, N);
     mat_free (diffone, N, N);
@@ -74,13 +96,14 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     mat_zeros (s, N, N);
 
 #ifndef EXACT_LINE_SEARCH
-    
+    int K = 300;
 #else
+    int K = 100;
     double ** w_minus_s = mat_init (N, N);
     double ** w_minus_z = mat_init (N, N);
 #endif
 
-    int K = 1000, k = 0; // iteration number
+    int k = 0; // iteration number
     double gamma; // step size
     double penalty;
     double ** tempS = mat_init (N, N);
@@ -132,9 +155,11 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // gamma should be within interval [0,1]
         gamma = (sum1 + sum2 + sum3) / sum4;
 
+#ifdef EXACT_LINE_SEARCH_DUMP
         cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
              << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
              << ")" << endl;
+#endif
         }
 #endif
         // update the w^(k+1)
@@ -146,7 +171,9 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // compute value of objective function
         penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
         // report the #iter and objective function
+        /*
         cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
+        */
 
         k ++;
     }
@@ -206,13 +233,11 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     mat_free (temp, N, N);
 
     // ouput values of each components
-    /*cout << "[Blockwise] reg (group_lasso): " << group_lasso << endl; 
-      cout << "[Blockwise] sum2 (linear): " << sum2 << endl;
-      cout << "[Blockwise] sum3 (quadratic): " << sum3 << endl;*/
-
+#ifdef BLOCKWISE_DUMP
     cout << "[Blockwise] (group_lasso, linear, quadratic) = ("
         << group_lasso << ", " << sum2 << ", " << sum3
         << ")" << endl;
+#endif
 
     //cerr << group_lasso << ", " << sum2 << ", " << sum3 << endl;
     return group_lasso + sum2 + sum3;
@@ -478,6 +503,11 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
           cout << "[Overall] || w_2 - z || ^2 = " << trace_wtwo_minus_z << endl;
           cout << endl;*/
 
+#ifdef NCENTROID_DUMP
+        // get current number of employed centroid
+        int nCentroids = get_nCentroids (z, N, N);
+        cout << "iter: " << iter << ", nCentroids: " << nCentroids << endl;
+#endif
 
         iter ++;
     }
@@ -540,5 +570,5 @@ int main (int argc, char ** argv) {
     mat_zeros (W, N, N);
     sparseClustering (data, D, N, lambda, W);
     // Output results
-
+    
 }
