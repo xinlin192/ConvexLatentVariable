@@ -12,9 +12,7 @@
 ################################################################*/
 
 #include "sparseClustering.h"
-
-/* algorithmic options */
-#define EXACT_LINE_SEARCH  // comment this to use inexact search
+/* algorithmic options */ #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
@@ -618,9 +616,9 @@ int main (int argc, char ** argv) {
     // Output results
     ofstream fout("result");
 
-    for (int i = 0; i < N; i ++){
-        fout << "i =" << i+1 <<"\t";
-        for(int j = 0; j < N; j ++){
+    for (int i = 0; i < N; i ++) {
+        fout << "i =" << i+1 << "\t";  // sample id
+        for(int j = 0; j < N; j ++) {
             if( fabs(W[i][j]) > 3e-1 )
                 fout << j+1 << ":" << W[i][j] << ", ";
         }
