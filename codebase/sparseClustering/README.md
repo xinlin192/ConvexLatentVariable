@@ -49,4 +49,10 @@ DEVELOPMENT LOGS
 3. [June 30, 2014 by Jimmy] We refine the mechanism of **managing variable
    dumping works** with macros definition at the very beginning of code script.
 
-4. 
+4. [July 1, 2014 by Jimmy] Fix up a bug in frank-wolfe algorithm. It resolves
+   the problem of glic's dumping double free and corruption problem. It is
+   technically math problem. Previously, we did not consider the case of 
+   **|| w - z || ^ 2 = 0 **, which causes the crash in frank-wolfe algorithm.
+   This condition occurs as convergence indicator of frank-wolfe algorithm,
+   saying that there is no further growth for **w** as w^(k+1) = w^(k) + gamma
+   \* (s - w^(k)). 

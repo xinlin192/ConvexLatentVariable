@@ -82,13 +82,16 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
 
     mat_free (temp, N, N);
     mat_free (diffone, N, N);
-    delete temp_vec;
+    delete [] temp_vec;
 
     return total;
 }
 
 void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
 
+    bool is_global_optimal_reached = false;
+
+    // cout << "within frank_wolf" << endl;
     // This can be computed by using corner point. 
     double ** gradient = mat_init (N, N);
     double ** s = mat_init (N, N);
@@ -98,7 +101,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 #ifndef EXACT_LINE_SEARCH
     int K = 300;
 #else
-    int K = 10;
+    int K = 20;
     double ** w_minus_s = mat_init (N, N);
     double ** w_minus_z = mat_init (N, N);
 #endif
@@ -108,7 +111,9 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     double penalty;
     double ** tempS = mat_init (N, N);
     mat_zeros (wone, N, N);
-    while (k < K) {
+    double sum1, sum2, sum3, sum4;
+    // cout << "within frank_wolf: start iteration" << endl;
+    while (k < K && !is_global_optimal_reached) {
         // STEP ONE: find s minimize <s, grad f>
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -117,17 +122,24 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         }
         mat_min_row (gradient, s, N, N);
 
+#ifdef FRANK_WOLFE_DUMP
+        cout << "mat_norm2 (wone, N, N): " <<  mat_norm2 (wone, N, N) << endl;
+        cout << "mat_norm2 (yone, N, N): " <<  mat_norm2 (yone, N, N) << endl;
+        cout << "mat_norm2 (gradient, N, N): " <<  mat_norm2 (gradient, N, N) << endl;
+        cout << "mat_sum (s, N, N): " <<  mat_sum (s, N, N) << endl;
+#endif
+        // cout << "within frank_wolf: step one finished" << endl;
+
         // STEP TWO: apply exact or inexact line search to find solution
 #ifndef EXACT_LINE_SEARCH
         // Here we use inexact line search
         gamma = 2.0 / (k + 2.0);
-
 #else
+        // Here we use exact line search 
         if (k == 0) {
             gamma = 1.0;
         } else {
-        // Here we use exact line search 
-        // gamma* = (sum1 + sum2 + sum3) / sum4
+        // gamma* = (sum1 + sum2 + sum3) / sum4, where
         // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
         // sum2 = sum_n sum_k (w - s)_nk
         // sum3 = - rho * sum_n sum_k  (w - z) 
@@ -138,28 +150,44 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         mat_sub (wone, s, w_minus_s, N, N);
         mat_sub (wone, zone, w_minus_z, N, N);
 
-        mat_times (w_minus_s, dist_mat, tempS, N, N);
-        double sum1 = 0.5 * mat_sum (tempS, N, N);
+        // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
+        // since incremental term = w + gamma (s - w), and whatever gamma is,
+        // w^(k+1) = w^(k), this would be equivalent to gamma = 0
+        if (mat_norm2(w_minus_s, N, N) == 0) {
+            gamma = 0;
+            is_global_optimal_reached = true;
+        } else {
+            mat_times (w_minus_s, dist_mat, tempS, N, N);
+            sum1 = 0.5 * mat_sum (tempS, N, N);
 
-        mat_zeros (tempS, N, N);
-        mat_tdot (yone, w_minus_s, tempS, N, N);
-        double sum2 = mat_sum (tempS, N, N);
+            mat_zeros (tempS, N, N);
+            mat_tdot (yone, w_minus_s, tempS, N, N);
+            sum2 = mat_sum (tempS, N, N);
 
-        mat_zeros (tempS, N, N);
-        mat_tdot (w_minus_z, w_minus_s, tempS, N, N);
-        double sum3 = rho * mat_sum (tempS, N, N);
+            mat_zeros (tempS, N, N);
+            mat_tdot (w_minus_z, w_minus_s, tempS, N, N);
+            sum3 = rho * mat_sum (tempS, N, N);
 
-        mat_zeros (tempS, N, N);
-        double sum4 = rho * mat_norm2 (w_minus_s, N, N);
+            mat_zeros (tempS, N, N);
+            sum4 = rho * mat_norm2 (w_minus_s, N, N);
 
-        // gamma should be within interval [0,1]
-        gamma = (sum1 + sum2 + sum3) / sum4;
+            // gamma should be within interval [0,1]
+            gamma = (sum1 + sum2 + sum3) / sum4;
+
+#ifdef FRANK_WOLFE_DUMP
+            cout << "mat_norm2 (w_minus_s, N, N)" << mat_norm2 (w_minus_s, N, N) << endl;
+            cout << "mat_norm2 (w_minus_z, N, N)" << mat_norm2 (w_minus_z, N, N) << endl;
+#endif
+            // cout << "within frank_wolf: step two finished" << endl;
 
 #ifdef EXACT_LINE_SEARCH_DUMP
-        /*cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
-             << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
-             << ")" << endl;*/
+            cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
+                << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
+                << ")"
+                << endl;
 #endif
+        }
+
         }
 #endif
         // update the w^(k+1)
@@ -170,16 +198,22 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 
         // compute value of objective function
         penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
+    // cout << "within frank_wolf: step three finished" << endl;
         // report the #iter and objective function
         /*
         cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
         */
 
         k ++;
+    // cout << "within frank_wolf: next iteration" << endl;
     }
+    // cout << "within frank_wolf: to free gradient" << endl;
     mat_free (gradient, N, N);
+    // cout << "within frank_wolf: to free temps" << endl;
     mat_free (tempS, N, N);
+    // cout << "within frank_wolf: to free s " << endl;
     mat_free (s, N, N);
+    // cout << "end frank_wolf: finished! " << endl;
 }
 
 double sign (int input) {
@@ -366,7 +400,8 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
     }
 
     double loss = 0.5 * (normSum+dummy_penalty);
-    //cout << "loss=" << loss << endl;
+    // cout << "loss=" << loss << endl;
+
     // STEP TWO: compute group-lasso regularization
     double * maxn = new double [N]; 
     for (int i = 0;i < N; i ++) { // Ian: need initial 
@@ -386,7 +421,7 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
     double reg = lambda * sumk; 
     //cout << "reg=" << reg << endl;
 
-    //delete[] temp_vec;
+    delete[] temp_vec;
     return loss + reg;
 }
 
@@ -440,28 +475,39 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
     compute_dist_mat (data, dist_mat, N, df, true); 
 
     int iter = 0; // Ian: usually we count up (instead of count down)
-    int max_iter = 120;
+    int max_iter = 300;
 
     while ( iter < max_iter ) { // stopping criteria
+
+#ifdef SPARSE_CLUSTERING_DUMP
+        cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe"  << endl;
+#endif
+
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N); // for w_1
+#ifdef SPARSE_CLUSTERING_DUMP
+        cout << "frank_wolfe done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
+        cout << "it is place 1 iteration #" << iter << ", going to get into blockwise_closed_form"<< endl;
+#endif
+
         blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N);  // for w_2
+#ifdef SPARSE_CLUSTERING_DUMP
+        cout << "it is place 3 iteration #" << iter << endl;
+        cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
+#endif
+        /* // test
         mat_sub (wone, wtwo, diffzero, N, N);
         double trace_wone_minus_wtwo = mat_norm2 (diffzero, N, N);
-        /*for(int i=0;i<N;i++){
-          for(int j=0;j<N;j++){
-          if(wone[i][j] < z[i][j] ){
-          cerr << wone[i][j] << ", " << z[i][j] << endl;
-          }
-          }
-          }*/
+        */
+        
         // STEP TWO: update z by averaging w_1 and w_2
         mat_add (wone, wtwo, z, N, N);
         mat_dot (0.5, z, z, N, N);
+#ifdef SPARSE_CLUSTERING_DUMP
+        cout << "it is place 4 iteration #" << iter << endl;
+        cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
+#endif
 
-        /*for(int i=0;i<N;i++)
-          cerr << difftwo[4][i] << ", ";
-          cerr << endl;*/
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         double * temp_vec = new double [N];
         mat_sum_row (z, temp_vec, N, N);
@@ -490,9 +536,18 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
         mat_add (ytwo, difftwo, ytwo, N, N);
 
         // STEP FOUR: trace the objective function
-        if(iter%1==0){
+        if (iter % 1 == 0) {
             error = opt_objective (dist_mat, lambda, N, z);
-            cout << "[Overall] iter = " << iter << ", Overall Error: " << error << endl;
+            // get current number of employed centroid
+#ifdef NCENTROID_DUMP
+            int nCentroids = get_nCentroids (z, N, N);
+#endif
+            cout << "[Overall] iter = " << iter 
+                 << ", Overall Error: " << error 
+#ifdef NCENTROID_DUMP
+                 << ", nCentroids: " << nCentroids
+#endif
+                 << endl;
         }
         /*cout << "w1" << endl;
           error = opt_objective (dist_mat, lambda, N, wone);
@@ -502,12 +557,6 @@ void sparseClustering ( vector<Instance*>& data, int D, int N, double lambda, do
           cout << "[Overall] || w_1 - z || ^2 = " << trace_wone_minus_z << endl;
           cout << "[Overall] || w_2 - z || ^2 = " << trace_wtwo_minus_z << endl;
           cout << endl;*/
-
-#ifdef NCENTROID_DUMP
-        // get current number of employed centroid
-        int nCentroids = get_nCentroids (z, N, N);
-        cout << "iter: " << iter << ", nCentroids: " << nCentroids << endl;
-#endif
 
         iter ++;
     }
@@ -558,7 +607,7 @@ int main (int argc, char ** argv) {
     cerr << "N = " << N << endl; // # instances
     cerr << "lambda = " << lambda << endl;
     int seed = time(NULL);
-    srand(seed);
+    srand (seed);
     cerr << "seed = " << seed << endl;
 
     // Run sparse convex clustering
@@ -568,12 +617,13 @@ int main (int argc, char ** argv) {
     sparseClustering (data, D, N, lambda, W);
     // Output results
     ofstream fout("result");
-    for(int i=0;i<N;i++){
-	fout << "i=" << i+1 <<"\t";
-        for(int j=0;j<N;j++){
+
+    for (int i = 0; i < N; i ++){
+        fout << "i =" << i+1 <<"\t";
+        for(int j = 0; j < N; j ++){
             if( fabs(W[i][j]) > 3e-1 )
-		fout << j+1 << ":" << W[i][j] << ", ";
-	}
+                fout << j+1 << ":" << W[i][j] << ", ";
+        }
         fout << endl;
     }
 }

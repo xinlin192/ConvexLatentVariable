@@ -33,7 +33,7 @@ void mat_zeros (double ** src, int nRows, int nCols) {
 void mat_free (double ** src, int nRows, int nCols) {
 
     for (int i = 0; i < nRows; i ++) {
-        delete src[i];
+        delete [] src[i];
     }
 
 }
