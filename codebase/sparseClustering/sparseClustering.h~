@@ -224,6 +224,7 @@ void readFixDim(char* fname, vector<Instance*>& data, int D){
 		}
 		
 		data.push_back(ins);
+		cerr << id << endl;
 		id++;
 	}
 	fin.close();
