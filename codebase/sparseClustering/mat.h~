@@ -109,6 +109,7 @@ void mat_sum_col(double ** src, double * dest, int nRows, int nCols) {
             dest[j] += src[i][j];
         }
     }
+
 }
 
 double mat_dot (double * vec1, double * vec2, int N) {
