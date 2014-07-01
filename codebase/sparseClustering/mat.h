@@ -33,7 +33,7 @@ void mat_zeros (double ** src, int nRows, int nCols) {
 void mat_free (double ** src, int nRows, int nCols) {
 
     for (int i = 0; i < nRows; i ++) {
-        delete src[i];
+        delete [] src[i];
     }
 
 }
@@ -101,7 +101,7 @@ void mat_sum_row (double ** src, double * dest, int nRows, int nCols) {
 
 void mat_sum_col(double ** src, double * dest, int nRows, int nCols) {
     
-    for(int j=0;j<nCols;j++)
+    for(int j = 0;j < nCols; j ++)
 	    dest[j] = 0.0;
 
     for (int i = 0; i < nRows; i ++) {
@@ -203,12 +203,13 @@ double mat_norm2 (double ** src, int nRows, int nCols) {
 
 // TODO: mat_write and mat_read
 
-void trim(double** mat, int R, int C){
+void trim (double** mat, int R, int C) {
 	
-	for(int i=0;i<R;i++){
-		for(int j=0;j<C;j++){
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
 			if( fabs(mat[i][j]) < 1e-5 )
 				mat[i][j] = 0.0;
 		}
 	}
+
 }
