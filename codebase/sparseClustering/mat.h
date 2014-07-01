@@ -99,6 +99,17 @@ void mat_sum_row (double ** src, double * dest, int nRows, int nCols) {
 
 }
 
+void mat_sum_col (double ** src, double * dest, int nRows, int nCols) {
+
+    for (int i = 0; i < nCols; i ++) {
+        double sum = 0.0;
+        for (int j = 0; j < nRows; j ++) {
+            sum += src[j][i];
+        }
+        dest[i] = sum;
+    }
+}
+
 double mat_dot (double * vec1, double * vec2, int N) {
 
     double sum = 0.0;
@@ -191,12 +202,13 @@ double mat_norm2 (double ** src, int nRows, int nCols) {
 
 // TODO: mat_write and mat_read
 
-void trim(double** mat, int R, int C){
+void trim (double** mat, int R, int C) {
 	
-	for(int i=0;i<R;i++){
-		for(int j=0;j<C;j++){
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
 			if( fabs(mat[i][j]) < 1e-5 )
 				mat[i][j] = 0.0;
 		}
 	}
+
 }
