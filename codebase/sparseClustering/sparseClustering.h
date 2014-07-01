@@ -220,7 +220,7 @@ void readFixDim(char* fname, vector<Instance*>& data, int D){
 		Instance* ins = new Instance(id++);
 	       	for(int j=0;j<D;j++){
 			fin >> val;
-			ins->fea.push_back(make_pair(j,val));
+			ins->fea.push_back(make_pair(j+1,val));
 		}
 		
 		data.push_back(ins);
