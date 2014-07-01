@@ -32,6 +32,7 @@ int get_nCentroids (double ** W, int nRows, int nCols) {
     }
 
     mat_sum_col (W, sum_belonging, nRows, nCols);
+
     for (int i = 0; i < nCols; i ++ ) {
         if (sum_belonging[i] > 1) { 
             nCentroids ++;
@@ -39,6 +40,26 @@ int get_nCentroids (double ** W, int nRows, int nCols) {
     }
 
     return nCentroids;
+}
+
+vector<int> get_all_centroids(double ** W, int nRows, int nCols) {
+
+    std::vector<int> centroids;
+
+    double * sum_belonging = new double [nCols];
+    for (int i = 0; i < nCols; i ++) {
+        sum_belonging[i] = 0.0;
+    }
+
+    mat_sum_col (W, sum_belonging, nRows, nCols);
+
+    for (int i = 0; i < nCols; i ++ ) {
+        if (sum_belonging[i] > 1) { 
+            centroids.push_back(i);
+        }
+    }
+    
+    return centroids;
 }
 
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
@@ -98,7 +119,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 #ifndef EXACT_LINE_SEARCH
     int K = 300;
 #else
-    int K = 20;
+    int K = 50;
     double ** w_minus_s = mat_init (N, N);
     double ** w_minus_z = mat_init (N, N);
 #endif
@@ -617,22 +638,25 @@ int main (int argc, char ** argv) {
     // Output results
     ofstream fout("result");
 
+    // get all centroids
+    vector<int> centroids = get_all_centroids(W, N, N); // contains index of all centroids
+    
+    int nCentroids = centroids.size();
     for (int i = 0; i < N; i ++) {
-        fout << "i = " << i+1 << ", dim0 = " << data[i]->fea[0].second << ", ";  // sample id
-        for(int j = 0; j < N; j ++) {
+        // output identification and its belonging
+        fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
+        for (int j = 0; j < N; j ++) {
             if( fabs(W[i][j]) > 3e-1 ) {
-                fout << "centroid: " << j+1 << " with " << W[i][j] << ", "
-                    << "distance: " << dist_mat[i][j];
+                fout << "centroid: " << j+1 << "(" << W[i][j] << "),\t";
             }
         }
-        if (i+1 == 130)
-            fout << " vs  " << dist_mat[i][128];
-        if (i+1 == 59) {
-            fout << " vs " << dist_mat[i][57];
+        // output distance of one sample to each centroid 
+        fout << "dist_centroids: (";
+        for (int j = 0; j < nCentroids - 1; j ++) {
+            fout << dist_mat[i][ centroids[j] ] << ", ";
         }
-        if (i+1 == 84) {
-            fout << " vs " << dist_mat[i][128];
-        }
+        fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
+
         fout << endl;
     }
 }
