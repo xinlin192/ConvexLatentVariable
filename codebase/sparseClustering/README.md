@@ -60,3 +60,6 @@ DEVELOPMENT LOGS
 5. [July 1, 2014 by Jimmy] the found optima would vary according to the
    placement ordering of the instances in dataset. I swap the order of a few
    data instances and find that **the converged objective varies!**.  
+
+6. [July 1, 2014 by Jimmy] fix up a minor problem about L2norm. previously,
+   have mix up N and D as dimensionality of instances. 

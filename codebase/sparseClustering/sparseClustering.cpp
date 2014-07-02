@@ -11,7 +11,10 @@
 ################################################################*/
 
 #include "sparseClustering.h"
-/* algorithmic options */ #define EXACT_LINE_SEARCH  // comment this to use inexact search
+#include <cassert>
+
+/* algorithmic options */ 
+#define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
@@ -370,27 +373,26 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
     mat_free (wbar, N, N);
 }
 
-double L2norm (Instance * ins1, Instance * ins2, int N) {
+double L2norm (Instance * ins1, Instance * ins2, int D) {
     // TODO: 
     //   1. refine by using hash table to restore each instance
     //   2. avoid the apply memory for vec1, vec2, make it direct computation
+    assert (ins1->fea.size() == D);
+    assert (ins2->fea.size() == D);
 
-    double * vec1 = new double [N];
-    double * vec2 = new double [N];
+    double * diff = new double [D];
 
-    for (int i = 0; i < ins1->fea.size(); i ++) {
-        vec1[ ins1->fea[i].first ] = ins1->fea[i].second;
+    for (int i = 0; i < D; i ++) {
+        diff[ ins1->fea[i].first ] = ins1->fea[i].second;
     }
-    for (int i = 0; i < ins2->fea.size(); i ++) {
-        vec2[ ins2->fea[i].first ] = ins2->fea[i].second;
+    for (int i = 0; i < D; i ++) {
+        diff[ ins2->fea[i].first ] -= ins2->fea[i].second;
     }
 
     double norm = 0.0;
-    for (int i = 0; i < N; i ++) {
-        norm += (vec1[i] - vec2[i]) * (vec1[i] - vec2[i]);
+    for (int i = 0; i < D; i ++) {
+        norm += diff[i] * diff[i];
     }
-
-    delete vec1, vec2;
 
     return norm;
 }
@@ -414,7 +416,7 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
     double avg=0.0;
     for (int i = 0; i < N; i ++) {
         avg += temp_vec[i];
-        dummy_penalty += r* max(1 - temp_vec[i],0.0) ;
+        dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
     }
 
     double loss = 0.5 * (normSum+dummy_penalty);
@@ -444,15 +446,19 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
 }
 
 /* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, dist_func df, bool isSym) {
+void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
 
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
 
             if (j >= i || !isSym) { // invoke dist_func
+                if (j == i) {
+                    dist_mat[i][j] = 0;
+                    continue;
+                }
                 Instance * xi = data[i];
                 Instance * muj = data[j];
-                dist_mat[i][j] = df (xi, muj, N);
+                dist_mat[i][j] = df (xi, muj, D);
             } else { // by symmetry 
                 dist_mat[i][j] = dist_mat[j][i];
             }
@@ -620,6 +626,7 @@ int main (int argc, char ** argv) {
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
     cerr << "lambda = " << lambda << endl;
+    cerr << "r = " << r << endl;
     int seed = time(NULL);
     srand (seed);
     cerr << "seed = " << seed << endl;
@@ -628,7 +635,7 @@ int main (int argc, char ** argv) {
     dist_func df = L2norm;
     double ** dist_mat = mat_init (N, N);
     mat_zeros (dist_mat, N, N);
-    compute_dist_mat (data, dist_mat, N, df, true); 
+    compute_dist_mat (data, dist_mat, N, D, df, true); 
 
     // Run sparse convex clustering
     map<int, Cluster*> clusters; 
