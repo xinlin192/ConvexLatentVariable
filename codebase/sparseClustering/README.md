@@ -22,6 +22,17 @@ Inventory
     sparseClustering.h      header file for algorithmic script
     sparseClustering.cpp    codebase as our algorithmic script
 
+TODOs
+---------------
+1. Fix bugs about result inconsistency according to the input data shuffling.
+   Possible solution involves in tracing the computational process.
+
+2. The case of indistinguishable cluster assignment (0.50 to one cluster and
+   \0.5 to the other one)
+
+3. Compare and improve current performance. 
+
+4. Apply similar approach to other model.
 
 DEVELOPMENT LOGS
 ---------------
@@ -63,3 +74,4 @@ DEVELOPMENT LOGS
 
 6. [July 1, 2014 by Jimmy] fix up a minor problem about L2norm. previously,
    have mix up N and D as dimensionality of instances. 
+
