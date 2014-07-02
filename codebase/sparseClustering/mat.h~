@@ -65,6 +65,7 @@ void mat_times (double ** src1, double ** src2, double ** dest, int nRows, int n
             dest[i][j] = src1[i][j]* src2[i][j];
         }
     }
+
 }
 
 void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols) {
@@ -140,6 +141,7 @@ void mat_copy (double ** src, double ** dest, int nRows, int nCols) {
             dest[i][j] = src[i][j];
         }
     }
+
 }
 
 double mat_sum (double ** src, int nRows, int nCols) {
