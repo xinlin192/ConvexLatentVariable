@@ -40,14 +40,14 @@ class Instance{
 	private:
 	double _x_sq;
 };
-
+/*
 class Cluster{
 
 	public:
 	int d;
 	vector<double>  mu;
 	double mu_sq;
-
+	
 	Cluster(int _d){
 		
 		d = _d;
@@ -76,9 +76,11 @@ class Cluster{
 		
 		return  ins->x_sq() + mu_sq - 2*dot(mu,ins->fea);
 	}
-};
 
-/*
+
+};*/
+
+
 class Cluster{
 
 	public:
@@ -135,7 +137,7 @@ class Cluster{
 		vsub(sum,ins->fea);
 		mu_sq = -1;
 	}
-};*/
+};
 
 class ScoreComparator{
 	

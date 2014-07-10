@@ -1,2 +1,2 @@
 all:
-	g++ -O3 sparseKmeans.cpp -o cvMeans
+	g++ -O3 kmeans.cpp -o kmeans

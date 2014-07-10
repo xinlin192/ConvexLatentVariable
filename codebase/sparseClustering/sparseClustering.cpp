@@ -25,24 +25,22 @@
 
 
 typedef double (* dist_func) (Instance*, Instance*, int); 
-const double r = 100.0;
+const double r = 1000.0;
 
 int get_nCentroids (double ** W, int nRows, int nCols) {
 
     int nCentroids = 0;
     double * sum_belonging = new double [nCols];
-    for (int i = 0; i < nCols; i ++) {
-        sum_belonging[i] = 0.0;
-    }
 
-    mat_sum_col (W, sum_belonging, nRows, nCols);
+    mat_max_col (W, sum_belonging, nRows, nCols);
 
     for (int i = 0; i < nCols; i ++ ) {
         if (sum_belonging[i] > 3e-1) { 
             nCentroids ++;
         }
     }
-
+    
+    delete[] sum_belonging;
     return nCentroids;
 }
 
@@ -55,10 +53,10 @@ vector<int> get_all_centroids(double ** W, int nRows, int nCols) {
         sum_belonging[i] = 0.0;
     }
 
-    mat_sum_col (W, sum_belonging, nRows, nCols);
+    mat_max_col (W, sum_belonging, nRows, nCols);
 
     for (int i = 0; i < nCols; i ++ ) {
-        if (sum_belonging[i] >= 3e-1) {
+        if (sum_belonging[i] > 3e-1) {
             centroids.push_back(i);
         }
     }
@@ -123,7 +121,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 #ifndef EXACT_LINE_SEARCH
     int K = 300;
 #else
-    int K = 10;
+    int K = 2;
     double ** w_minus_s = mat_init (N, N);
     double ** w_minus_z = mat_init (N, N);
 #endif
@@ -133,7 +131,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     double penalty;
     double ** tempS = mat_init (N, N);
 
-    // mat_zeros (wone, N, N);
+    //mat_zeros (wone, N, N);
     double sum1, sum2, sum3, sum4;
     // cout << "within frank_wolf: start iteration" << endl;
     while (k < K && !is_global_optimal_reached) {
@@ -409,14 +407,18 @@ double L2norm (Instance * ins1, Instance * ins2, int D) {
     }
 	
     delete[] diff;
-
     return norm;
 }
 
 double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
     // N is number of entities in "data", and z is N by N.
     // z is current valid solution (average of w_1 and w_2)
-
+    
+    double sum = 0.0;
+    for(int i=0;i<N;i++)
+	    for(int j=0;j<N;j++)
+		    sum += z[i][j];
+    cerr << "sum=" << sum/N << endl;
     // STEP ONE: compute loss function
     double normSum = 0.0;
     for (int i = 0; i < N; i ++) {
@@ -424,19 +426,19 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
             normSum += z[i][j] * dist_mat[i][j];
         }
     }
-
+    
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
-    /*double * temp_vec = new double [N];
+    double * temp_vec = new double [N];
     mat_sum_row (z, temp_vec, N, N);
-    double dummy_penalty=0.0;
+    //double dummy_penalty=0.0;
     double avg=0.0;
     for (int i = 0; i < N; i ++) {
         avg += temp_vec[i];
-        dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
-    }*/
-
+        //dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
+    }
+    
     double loss = 0.5 * (normSum/*+dummy_penalty*/);
-    // cout << "loss=" << loss << endl;
+    cout << "loss=" << loss << endl;
 
     // STEP TWO: compute group-lasso regularization
     double * maxn = new double [N]; 
@@ -455,7 +457,7 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
         sumk += maxn[i];
     }
     double reg = lambda * sumk; 
-    //cout << "reg=" << reg << endl;
+    cout << "reg=" << reg << endl;
 
     //delete[] temp_vec;
     return loss + reg;
@@ -523,7 +525,7 @@ void sparseClustering ( double ** dist_mat, int D, int N, double lambda, double 
 
 
     int iter = 0; // Ian: usually we count up (instead of count down)
-    int max_iter = 1000;
+    int max_iter = 2000;
 
     while ( iter < max_iter ) { // stopping criteria
 
@@ -567,7 +569,7 @@ void sparseClustering ( double ** dist_mat, int D, int N, double lambda, double 
         mat_add (ytwo, difftwo, ytwo, N, N);
 
         // STEP FOUR: trace the objective function
-        if (iter % 1 == 0) {
+        if (iter % 10 == 0) {
             error = opt_objective (dist_mat, lambda, N, z);
             // get current number of employed centroid
 #ifdef NCENTROID_DUMP
@@ -678,7 +680,7 @@ int main (int argc, char ** argv) {
         fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
         for (int j = 0; j < N; j ++) {
             if( fabs(W[i][j]) > 3e-1 ) {
-                fout << "centroid: " << j+1 << "(" << W[i][j] << "),\t";
+                fout << j+1 << "(" << W[i][j] << "),\t";
             }
         }
 	fout << endl;

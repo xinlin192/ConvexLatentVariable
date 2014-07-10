@@ -20,11 +20,38 @@ void read2D(char* fname, vector<Instance*>& data){
 	fin.close();
 }
 
-void write2D(char* fname, int* labels, vector<Instance*>& data){
+
+void readFixDim(char* fname, vector<Instance*>& data, int D){
+	
+	ifstream fin(fname);
+	int tmp;
+	double val;
+	int id=0;
+	while(!fin.eof()){
+		
+		fin >> tmp;
+		if( fin.eof() )break;
+		
+		Instance* ins = new Instance(id++);
+	       	for(int j=0;j<D;j++){
+			fin >> val;
+			ins->fea.push_back(make_pair(j+1,val));
+		}
+		
+		data.push_back(ins);
+		id++;
+	}
+	fin.close();
+}
+
+void writeResult(char* fname, int* labels, vector<Instance*>& data){
 
 	ofstream fout(fname);
 	for(int i=0;i<data.size();i++){
-		fout << labels[i] << " " << data[i]->fea[0].second << " " << data[i]->fea[1].second << endl;
+		fout << labels[i] << " ";
+	       	for(int j=0;j<data[i]->fea.size();j++)
+			fout << data[i]->fea[j].second << " ";
+		fout << endl;
 	}
 	fout.close();
 }
@@ -131,17 +158,14 @@ void kmeans_iter( vector<Instance*>& data, int* z, map<int,Cluster*>& clusters )
 
 void kmeans( vector<Instance*>& data, int D, int K,   int* z, map<int,Cluster*>& clusters ){
 	
-
 	// Random Initialize K clusters ~ uni( [0,1]^D )
 	clusters.clear();
 	for(int k=0;k<K;k++){
 		Cluster* cluster = new Cluster(D); //with 0 being bias
 		clusters.insert( make_pair(k, cluster) );
 	}
-
 	for(int i=0;i<data.size();i++)
 		z[i] = -1;
-
 	kmeans_iter( data, z, clusters);
 }
 
@@ -156,7 +180,7 @@ int main(int argc, char** argv){
 	int K = atoi(argv[2]);
 
 	vector<Instance*> data;
-	read2D( dataFile, data );
+	readFixDim( dataFile, data, 13 );
 	
 	int max_dim = -1;
 	for(int i=0;i<data.size();i++){
@@ -181,7 +205,7 @@ int main(int argc, char** argv){
 	
 	//output results
 	writeModel("model.kmeans", clusters);
-	write2D("result.kmeans", z, data );
+	writeResult("result.kmeans", z, data );
 
 	return 0;
 }
