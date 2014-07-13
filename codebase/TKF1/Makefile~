@@ -1,4 +1,4 @@
-flag= -O3 -fopenmp
+flag= -O3 -w
 
 all:
 	g++ $(flag)  TKF1.cpp -o TKF1

@@ -40,11 +40,11 @@ int main(int argc, char** argv){
 	}else{
 		outputFile = "output";
 	}
-
+	
 	char tmp_str[1000];
-	sprintf(tmp_str,"%s.%s",outputFile,".algin");
+	sprintf(tmp_str,"%s.%s",outputFile,"align");
 	ofstream fout_align(tmp_str);
-	sprintf(tmp_str,"%s.%s",outputFile,".noAlgin");
+	sprintf(tmp_str,"%s.%s",outputFile,"noAlgin");
 	ofstream fout_noAlign(tmp_str);
 	fout_align << N << endl ;
 	fout_noAlign << N << endl ;
