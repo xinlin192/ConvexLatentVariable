@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const bool print_align = 1;
+const bool print_align = 0;
 
 int main(int argc, char** argv){
 	
@@ -15,8 +15,8 @@ int main(int argc, char** argv){
 		exit(0);
 	}
 	
-	//srand(time(NULL));
-	srand(1);
+	srand(time(NULL));
+	//srand(1);
 	int N = atoi(argv[1]);
 	int L = atoi(argv[2]);
 	double sub_rate = atof(argv[3]);

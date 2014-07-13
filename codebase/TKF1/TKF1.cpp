@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const bool print_align = 0;
+const bool print_align = 1;
 
 int main(int argc, char** argv){
 	

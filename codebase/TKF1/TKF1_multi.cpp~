@@ -1,17 +1,17 @@
 #include<fstream>
 #include<vector>
 #include<iostream>
+#include<cstring>
 #include"TKF1.h"
 
 using namespace std;
 
-const bool print_align = 0;
 
 int main(int argc, char** argv){
 	
 	if( argc < 5 ){
 		
-		cerr << "./TKF1 [N] [length] [sub_rate] [del_rate] (output)" << endl;
+		cerr << "./TKF1_multi [N] [length] [sub_rate] [del_rate] (output)" << endl;
 		exit(0);
 	}
 	
@@ -40,23 +40,29 @@ int main(int argc, char** argv){
 	}else{
 		outputFile = "output";
 	}
+
+	char tmp_str[1000];
+	sprintf(tmp_str,"%s.%s",outputFile,".algin");
+	ofstream fout_align(tmp_str);
+	sprintf(tmp_str,"%s.%s",outputFile,".noAlgin");
+	ofstream fout_noAlign(tmp_str);
+	fout_align << N << endl ;
+	fout_noAlign << N << endl ;
 	
-	ofstream fout(outputFile);
-	fout << N << endl ;
 	//ancestral sequence (geometric with p = ins_rate/del_rate)
 	vector<char> anc_seq;
 	for(int i=0;i<L;i++)
 		anc_seq.push_back(sample_char());
-	
+
 	for(int n=0;n<N;n++){
-			
+
 		//descent sequence 
 		vector<vector<char> > des_seq;
 		//insert before 1st match/delete
 		des_seq.push_back(vector<char>());
 		while(rand_u01() < beta)
 			des_seq[0].push_back(sample_char());
-		
+
 		for(int i=0;i<anc_seq.size();i++){
 			des_seq.push_back(vector<char>());
 			//evolution for the i-th taxon of ancestral seq
@@ -69,59 +75,60 @@ int main(int argc, char** argv){
 				des_seq[i+1].push_back('-');
 				has_insert_prob = gamma;
 			}
-			
+
 			if( rand_u01() < has_insert_prob ){
-				
+
 				des_seq[i+1].push_back(sample_char());
 				while(rand_u01() < beta)
 					des_seq[i+1].push_back(sample_char());
 			}
 		}
-		
-		if( print_align ){
-			//print on buffer
-			vector<char> line1;
-			vector<char> line2;
-			//initial insertion
-			for(int j=0;j<des_seq[0].size();j++){
+
+		//Print Aligned
+
+		//print on buffer
+		vector<char> line1;
+		vector<char> line2;
+		//initial insertion
+		for(int j=0;j<des_seq[0].size();j++){
+			line1.push_back(' ');
+			line2.push_back(des_seq[0][j]);
+		}
+		line1.push_back('|');
+		line2.push_back('|');
+
+		//for each ancestral taxon
+		for(int i=0;i<anc_seq.size();i++){
+			line1.push_back(anc_seq[i]);
+			line2.push_back(des_seq[i+1][0]);
+			for(int j=1;j<des_seq[i+1].size();j++){
 				line1.push_back(' ');
-				line2.push_back(des_seq[0][j]);
+				line2.push_back(des_seq[i+1][j]);
 			}
 			line1.push_back('|');
 			line2.push_back('|');
-
-			//for each ancestral taxon
-			for(int i=0;i<anc_seq.size();i++){
-				line1.push_back(anc_seq[i]);
-				line2.push_back(des_seq[i+1][0]);
-				for(int j=1;j<des_seq[i+1].size();j++){
-					line1.push_back(' ');
-					line2.push_back(des_seq[i+1][j]);
-				}
-				line1.push_back('|');
-				line2.push_back('|');
-			}
-
-			//pinrt to file
-			for(int i=0;i<line1.size();i++)
-				fout << line1[i];
-			fout << endl;
-			for(int i=0;i<line2.size();i++)
-				fout << line2[i];
-			fout << endl;
-		}else{
-
-			//directly print to file
-			for(int i=0;i<anc_seq.size();i++)
-				fout << anc_seq[i] ;
-			fout << endl;
-			for(int i=0;i<des_seq.size();i++){
-				for(int j=0;j<des_seq[i].size();j++)
-					if(des_seq[i][j] != '-')
-						fout << des_seq[i][j];
-			}
-			fout << endl;
 		}
+
+		//pinrt to file
+		for(int i=0;i<line1.size();i++)
+			fout_align << line1[i];
+		fout_align << endl;
+		for(int i=0;i<line2.size();i++)
+			fout_align << line2[i];
+		fout_align << endl;
+
+		//Print Non-Aligned
+
+		for(int i=0;i<anc_seq.size();i++)
+			fout_noAlign << anc_seq[i] ;
+		fout_noAlign << endl;
+		for(int i=0;i<des_seq.size();i++){
+			for(int j=0;j<des_seq[i].size();j++)
+				if(des_seq[i][j] != '-')
+					fout_noAlign << des_seq[i][j];
+		}
+		fout_noAlign << endl;
 	}
-	fout.close();
+	fout_align.close();
+	fout_noAlign.close();
 }
