@@ -22,11 +22,16 @@ Inventory
 
 TODOs
 ---------------
-1. 
+1. identify clearly definition of loss and three regularization terms
+2. design data structure for z, w 1-4 follows the same form. (sparse or
+   regular)
+3.  
 
 DEVELOPMENT LOGS
 ---------------
 
 1. [Mon Jul 21 22:19:58 2014 by Jimmy] repository setup
 
-2. [Mon Jul 21 22:20:22 2014 by Jimmy] 
+2. [Mon Jul 21 22:20:22 2014 by Jimmy] modifies HDP function and frank\_wolfe
+
+3. 

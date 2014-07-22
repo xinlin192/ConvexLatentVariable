@@ -25,12 +25,28 @@
 #define NTOPIC_DUMP
 
 
+double sign (int input) {
+
+    if (input > 0) return 1.0;
+    else if ( input < 0 ) return -1.0;
+    else return 0.0;
+
+}
+
+bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
+    // sort pairs by second element with *decreasing order*
+    return firstElem.second > secondElem.second;
+}
+
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 1000.0;
 
 int get_nCentroids (double ** W, int nRows, int nCols) {
 
-    int nCentroids = 0;
+    int nTopics = 0;
+
+/*{{{*/
+    /*
     double * sum_belonging = new double [nCols];
 
     mat_max_col (W, sum_belonging, nRows, nCols);
@@ -42,13 +58,18 @@ int get_nCentroids (double ** W, int nRows, int nCols) {
     }
     
     delete[] sum_belonging;
-    return nCentroids;
+    */
+/*}}}*/
+
+    return nTopics;
 }
 
 vector<int> get_all_centroids(double ** W, int nRows, int nCols) {
 
-    std::vector<int> centroids;
+    std::vector<int> topics;
 
+/*{{{*/
+    /*
     double * sum_belonging = new double [nCols];
     for (int i = 0; i < nCols; i ++) {
         sum_belonging[i] = 0.0;
@@ -63,7 +84,10 @@ vector<int> get_all_centroids(double ** W, int nRows, int nCols) {
     }
     
     delete[] sum_belonging;
-    return centroids;
+    */
+/*}}}*/
+
+    return topics;
 }
 
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
@@ -109,7 +133,7 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     return total;
 }
 
-void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
+void frank_wolfe_solver (double ** MATCH_MAT, double ** Y_1, double ** Z_1, double ** w_1, double RHO, int N) {
 
     bool is_global_optimal_reached = false;
 
@@ -132,23 +156,22 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
     double penalty;
     double ** tempS = mat_init (N, N);
 
-    //mat_zeros (wone, N, N);
+    //mat_zeros (w_1, N, N);
     double sum1, sum2, sum3, sum4;
     // cout << "within frank_wolfe_solver: start iteration" << endl;
     while (k < K && !is_global_optimal_reached) {
         // STEP ONE: find s minimize <s, grad f>
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                gradient[i][j] =  0.5*dist_mat[i][j] + yone[i][j] + rho * (wone[i][j] - zone[i][j]) ;  //- r[i];
+                gradient[i][j] =  0.5*MATCH_MAT[i][j] + Y_1[i][j] + RHO * (w_1[i][j] - Z_1[i][j]) ;  //- r[i];
             }
         }
         mat_zeros (s, N, N);
         mat_min_row (gradient, s, N, N);
 
-
 #ifdef FRANK_WOLFE_DUMP
-        cout << "mat_norm2 (wone, N, N): " <<  mat_norm2 (wone, N, N) << endl;
-        cout << "mat_norm2 (yone, N, N): " <<  mat_norm2 (yone, N, N) << endl;
+        cout << "mat_norm2 (w_1, N, N): " <<  mat_norm2 (w_1, N, N) << endl;
+        cout << "mat_norm2 (Y_1, N, N): " <<  mat_norm2 (Y_1, N, N) << endl;
         cout << "mat_norm2 (gradient, N, N): " <<  mat_norm2 (gradient, N, N) << endl;
         cout << "mat_sum (s, N, N): " <<  mat_sum (s, N, N) << endl;
 #endif
@@ -166,13 +189,13 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
         // gamma* = (sum1 + sum2 + sum3) / sum4, where
         // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
         // sum2 = sum_n sum_k (w - s)_nk
-        // sum3 = - rho * sum_n sum_k  (w - z) 
-        // sum4 = sum_n sum_k rho * (s - w)
+        // sum3 = - RHO * sum_n sum_k  (w - z) 
+        // sum4 = sum_n sum_k RHO * (s - w)
         mat_zeros (tempS, N, N);
         mat_zeros (w_minus_s, N, N);
         mat_zeros (w_minus_z, N, N);
-        mat_sub (wone, s, w_minus_s, N, N);
-        mat_sub (wone, zone, w_minus_z, N, N);
+        mat_sub (w_1, s, w_minus_s, N, N);
+        mat_sub (w_1, Z_1, w_minus_z, N, N);
 
         // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
         // since incremental term = w + gamma (s - w), and whatever gamma is,
@@ -185,15 +208,15 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
             sum1 = 0.5 * mat_sum (tempS, N, N);
 
             mat_zeros (tempS, N, N);
-            mat_tdot (yone, w_minus_s, tempS, N, N);
+            mat_tdot (Y_1, w_minus_s, tempS, N, N);
             sum2 = mat_sum (tempS, N, N);
 
             mat_zeros (tempS, N, N);
             mat_tdot (w_minus_z, w_minus_s, tempS, N, N);
-            sum3 = rho * mat_sum (tempS, N, N);
+            sum3 = RHO * mat_sum (tempS, N, N);
 
             mat_zeros (tempS, N, N);
-            sum4 = rho * mat_norm2 (w_minus_s, N, N);
+            sum4 = RHO * mat_norm2 (w_minus_s, N, N);
 
             // gamma should be within interval [0,1]
             gamma = (sum1 + sum2 + sum3) / sum4;
@@ -217,11 +240,11 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
         // update the w^(k+1)
         mat_zeros (tempS, N, N);
         mat_dot (gamma, s, tempS, N, N);
-        mat_dot (1.0-gamma, wone, wone, N, N);
-        mat_add (wone, tempS, wone, N, N);
+        mat_dot (1.0-gamma, w_1, w_1, N, N);
+        mat_add (w_1, tempS, w_1, N, N);
 
         // compute value of objective function
-        penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
+        penalty = first_subproblm_obj (dist_mat, Y_1, Z_1, w_1, RHO, N);
     // cout << "within frank_wolfe_solver: step three finished" << endl;
         // report the #iter and objective function
         /*
@@ -240,18 +263,6 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
     // cout << "end frank_wolfe_solver: finished! " << endl;
 }
 
-double sign (int input) {
-
-    if (input > 0) return 1.0;
-    else if ( input < 0 ) return -1.0;
-    else return 0.0;
-
-}
-
-bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
-    // sort pairs by second element with decreasing order
-    return firstElem.second > secondElem.second;
-}
 
 double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double lambda) {
 
@@ -376,6 +387,10 @@ void group_lasso_solver (double ** ytwo, double ** ztwo, double ** wtwo, double 
     mat_free (wbar, N, N);
 }
 
+/* TODO: 
+    1. clarify the definition of new loss
+    2. extend opt_objective to three regularizers (data structure dependent) 
+*/
 double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
     // N is number of entities in "data", and z is N by N.
     // z is current valid solution (average of w_1 and w_2)
@@ -385,6 +400,7 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
 	    for(int j=0;j<N;j++)
 		    sum += z[i][j];
     cerr << "sum=" << sum/N << endl;
+
     // STEP ONE: compute loss function
     double normSum = 0.0;
     for (int i = 0; i < N; i ++) {
@@ -444,7 +460,7 @@ void compute_match_mat (vector<Instance*>& data, double ** dist_mat, int N, int 
 
 }
 
-void sparseClustering ( double ** dist_mat, int D, int N, vector<double> LAMBDAs, double ** W) {
+void HDP ( double ** dist_mat, int D, int N, vector<double> LAMBDAs, double ** W) {
 
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size == 2);
@@ -602,26 +618,27 @@ void sparseClustering ( double ** dist_mat, int D, int N, vector<double> LAMBDAs
 // entry main function
 int main (int argc, char ** argv) {
 
-    // exception control: illustrate the usage if get input of wrong format
+    // EXCEPTION control: illustrate the usage if get input of wrong format
     if (argc < 3) {
         cerr << "Usage: HDP [dataFile] [lambda_document] [lambda_topic] [lambda_block]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
     }
 
-    // parse arguments
+    // PARSE arguments
     char * dataFile = argv[1];
-    double lambda_document = atof(argv[2]);
-    double lambda_topic = atof(argv[3]);
-    double lambda_block = atof(argv[4]);
+    vector<double> LAMBDAs (3, 0.0);
+    LAMBDAs[0] = atof(argv[2]); // lambda_document
+    LAMBDAs[1] = atof(argv[3]); // lambda_topic
+    LAMBDAs[2] = atof(argv[4]); // lambda_block
 
-    // read in data
+    // READ in data
     vector<Instance*> data;
     //read2D (dataFile, data);  
     // NOTE: need to change the number once switch to a new dataset
     readFixDim (dataFile, data, 13);
 
-    // explore the data 
+    // EDA: explore the data 
     int dimensions = -1;
     int N = data.size(); // data size
     for (int i = 0; i < N; i++) {
@@ -631,12 +648,12 @@ int main (int argc, char ** argv) {
             dimensions = f->at(last_index).first;
         }
     }
-
     int D = dimensions;
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
     cerr << "lambda = " << lambda << endl;
     cerr << "r = " << r << endl;
+
     int seed = time(NULL);
     srand (seed);
     cerr << "seed = " << seed << endl;
@@ -648,11 +665,13 @@ int main (int argc, char ** argv) {
     // Run sparse convex clustering
     double ** W = mat_init (N, N);
     mat_zeros (W, N, N);
-    sparseClustering (dist_mat, D, N, lambda, W);
+    HDP (dist_mat, D, N, lambda, W);
+
     // Output results
     ofstream fout("result");
 
     // get all topics
+    /*{{{*/
     /*
     vector<int> centroids = get_all_centroids(W, N, N); // contains index of all centroids
     
@@ -674,7 +693,7 @@ int main (int argc, char ** argv) {
             fout << dist_mat[i][ centroids[j] ] << ", ";
         }
         fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
-
         fout << endl;*/
+/*}}}*/
     }
 }
