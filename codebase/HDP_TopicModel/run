@@ -13,6 +13,6 @@ lambda_set[0]=""
 
 for x in $(seq -4 4)
 do
-    ./sparseClustering $dataset 1e$x > $dataset_result_dir/"lambda_1e$x.log"
+    ./sparseHDP $dataset 1e$x > $dataset_result_dir/"lambda_1e$x.log"
 done
 
