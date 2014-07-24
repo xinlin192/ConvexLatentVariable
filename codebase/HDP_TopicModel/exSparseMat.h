@@ -187,16 +187,25 @@ esmat_fdot (Esmat A, Esmat B) {
     return result;
 }
 
-void esmat_sum_row (double ** src, double * dest, int nRows, int nCols) {
+void esmat_sum_row (Esmat A, Esmat dest) {
+
+    int sizeA = A.val.size();
+
+    dest.nRows = A.nRows;
+    dest.nCols = 1;
+    dest.val.clear();
+
+    vector<double> temp = new vector<double> (A.nRows, 0.0);
     
-    for (int i = 0; i < nRows; i ++) {
-        double sum = 0.0;
-        for (int j = 0; j < nCols; j ++) {
-            sum += src[i][j];
-        }
-        dest[i] = sum;
+    for (int i = 0; i < sizeA; i ++) {
+        temp[dest.val[i].first % A.nRows] += dest.val[i].second;
     }
 
+    for (int j = 0; j < A.nRows; j ++) { 
+        dest.val.push_back(make_pair(j, temp[j]));
+    }
+
+    delete temp;
 }
 
 void mat_sum_col(double ** src, double * dest, int nRows, int nCols) {
