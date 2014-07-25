@@ -291,7 +291,7 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
 
     // sum2 = y_2^T dot (w_2 - z) -> linear
     mat_zeros (temp, N, N);
-    mat_sub (ytwo, z, difftwo, N, N);
+    mat_sub (wtwo, z, difftwo, N, N);
     mat_tdot (ytwo, difftwo, temp, N, N);
     double sum2 = mat_sum (temp, N, N);
 
