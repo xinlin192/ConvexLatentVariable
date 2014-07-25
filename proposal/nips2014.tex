@@ -71,6 +71,8 @@ Address \\
 \newcommand{\wn}{\mathbf{w}_n}
 \newcommand{\wone}{\mathbf{w}_1}
 \newcommand{\wtwo}{\mathbf{w}_2}
+\newcommand{\wthree}{\mathbf{w}_3}
+\newcommand{\wfour}{\mathbf{w}_4}
 \newcommand{\w}{\mathbf{w}}
 \newcommand{\wbar}{\overline{\w}}
 \newcommand{\wopt}{\mathbf{w^{*}}}
@@ -80,9 +82,12 @@ Address \\
 \newcommand{\xn}{\mathbf{x}_n}
 \newcommand{\muk}{\boldsymbol{\mu}_k}
 \newcommand{\maxn}{ \underset{n}{\text{max}} }
+\newcommand{\maxk}{ \underset{k}{\text{max}} }
 
 \newcommand{\yone}{\mathbf{y}_1}
 \newcommand{\ytwo}{\mathbf{y}_2}
+\newcommand{\ythree}{\mathbf{y}_3}
+\newcommand{\yfour}{\mathbf{y}_4}
 \newcommand{\z}{\mathbf{z}}
 \newcommand{\quadraterm}[1]{\frac{\rho}{2}\LTwoNorm{\w_{#1}-\z}}
 \newcommand{\dualterm}[1]{\mathbf{y}_{#1}^{T}(\w_{#1}-\z)}
@@ -222,29 +227,6 @@ Repeat
 Until Convergence.
 
 \subsection{Resolve first subproblem: Frank-Wolf Algorithm} 
-\subsubsection{Single-variable case}
-In the context of only one input instance, the optimization problem can be written as
-\begin{align}
-   \minimize{w}
-   \hs & \frac{1}{2} w \cdot d^2 + y \cdot w +   % clustering loss
-   \frac{\rho}{2} ||w - z||^2 \\
-   \subjectto
-   \hs & 0 \leq  w \leq 1
-\end{align}
-Note that the distance $d$ above should be zero. We can further rewrite above
-optimization task as 
-\begin{align}
-   \minimize{w}
-   \hs & \frac{\rho}{2} w^2 + (- \rho  z + y + \frac{1}{2} d^2) w + z^2 \\
-   \subjectto
-   \hs & 0 \leq  w \leq 1
-\end{align}
-As we can see the critical point of objective function is 
-\begin{align}
-    -\frac{- \rho  z + y + \frac{1}{2}d^2}{\rho} 
-    = z - \frac{1}{\rho} y - \frac{d^2}{2\rho}
-\end{align}
-
 
 \subsection{Resolve second subproblem: Blockwise Coordinate Descent Procedures} 
 According to Blockwise Coordinate Descent Procedures (Han Liu.), the way to
@@ -268,6 +250,123 @@ solution $\wopt$ is given as follows:
 where $\ms = \argmax{m} \frac{1}{m} \big(\sum_{i'}^{m} |\wopt^{(k_{i'})}| -
 \lambda \big)$.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Application on Topic Model}
+\newcommand{\lambdag}{\lambda_g}
+\newcommand{\lambdal}{\lambda_l}
+\newcommand{\lambdab}{\lambda_b}
+
+
+\subsection{Problem Formulation}
+In this topic model, there are four main semantics supposed to be captured.
+
+First key point is that all words in any document should be related to one
+topic. This can be regarded as resources (words) given out to all receivers
+(topics). And intuitively, this term support the value of components within
+$w$. Formally, this is represented by equality constraints.
+
+Secondly, too many hidden topics are supposed to be penalized. Intuitively,
+this objective aimed at reducing total number of topics. Formally, one
+regularization term is used as follows: 
+\begin{align}
+   \lambdag \sumk \maxn |\wnk| 
+\end{align}
+
+Thirdly, too many topics involved by each document should be penalized.
+However, the situation of no topics to explain one document is
+non-existent since we enforce one constraint that all words must be related to
+certain topics with total explanation.  Hence, this objective intuitively
+aimed at reducing topic distribution within one document. To capture this
+semanticcs, we use another regularizer:
+\begin{align}
+\lambdal \sumn \maxk |\wnk|
+\end{align}
+
+Fourthly, too many vocabularies involved by each topic ought to be penalized.
+This would increase the number of hidden topics within this model. It can be
+intuitively seen as an support of topics number or cause of matrix extension
+of $w$. One extra regularizer is employed:
+\begin{align}
+\lambdab \sumk \sum_v \max |\wnk^{(v)}|
+\end{align}
+To acquire small penalty from the last regularization, all documents that are
+related to certain topic should be attributed to a narrow set of vocabularies. 
+
+\subsection{Objectives}
+\begin{align}
+   \minimize{w}
+   \hs & \lambdag \sumk \maxn |\wnk| 
+        + \lambdal \sumn \maxk |\wnk| 
+        + \lambdab \sumk \sum_v \max |\wnk^{(v)}| \\
+   \subjectto
+   \hs & \forall n,\ k,\ 0 \leq  \wnk \leq 1 \\
+    \hs & \forall n,\ \sumk \wnk = 1
+\end{align}
+
+ \subsection{Optimization Decomposition} \label{nseparate}
+
+The first optimization task:
+  \begin{align}
+   \minimize{\wone}
+   \hs & r \cdot \big| 1 - \sumk \wnk \big|   % dummy loss
+   + \mutw{1} + \quadraterm{1} \\
+   \subjectto
+   \hs & \forall n,\ \sumk \wnk \leq 1 \\
+   \hs & \forall n,\ k,\ \wnk \geq 0
+ \end{align}
+ where $r$ is a arbitrary value to enforce the resource to be fully
+ distributed. Note that this subproblem can be solved by Frank-Wolf Algorithm. 
+
+ The second optimization task:
+ \begin{align} \label{second}
+   \minimize{\wtwo}
+   \hs & \lambdag \sumk \maxn |\wnk|  % group-lasso
+   + \mutw{2} + \quadraterm{2} 
+ \end{align}
+
+  The third optimization task:
+ \begin{align} \label{second}
+   \minimize{\wthree}
+   \hs & \lambdal \sumn \maxk |\wnk|  % group-lasso
+   + \mutw{3} + \quadraterm{3} 
+ \end{align}
+
+   The fourth optimization task:
+ \begin{align} \label{second}
+   \minimize{\wfour}
+   \hs &  \lambdab \sumk \sum_v \max |\wnk^{(v)}|  % group-lasso
+   + \mutw{4} + \quadraterm{4} 
+ \end{align}
+
+ The closed-form solution of 2-4 subproblems can be found through Blockwise
+ Coordinate Descent Procedures (Han Liu.). 
+
+\subsection{Overall Solution Procedure}
+Repeat
+
+1. Resolve $\wone$, $\wtwo$, $\wthree$, $\wfour$ in separate subproblem
+formulated in section \ref{nseparate}.
+
+2. Update the combination indicator $\z$ by $\z = \frac{1}{4} (\wone + \wtwo +
+\wthree + \wfour)$
+
+3. Refine the multiplier $\yone$ and $\ytwo$ with gradient update rule: 
+\begin{align}
+\yone = \yone - \alpha \cdot (\wone - \z) \\
+\ytwo = \ytwo - \alpha \cdot (\wtwo - \z) \\ 
+\ythree = \ythree - \alpha \cdot (\wthree - \z) \\
+\yfour = \yfour - \alpha \cdot (\wfour - \z)
+\end{align}
+
+Until Convergence.
+
+\subsection{Implementation Details}
+To handle large scale data and manage extensibility, we implement a new data
+structure - extensible sparse matrice. 
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Acknowledgments}
 
 \subsubsection*{References}
