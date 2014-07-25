@@ -43,3 +43,6 @@ DEVELOPMENT LOGS
 
 5. [Fri Jul 25 02:06:40 2014 by Jimmy] implement initial version of esmat and
    do corresponding modification on HDP.cpp based on sparseClustering.cpp
+
+6. [Fri Jul 25 17:18:40 2014 by Jimmy] updated write-up to record the
+   theoretical details. 
