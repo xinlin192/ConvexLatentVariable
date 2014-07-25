@@ -20,12 +20,14 @@ Inventory
     HDP.cpp                 HDP codes
     HDP.h                   HDP header file
 
+    exSparseMat.h           extensible sparse matrix API
+
 TODOs
 ---------------
-1. identify clearly definition of loss and three regularization terms
-2. design data structure for z, w 1-4 follows the same form. (sparse or
-   regular)
-3.  
+1. test availability of esmat API functions
+2. modify frank\_wolfe\_solver by utilizing esmat
+3. modify frank\_wolfe\_solver to respect the new loss function (dummy only)
+4. modify group\_lasso\_solver by using esmat
 
 DEVELOPMENT LOGS
 ---------------
@@ -34,4 +36,10 @@ DEVELOPMENT LOGS
 
 2. [Mon Jul 21 22:20:22 2014 by Jimmy] modifies HDP function and frank\_wolfe
 
-3. 
+3. [Wed Jul 23 23:00:00 2014 by Jimmy and Ian] identify clearly definition of loss and three regularization terms
+
+4. [Wed Jul 23 23:00:00 2014 by Jimmy and Ian] design data structure esmat for
+   w, z and y
+
+5. [Fri Jul 25 02:06:40 2014 by Jimmy] implement initial version of esmat and
+   do corresponding modification on HDP.cpp based on sparseClustering.cpp
