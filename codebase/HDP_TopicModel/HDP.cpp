@@ -13,6 +13,7 @@
 ################################################################*/
 
 #include "HDP.h"
+#include "exSparseMat.h"
 #include <cassert>
 
 /* algorithmic options */ 
@@ -22,7 +23,7 @@
 // #define FRANK_WOLFE_DUMP
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
-#define NTOPIC_DUMP
+// #define NTOPIC_DUMP
 
 
 double sign (int input) {
@@ -120,11 +121,13 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
         dummy_penalty += r*(1 - temp_vec[i]);
     }
     double total = sum1+sum2+sum3+dummy_penalty;
+    /*
 #ifdef FRANK_WOLFE_DUMP
     cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
          << sum1 << ", " << sum2 << ", " << sum3 << ", " << dummy_penalty << ", " << total
          <<  ")" << endl;
 #endif
+*/
 
     mat_free (temp, N, N);
     mat_free (diffone, N, N);
@@ -169,12 +172,14 @@ void frank_wolfe_solver (double ** MATCH_MAT, double ** Y_1, double ** Z_1, doub
         mat_zeros (s, N, N);
         mat_min_row (gradient, s, N, N);
 
+        /*
 #ifdef FRANK_WOLFE_DUMP
         cout << "mat_norm2 (w_1, N, N): " <<  mat_norm2 (w_1, N, N) << endl;
         cout << "mat_norm2 (Y_1, N, N): " <<  mat_norm2 (Y_1, N, N) << endl;
         cout << "mat_norm2 (gradient, N, N): " <<  mat_norm2 (gradient, N, N) << endl;
         cout << "mat_sum (s, N, N): " <<  mat_sum (s, N, N) << endl;
 #endif
+*/
         // cout << "within frank_wolfe_solver: step one finished" << endl;
 
         // STEP TWO: apply exact or inexact line search to find solution
@@ -210,7 +215,7 @@ void frank_wolfe_solver (double ** MATCH_MAT, double ** Y_1, double ** Z_1, doub
             mat_zeros (tempS, N, N);
             mat_tdot (Y_1, w_minus_s, tempS, N, N);
             sum2 = mat_sum (tempS, N, N);
-
+ 
             mat_zeros (tempS, N, N);
             mat_tdot (w_minus_z, w_minus_s, tempS, N, N);
             sum3 = RHO * mat_sum (tempS, N, N);
@@ -245,10 +250,10 @@ void frank_wolfe_solver (double ** MATCH_MAT, double ** Y_1, double ** Z_1, doub
 
         // compute value of objective function
         penalty = first_subproblm_obj (dist_mat, Y_1, Z_1, w_1, RHO, N);
-    // cout << "within frank_wolfe_solver: step three finished" << endl;
+        // cout << "within frank_wolfe_solver: step three finished" << endl;
         // report the #iter and objective function
         /*
-        cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
+           cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
         */
 
         k ++;
@@ -471,36 +476,22 @@ void HDP ( double ** dist_mat, int D, int N, vector<double> LAMBDAs, double ** W
     double RHO = 1.0;
 
     /* DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
+    Esmat* w_1 = esmat_init (N, N);
+    Esmat* w_2 = esmat_init (N, N);
+    Esmat* w_3 = esmat_init (N, N);
+    Esmat* w_4 = esmat_init (N, N);
 
-    double ** w_1 = mat_init (N, N);
-    double ** w_2 = mat_init (N, N);
-    double ** w_3 = mat_init (N, N);
-    double ** w_4 = mat_init (N, N);
-    mat_zeros (w_1, N, N);
-    mat_zeros (w_2, N, N);
-    mat_zeros (w_3, N, N);
-    mat_zeros (w_4, N, N);
+    Esmat* y_1 = esmat_init (N, N);
+    Esmat* y_2 = esmat_init (N, N);
+    Esmat* y_3 = esmat_init (N, N);
+    Esmat* y_4 = esmat_init (N, N);
 
-    double ** y_1 = mat_init (N, N);
-    double ** y_2 = mat_init (N, N);
-    double ** y_3 = mat_init (N, N);
-    double ** y_4 = mat_init (N, N);
-    mat_zeros (y_1, N, N);
-    mat_zeros (y_2, N, N);
-    mat_zeros (y_3, N, N);
-    mat_zeros (y_4, N, N);
+    Esmat* z = esmat_init (N, N);
 
-    double ** z = mat_init (N, N);
-    mat_zeros (z, N, N);
-
-    double ** diff_1 = mat_init (N, N);
-    double ** diff_2 = mat_init (N, N);
-    double ** diff_3 = mat_init (N, N);
-    double ** diff_4 = mat_init (N, N);
-    mat_zeros (diff_1, N, N);
-    mat_zeros (diff_2, N, N);
-    mat_zeros (diff_3, N, N);
-    mat_zeros (diff_4, N, N);
+    Esmat* diff_1 = esmat_init (N, N);
+    Esmat* diff_2 = esmat_init (N, N);
+    Esmat* diff_3 = esmat_init (N, N);
+    Esmat* diff_4 = esmat_init (N, N);
 
     /* SET ITERATION-RELEVANT VARIABLES */
     double error = INF;
@@ -510,75 +501,90 @@ void HDP ( double ** dist_mat, int D, int N, vector<double> LAMBDAs, double ** W
     /* ITERATIVE OPTIMIZATION */
     while ( iter < max_iter ) { // STOPPING CRITERIA
         // STEP ZERO: RESET ALL SUBPROBLEM SOLUTIONS (OPTIONAL) 
-        mat_zeros (w_1, N, N);
-        mat_zeros (w_2, N, N);
-        mat_zeros (w_3, N, N);
-        mat_zeros (w_4, N, N);
+        esmat_zeros (w_1);
+        esmat_zeros (w_2);
+        esmat_zeros (w_3);
+        esmat_zeros (w_4);
 
+        /*
 #ifdef ITERATION_TRACE_DUMP
         cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe_solvere"  << endl;
 #endif
+*/
 
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
         frank_wolfe_solver (dist_mat, y_1, z, w_1, rho, N); 
 
+        /*
 #ifdef ITERATION_TRACE_DUMP
         cout << "frank_wolfe_solver done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
         cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_solver"<< endl;
 #endif
+*/
 
         // resolve w_2
         group_lasso_solver (y_2, z, w_2, RHO, lambda, N);
+        /*
 #ifdef ITERATION_TRACE_DUMP
         cout << "it is place 3 iteration #" << iter << endl;
         cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
 #endif
+*/
         // resolve w_3
         group_lasso_solver (y_3, z, w_3, RHO, lambda, N);
         // resolve w_4
         group_lasso_solver (y_4, z, w_4, RHO, lambda, N);
         
         // STEP TWO: update z by averaging w_1, w_2, w_3 and w_4
-        mat_zeros (z, N, N);
-        mat_add (z, w_1, z, N, N);
-        mat_add (z, w_2, z, N, N);
-        mat_add (z, w_3, z, N, N);
-        mat_add (z, w_4, z, N, N);
-        mat_dot (0.25, z, z, N, N);
+        temp = esmat_init ();
+        esmat_add (w_1, w_2, z);
+        esmat_copy (z, temp);
+        esmat_add (temp, w_3, z);
+        esmat_copy (z, temp);
+        esmat_add (temp, w_4, z);
+        esmat_scalar_mult (0.25, z);
 
+        /*
 #ifdef ITERATION_TRACE_DUMP
         cout << "it is place 4 iteration #" << iter << endl;
         cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
 #endif
+*/
 
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
-        mat_sub (w_1, z, diff_1, N, N);
-        // double trace_wone_minus_z = mat_norm2 (diff_1, N, N); 
-        mat_dot (ALPHA, diff_1, diff_1, N, N);
-        mat_add (y_1, diff_1, y_1, N, N);
+        esmat_sub (w_1, z, diff_1);
+        // double trace_wone_minus_z = esmat_norm2 (diff_1); 
+        esmat_scalar_mult (ALPHA, diff_1);
+        esmat_copy (y_1, temp);
+        esmat_add (temp, diff_1, y_1);
 
-        mat_sub (w_2, z, diff_2, N, N);
-        //double trace_wtwo_minus_z = mat_norm2 (diff_2, N, N); 
-        mat_dot (ALPHA, diff_2, diff_2, N, N);
-        mat_add (y_2, diff_2, y_2, N, N);
+        esmat_sub (w_2, z, diff_2);
+        //double trace_wtwo_minus_z = esmat_norm2 (diff_2); 
+        esmat_scalar_mult (ALPHA, diff_2);
+        esmat_copy (y_2, temp);
+        esmat_add (temp, diff_2, y_2);
 
-        mat_sub (w_3, z, diff_3, N, N);
-        //double trace_wthree_minus_z = mat_norm2 (diff_3, N, N); 
-        mat_dot (ALPHA, diff_3, diff_3, N, N);
-        mat_add (y_3, diff_3, y_3, N, N);
+        esmat_sub (w_3, z, diff_3);
+        //double trace_wthree_minus_z = esmat_norm2 (diff_3); 
+        esmat_scalar_mult (ALPHA, diff_3);
+        esmat_copy (y_3, temp);
+        esmat_add (temp, diff_3, y_3);
 
-        mat_sub (w_4, z, diff_4, N, N);
-        //double trace_wfour_minus_z = mat_norm2 (diff_4, N, N); 
-        mat_dot (ALPHA, diff_4, diff_4, N, N);
-        mat_add (y_4, diff_4, y_4, N, N);
+        esmat_sub (w_4, z, diff_4);
+        //double trace_wfour_minus_z = esmat_norm2 (diff_4); 
+        esmat_scalar_mult (ALPHA, diff_4);
+        esmat_copy (y_4, temp);
+        esmat_add (temp, diff_4, y_4);
 
         // STEP FOUR: trace the objective function
+        /*
         if (iter % 1 == 0) {
             // 1. trace the error
             error = opt_objective (dist_mat, lambda, N, z);
             cout << "[Overall] iter = " << iter 
                  << ", Overall Error: " << error;
+            /
 #ifdef NTOPIC_DUMP
             // 2. get number of topic
             int nTopics = get_nTopics(z, N, N);
@@ -586,33 +592,29 @@ void HDP ( double ** dist_mat, int D, int N, vector<double> LAMBDAs, double ** W
 #endif
             cout << endl;
         }
-        /*
-          cout << "w1" << endl;
-          error = opt_objective (dist_mat, lambda, N, wone);
-          cout << "w2" << endl;
-          error = opt_objective (dist_mat, lambda, N, wtwo);
-          */
-        /*
-        mat_sub (wone, wtwo, diffzero, N, N);
-        double trace_wone_minus_wtwo = mat_norm2 (diffzero, N, N);
-        cout << "[Overall] || w_1 - w_2 || ^2 = " << trace_wone_minus_wtwo << endl;
-          cout << "[Overall] || w_1 - z || ^2 = " << trace_wone_minus_z << endl;
-          // cout << "[Overall] || w_2 - z || ^2 = " << trace_wtwo_minus_z << endl;
-          //cout << endl;
         */
 
         iter ++;
     }
     
     // STEP FIVE: memory recollection
-    mat_free (wone, N, N);
-    mat_free (wtwo, N, N);
-    mat_free (yone, N, N);
-    mat_free (ytwo, N, N);
-    mat_free (diffone, N, N);
-    mat_free (difftwo, N, N);
-    // STEP SIX: put converged solution to destination W
-    mat_copy (z, W, N, N);
+    esmat_free (w_1);
+    esmat_free (w_2);
+    esmat_free (w_3);
+    esmat_free (w_4);
+
+    esmat_free (y_1);
+    esmat_free (y_2);
+    esmat_free (y_3);
+    esmat_free (y_4);
+
+    esmat_free (diff_1);
+    esmat_free (diff_2);
+    esmat_free (diff_3);
+    esmat_free (diff_4);
+    // STEP SIX: put converged solution to destinated W
+    esmat_copy (z, W);
+    esmat_free (z);
 }
 
 // entry main function
@@ -659,11 +661,13 @@ int main (int argc, char ** argv) {
     cerr << "seed = " << seed << endl;
 
     // restore matchness matrix in sparse representation
+    /* here we consider non-noise version of topic model
     double ** match_mat = mat_init (N, N);
     mat_zeros (match_mat, N, N);
+    */
 
     // Run sparse convex clustering
-    double ** W = mat_init (N, N);
+    Esmat* W = mat_init (N, N);
     mat_zeros (W, N, N);
     HDP (dist_mat, D, N, lambda, W);
 
@@ -685,15 +689,15 @@ int main (int argc, char ** argv) {
             }
         }
 	fout << endl;
-    */
 
         // output distance of one sample to each centroid 
-        /*fout << "dist_centroids: (";
+        fout << "dist_centroids: (";
         for (int j = 0; j < nCentroids - 1; j ++) {
             fout << dist_mat[i][ centroids[j] ] << ", ";
         }
         fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
-        fout << endl;*/
-/*}}}*/
+        fout << endl;
     }
+    */
+/*}}}*/
 }
