@@ -12,155 +12,83 @@
 
 #include <string>
 
+/* Global variables */
+double TRIM_THRESHOLD = 10e-5;
+
+/* Definition of Data structure for Extensible Sparse Matrix (Esmat) */
 typedef struct {
-        int nRows;
-        int nCols;
+        int nRows; int nCols;
         vector< pair<int, double> > val;
 } Esmat;
 
-/* Initialize one extensible sparse matrix with all zero entries */
-Esmat esmat_init (int nRows, int nCols) {
+/* Powerful function pointers and definition of instantiated operators */
+typedef double (* Operation) (double, double); 
+double min (double a, double b) { return a < b ? a : b; }
+double max (double a, double b) { return a > b ? a : b; }
+double sum (double a, double b) { return a + b; }
+double diff (double a, double b) { return a - b; // non-symmetric }
+double count (double value, double counter) { 
+    // note that for this "count" function, two input is not symmetric
+    if (fabs(value) > TRIM_THRESHOLD) counter += 1.0;
+    return counter; 
+}
 
+/* Prototype for fundamental functions, typically computational frameworks*/
+void esmat_bin_operate (Esmat A, Esmat B, Esmat dest, Operation opt);
+void esmat_operate_col (Esmat A, Esmat dest, Operation opt);
+void esmat_operate_row (Esmat A, Esmat dest, Operation opt);
+
+/* Allocation and De-allocation */
+Esmat esmat_init (int nRows, int nCols);
+void esmat_free (Esmat src);
+/* frobenius product and norm */
+double esmat_fdot (Esmat A, Esmat B);
+double esmat_fnorm (Esmat A);
+/* scalar multiplication */
+void esmat_scalar_mult (double scalar, Esmat A);
+void esmat_scalar_mult (double scalar, Esmat A, Esmat dest);
+/* Auxiliary functions */
+esmat_isValid (Esmat A, Esmat B, int mode);
+string esmat_toString (Esmat A);
+void esmat_copy (Esmat A, Esmat D);
+
+/* Add and Subtract two extensible sparse matrices */
+void esmat_add (Esmat A, Esmat B, Esmat dest) 
+{ esmat_bin_operator (A, B, dest, sum); }
+void esmat_sub (Esmat A, Esmat B, Esmat dest) 
+{ esmat_bin_operator (A, B, dest, diff); }
+
+/* min, max and sum over column elements */
+void esmat_min_col (Esmat A, Esmat dest) 
+{ esmat_operate_col (A, dest, min); }
+void esmat_max_col (Esmat A, Esmat dest) 
+{ esmat_operate_col (A, dest, max); }
+void esmat_sum_col (Esmat A, Esmat dest) 
+{ esmat_operate_col (A, dest, sum); }
+
+/* min, max and sum over row elements */
+void esmat_min_row (Esmat A, Esmat dest) 
+{ esmat_operate_row (A, dest, min); }
+void esmat_max_row (Esmat A, Esmat dest) 
+{ esmat_operate_row (A, dest, max); }
+void esmat_sum_row (Esmat A, Esmat dest) 
+{ esmat_operate_row (A, dest, sum); }
+
+/* Allocate one extensible sparse matrix with all zero entries */
+Esmat esmat_init (int nRows, int nCols) {
     Esmat freshman = new Esmat ();
     freshman.nRows = nRows;
     freshman.nCols = nCols;
     freshman.val = new vector< pair<int, double> > ();
-
     return freshman;
 }
-
+/* Deallocate given Esmat */
 void esmat_free (Esmat src) {
-
     delete src.val;
     delete Esmat;
-
 }
-
-/* Add two extensible sparse matrices */
-void esmat_add (Esmat A, Esmat B, Esmat dest) {
-    
-    assert (esmat_isValid (A, B, 1));
-    dest.nCols = A.nCols;
-    dest.nRows = A.nRows;
-    dest.val.clear();
-
-    int i = 0, j = 0;
-    int indexA, indexB;
-    int sizeA = A.val.size();
-    int sizeB = B.val.size();
-
-    while (i < sizeA && j < sizeB) {
-        indexA = A.val[i].first;
-        indexB = B.val[i].first;
-
-        if (indexA < indexB) {
-            dest.val.push_back(make_pair(indexA, A.val[i].second))
-            ++ i; 
-        } else if (indexA > indexB) {
-            dest.val.push_back(make_pair(indexB, B.val[i].second))
-            ++ j;
-        } else { // equality
-            value = A.val[i].second + B.val[i].second;
-            dest.val.push_back(make_pair(indexA, value))
-            ++i; ++j;
-        }
-    }
-
-}
-
-/* Subtract two extensible sparse matrices */
-void esmat_sub (Esmat A, Esmat B, Esmat dest) {
-    
-    assert (esmat_isValid (A, B, 1));
-    dest.nCols = A.nCols;
-    dest.nRows = A.nRows;
-    dest.val.clear();
-
-    int i = 0, j = 0;
-    int indexA, indexB;
-    int sizeA = A.val.size();
-    int sizeB = B.val.size();
-
-    while (i < sizeA && j < sizeB) {
-        indexA = A.val[i].first;
-        indexB = B.val[i].first;
-
-        if (indexA < indexB) {
-            dest.val.push_back(make_pair(indexA, A.val[i].second))
-            ++ i; 
-        } else if (indexA > indexB) {
-            dest.val.push_back(make_pair(indexB, B.val[i].second))
-            ++ j;
-        } else { // equality
-            value = A.val[i].second - B.val[i].second;
-            dest.val.push_back(make_pair(indexA, value))
-            ++i; ++j;
-        }
-    }
-}
-
-/* Frobenius norm of one extensible sparse matrices */
-double esmat_fnorm (Esmat A) {
-
-    double fnorm = 0.0;
-    int sizeA = A.val.size();
-
-    for (int i = 0; i < sizeA; i++) {
-        fnorm += A.val[i].second * 2;
-    }
-
-    return fnorm;
-}
-
-/* scalar times a esmat and store on input matrix*/
-void esmat_scalar_mult (double scalar, Esmat A) {
-
-    int sizeA = A.val.size();
-    int capacity = A.nRows * A.nCols;
-
-    for (int i = 0; i < sizeA; i ++) {
-        assert (A.val[i].first < capacity);
-        A.val[i].second *= scalar; 
-    }
-
-}
-
-/* scalar times a esmat */
-void esmat_scalar_mult (double scalar, Esmat A, Esmat dest) {
-
-    assert (esmat_isValid (A, dest, 1));
-
-    dest.val.clear();
-
-    for (int i = 0; i < A.val.size(); i ++) {
-        // insert multiplied value to the same position
-        dest.val.push_back(make_pair(A.val[i].first, scalar*A.val[i].second)); 
-    }
-
-}
-
-/* Check validity (dim alignment) of input esmat 
- *  mode:
- *    1 - same dim alignment
- *    2 - product alignment
- * */
-esmat_isValid (Esmat A, Esmat B, int mode) {
-
-    bool success = false;
-
-    if (mode == 1) {
-        if (A.nRows == B.nRows && A.nCols == B.nCols) 
-            success = true;
-    } else if (mode == 2) {
-        if (A.nCols == B.nRows) 
-            success = true;
-    }
-
-    return success;
-}
-
 /* frobenius product */
-esmat_fdot (Esmat A, Esmat B) {
+double esmat_fdot (Esmat A, Esmat B) {
 
     assert (esmat_isValid (A, B, 1));
 
@@ -187,37 +115,54 @@ esmat_fdot (Esmat A, Esmat B) {
     return result;
 }
 
-void esmat_sum_row (Esmat A, Esmat dest) {
-
+/* Frobenius norm of one extensible sparse matrices */
+double esmat_fnorm (Esmat A) {
+    double fnorm = 0.0;
     int sizeA = A.val.size();
-
-    dest.nRows = A.nRows;
-    dest.nCols = 1;
-    dest.val.clear();
-
-    vector<double> temp = new vector<double> (A.nRows, 0.0);
-    
-    for (int i = 0; i < sizeA; i ++) {
-        temp[dest.val[i].first % A.nRows] += dest.val[i].second;
+    for (int i = 0; i < sizeA; i++) {
+        fnorm += A.val[i].second ^ 2;
     }
-
-    for (int j = 0; j < A.nRows; j ++) { 
-        dest.val.push_back(make_pair(j, temp[j]));
-    }
-
-    delete temp;
+    return fnorm;
 }
 
-void mat_sum_col(double ** src, double * dest, int nRows, int nCols) {
-    
-    for (int j = 0;j < nCols; j ++)
-	    dest[j] = 0.0;
-
-    for (int i = 0; i < nRows; i ++) {
-        for (int j = 0; j < nCols; j ++) {
-            dest[j] += src[i][j];
-        }
+/* scalar times a esmat and store on input matrix*/
+void esmat_scalar_mult (double scalar, Esmat A) {
+    int sizeA = A.val.size();
+    int capacity = A.nRows * A.nCols;
+    for (int i = 0; i < sizeA; i ++) {
+        assert (A.val[i].first < capacity);
+        A.val[i].second *= scalar; 
     }
+}
+
+/* scalar times a esmat */
+void esmat_scalar_mult (double scalar, Esmat A, Esmat dest) {
+    assert (esmat_isValid (A, dest, 1));
+    dest.val.clear();
+    for (int i = 0; i < A.val.size(); i ++) {
+        // insert multiplied value to the same position
+        dest.val.push_back(make_pair(A.val[i].first, scalar*A.val[i].second)); 
+    }
+}
+
+/* Check validity (dim alignment) of input esmat 
+ *  mode:
+ *    1 - same dim alignment
+ *    2 - product alignment
+ * */
+esmat_isValid (Esmat A, Esmat B, int mode) {
+
+    bool success = false;
+
+    if (mode == 1) {
+        if (A.nRows == B.nRows && A.nCols == B.nCols) 
+            success = true;
+    } else if (mode == 2) {
+        if (A.nCols == B.nRows) 
+            success = true;
+    }
+
+    return success;
 }
 
 string esmat_toString (Esmat A) {
@@ -270,65 +215,108 @@ void esmat_copy (Esmat A, Esmat D) {
     }
 }
 
-/* regularization for penalizing global topics */
-void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
-
-    // we assume that the given dest is all-zero mat
-    for (int j = 0; j < nCols; j ++) {
-        int max_index = -1;
-        double max_value = -INF;
-        for (int i = 0; i < nRows; i ++) {
-            if (src[i][j] > max_value) {
-                max_index = i;
-                max_value = src[i][j];
-            }
-	    dest[i][j] = 0;
-        }
-        dest[max_index][j] = 1;
-    }
-}
-
-/* regularization for penalizing local topics */
-mat_count_row () {
-
-
-}
-
 /* regularization for penalizing number of vocabularies used by topics */
 mat_nonzero_index_col {
 
 }
 
-void mat_min_row (double ** src, double ** dest, int nRows, int nCols) {
-
-    for (int i = 0; i < nRows; i ++) {
-        int min_index = -1;
-        double min_value = INF;
-        for (int j = 0; j < nCols; j ++) {
-            if (src[i][j] < min_value) {
-                min_index = j;
-                min_value = src[i][j];
-            }
-            dest[i][j] = 0;
-        }
-        assert (min_index >= 0);
-        dest[i][min_index] = 1;
-    }
-
-}
-
 void esmat_trim (Esmat A) {
-	
     int sizeA = A.val.size();
-
 	for (int i = 0; i < sizeA; i ++) {
         double value = A.val[i].second;
-        if ( fabs(value) < 1e-5 ) {
+        if ( fabs(value) < TRIM_THRESHOLD ) {
             // remove this index:value pair
             A.val.erase(A.val.begin()+i);
-            -- i;
-            -- sizeA;
+            -- i; -- sizeA;
         }
 	}
-
 }
+
+//=========================================================
+// The followings are computational frameworks.
+// Do not modify them unless you know exactly what you are
+// doing. 
+// ========================================================
+
+/* Framework of binary operation for Esmat */
+void esmat_bin_operate (Esmat A, Esmat B, Esmat dest, Operation opt) {
+
+    assert (esmat_isValid (A, B, 1));
+
+    int i = 0, j = 0;
+    int indexA, indexB;
+    int sizeA = A.val.size();
+    int sizeB = B.val.size();
+    double result = 0.0;
+
+    while (i < sizeA && j < sizeB) {
+        indexA = A.val[i].first;
+        indexB = B.val[i].first;
+
+        if (indexA < indexB) {
+            dest.val.push_back(make_pair(indexA, A.val[i].second))
+            ++ i; 
+        } else if (indexA > indexB) {
+            dest.val.push_back(make_pair(indexB, B.val[i].second))
+            ++ j;
+        } else { // equality
+            value = opt(A.val[i].second, B.val[i].second);
+            dest.val.push_back(make_pair(indexA, value))
+            ++i; ++j;
+        }
+    }
+
+    return result;
+}
+/* Framework for operating over each row of esmat A */
+void esmat_operate_row (Esmat A, Esmat dest, Operation opt) {
+
+    int sizeA = A.val.size();
+
+    // set up dest esmat, here assume it has been initialized
+    dest.nRows = A.nRows;
+    dest.nCols = 1;
+    dest.val.clear();
+
+    vector<double> temp = new vector<double> (A.nRows, 0.0);
+    
+    for (int i = 0; i < sizeA; i ++) {
+        int row_idx = dest.val[i].first % A.nRows;
+        temp[row_idx] = opt(dest.val[i].second, temp[row_idx]);
+    }
+
+    for (int j = 0; j < A.nRows; j ++) {
+        // trim very small term
+        if (fabs(temp[j]) > TRIM_THRESHOLD) 
+            dest.val.push_back(make_pair(j, temp[j]));
+    }
+
+    delete temp;
+}
+/* Framework for operating over each column of esmat A */
+void esmat_operate_col (Esmat A, Esmat dest, Operation opt) {
+    
+    int sizeA = A.val.size();
+
+    // set up dest esmat, here assume it has been initialized
+    dest.nRows = 1;
+    dest.nCols = A.nCols;
+    dest.val.clear();
+
+    vector<double> temp = new vector<double> (A.nCols, 0.0);
+    
+    for (int i = 0; i < sizeA; i ++) {
+        int col_idx = dest.val[i].first / A.nRows;
+        temp[col_idx] = opt(dest.val[i].second, temp[col_idx]);
+    }
+
+    for (int j = 0; j < A.nCols; j ++) {
+        // trim very small term
+        if (fabs(temp[j]) > TRIM_THRESHOLD)
+            dest.val.push_back(make_pair(j, temp[j]));
+    }
+
+    delete temp;
+}
+
+
