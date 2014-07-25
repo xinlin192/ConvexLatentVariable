@@ -86,9 +86,7 @@ vector<int> get_all_centroids(double ** W, int nRows, int nCols) {
 
 double first_subproblm_obj (Esmat* Y_1, Esmat* Z_1, Esmat* W_1, double RHO, int N) {
 
-    Esmat* temp = esmat_init (N, N);
-    Esmat* diffone = esmat_init (N, N);
-
+    Esmat* w_minus_z = esmat_init (W_1);
     // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk) -> loss
     /* this term do not exist since we did not consider noise
     esmat_times (W_1, dist_mat, temp);
@@ -96,21 +94,16 @@ double first_subproblm_obj (Esmat* Y_1, Esmat* Z_1, Esmat* W_1, double RHO, int 
     */
 
     // sum2 = y_1^T dot (w_1 - z) -> linear
-    esmat_zeros (temp);
-    esmat_sub (W_1, Z_1, diffone); // temp = w_1 - z_1
-    esmat_fdot (Y_1, diffone, temp);
-    double linear = esmat_sum (temp);
+    esmat_sub (W_1, Z_1, w_minus_z); // temp = w_1 - z_1
+    double linear = esmat_fdot (Y_1, w_minus_z);
 
     // sum3 = 0.5 * RHO * || w_1 - z_1 ||^2 -> quadratic
-    esmat_zeros (temp);
-    esmat_sub (W_1, Z_1, temp);
-    double quadratic = 0.5 * RHO * esmat_fnorm (temp);
+    double quadratic = 0.5 * RHO * esmat_fnorm (w_minus_z);
 
     // dummy_penalty = r dot (1 - sum_k w_nk)
-    Esmat temp_vec = esmat_init (W_1->nRows, W_1->nCols);
+    Esmat* temp_vec = esmat_init (W_1->nRows, W_1->nCols);
     esmat_sum_row (W_1, temp_vec);
     double dummy = esmat_compute_dummy (temp_vec);
-    double total = linear+qudratic+dummy;
     /*
 #ifdef FRANK_WOLFE_DUMP
     cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
@@ -118,11 +111,10 @@ double first_subproblm_obj (Esmat* Y_1, Esmat* Z_1, Esmat* W_1, double RHO, int 
          <<  ")" << endl;
 #endif
 */
-    esmat_free (temp);
-    esmat_free (diffone);
     esmat_free (temp_vec);
+    esmat_free (w_minus_z);
 
-    return total;
+    return linear+qudratic+dummy;
 }
 
 void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int N) {
@@ -260,7 +252,7 @@ double second_subproblem_obj (Esmat* Y_2, Esmat* Z, Esmat* W_2, double RHO, int 
     esmat_sub (W_2, Z, w_minus_z);
     double linear = esmat_fdot (Y_2, w_minus_z);
 
-    // sum3 = 0.5 * rho * || w_2 - Z ||^2 -> quadratic 
+    // sum3 = 0.5 * RHO * || w_2 - Z ||^2 -> quadratic 
     double quadratic = 0.5 * RHO * esmat_fnorm (w_minus_z);
 
     // ouput values of each components
@@ -474,7 +466,7 @@ void HDP (int D, int N, vector<double> LAMBDAs, double ** W) {
 
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
-        frank_wolfe_solver ( y_1, z, w_1, rho, N); 
+        frank_wolfe_solver ( y_1, z, w_1, RHO, N); 
 
         /*
 #ifdef ITERATION_TRACE_DUMP

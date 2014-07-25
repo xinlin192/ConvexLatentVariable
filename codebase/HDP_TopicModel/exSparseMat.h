@@ -105,16 +105,16 @@ Esmat* esmat_init (int nRows, int nCols) {
     // freshman->val = new vector< pair<int, double> > ();
     return freshman;
 }
-Esmat* esmat_init (Esmat* A) {
-    return esmat_init (A->nRows, A->nCols);
+Esmat* esmat_init (Esmat* src) {
+    return esmat_init (src->nRows, src->nCols);
 };
 /* Deallocate given Esmat */
-void esmat_free (Esmat* A) {
+void esmat_free (Esmat* src) {
     src->val.clear();
     delete src;
 }
 void esmat_zeros (Esmat* A) {
-    src->val.clear();
+    A->val.clear();
 }
 /* frobenius product */
 double esmat_fdot (Esmat* A, Esmat* B) {
@@ -144,10 +144,10 @@ double esmat_fdot (Esmat* A, Esmat* B) {
     return result;
 }
 /* abs */
-void esmat_abs (Esmat* A, Esmat dest) {
-    dest->nRows = A.nRows;
-    dest->nCols = A.nCols;
-    dest.val.clear();
+void esmat_abs (Esmat* A, Esmat* dest) {
+    dest->nRows = A->nRows;
+    dest->nCols = A->nCols;
+    dest->val.clear();
 
     for (int i = 0; i < A->val.size(); i ++) {
         // insert multiplied value to the same position
