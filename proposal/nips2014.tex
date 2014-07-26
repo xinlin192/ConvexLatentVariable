@@ -257,6 +257,10 @@ where $\ms = \argmax{m} \frac{1}{m} \big(\sum_{i'}^{m} |\wopt^{(k_{i'})}| -
 \newcommand{\lambdal}{\lambda_l}
 \newcommand{\lambdab}{\lambda_b}
 
+\newcommand{\dummyterm}{r \big| 1 - \sumk \wnk \big|}
+\newcommand{\globalReg}{\lambdag \sumk \maxn |\wnk|}
+\newcommand{\localReg}{\lambdal \sum_d \sum_k \underset{n \in d}{\text{max}} |\wnk|}
+\newcommand{\coverReg}{\lambdab \sum_k \sum_{w \in voc(k)} \underset{word(n) = w}{\text{max}} |\wnk|  }
 
 \subsection{Problem Formulation}
 In this topic model, there are four main semantics supposed to be captured.
@@ -270,7 +274,7 @@ Secondly, too many hidden topics are supposed to be penalized. Intuitively,
 this objective aimed at reducing total number of topics. Formally, one
 regularization term is used as follows: 
 \begin{align}
-   \lambdag \sumk \maxn |\wnk| 
+   \globalReg
 \end{align}
 
 Thirdly, too many topics involved by each document should be penalized.
@@ -280,7 +284,7 @@ certain topics with total explanation.  Hence, this objective intuitively
 aimed at reducing topic distribution within one document. To capture this
 semanticcs, we use another regularizer:
 \begin{align}
-\lambdal \sumn \maxk |\wnk|
+\localReg
 \end{align}
 
 Fourthly, too many vocabularies involved by each topic ought to be penalized.
@@ -288,7 +292,7 @@ This would increase the number of hidden topics within this model. It can be
 intuitively seen as an support of topics number or cause of matrix extension
 of $w$. One extra regularizer is employed:
 \begin{align}
-\lambdab \sumk \sum_v \max |\wnk^{(v)}|
+\coverReg
 \end{align}
 To acquire small penalty from the last regularization, all documents that are
 related to certain topic should be attributed to a narrow set of vocabularies. 
@@ -296,9 +300,7 @@ related to certain topic should be attributed to a narrow set of vocabularies.
 \subsection{Objectives}
 \begin{align}
    \minimize{w}
-   \hs & \lambdag \sumk \maxn |\wnk| 
-        + \lambdal \sumn \maxk |\wnk| 
-        + \lambdab \sumk \sum_v \max |\wnk^{(v)}| \\
+   \hs & \globalReg + \localReg + \coverReg \\
    \subjectto
    \hs & \forall n,\ k,\ 0 \leq  \wnk \leq 1 \\
     \hs & \forall n,\ \sumk \wnk = 1
@@ -309,7 +311,7 @@ related to certain topic should be attributed to a narrow set of vocabularies.
 The first optimization task:
   \begin{align}
    \minimize{\wone}
-   \hs & r \cdot \big| 1 - \sumk \wnk \big|   % dummy loss
+   \hs & \dummyterm   % dummy loss
    + \mutw{1} + \quadraterm{1} \\
    \subjectto
    \hs & \forall n,\ \sumk \wnk \leq 1 \\
@@ -319,23 +321,23 @@ The first optimization task:
  distributed. Note that this subproblem can be solved by Frank-Wolf Algorithm. 
 
  The second optimization task:
- \begin{align} \label{second}
+ \begin{align} 
    \minimize{\wtwo}
-   \hs & \lambdag \sumk \maxn |\wnk|  % group-lasso
+   \hs & \globalReg  % group-lasso
    + \mutw{2} + \quadraterm{2} 
  \end{align}
 
   The third optimization task:
- \begin{align} \label{second}
+ \begin{align} 
    \minimize{\wthree}
-   \hs & \lambdal \sumn \maxk |\wnk|  % group-lasso
+   \hs & \localReg  % group-lasso
    + \mutw{3} + \quadraterm{3} 
  \end{align}
 
    The fourth optimization task:
- \begin{align} \label{second}
+ \begin{align} 
    \minimize{\wfour}
-   \hs &  \lambdab \sumk \sum_v \max |\wnk^{(v)}|  % group-lasso
+   \hs &  \coverReg  % group-lasso
    + \mutw{4} + \quadraterm{4} 
  \end{align}
 
