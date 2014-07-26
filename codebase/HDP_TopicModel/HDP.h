@@ -1,6 +1,6 @@
 /*###############################################################
-## MODULE: sparseClustering.cpp
-## VERSION: 1.0 
+## MODULE: HDP.h
+## VERSION: 2.0 
 ## SINCE 2014-06-14
 ## AUTHOR Jimmy Lin (xl5224) - JimmyLin@utexas.edu  
 ## DESCRIPTION: 
@@ -19,9 +19,37 @@
 #include<set>
 #include<algorithm>
 #include <cmath>    
+
 #include "../util.h"
+#include "exSparseMat.h"
 
 using namespace std;
+
+vector<string>* voc_list_read (string fname) {
+    vector<string>* vocList = new vector<string> ();
+   	ifstream fin(fname);
+
+	string line;
+	while (!fin.eof()) {
+        fin >> line;
+		if ( fin.eof() ) break;
+        vocList->push_back (line);
+	}
+	fin.close(); 
+
+    return vocList;
+}
+
+void voc_list_print (vector<string>* vocList) {
+    int nVoc = vocList->size();
+    for (int v = 0; v < nVoc; v ++) {
+        cout << (*vocList)[v] << endl;
+    }
+}
+
+void voc_list_free (vector<string>* vocList) {
+    delete vocList;
+}
 
 class Instance{
 	
@@ -56,102 +84,6 @@ class Instance{
 	double _x_sq;
 };
 
-class Cluster{
-
-	public:
-	int d;
-	vector<double>  mu;
-	double mu_sq;
-
-	Cluster(int _d){
-		
-		d = _d;
-		for(int i=0;i<d+1;i++)
-			mu.push_back( ((double)rand()/RAND_MAX)*2-1 );
-		mu[0] = 0.0;
-		mu_sq = -1;
-	}
-
-	Cluster(vector<double>& _mu){
-		
-		d = _mu.size()-1;
-		for(int i=0;i<_mu.size();i++)
-			mu.push_back( _mu[i] );
-		mu_sq = -1;
-	}
-	
-	double dist(Instance* ins){
-		
-		if( mu_sq == -1 ){
-			mu_sq = 0.0;
-			for(int i=0;i<d+1;i++){
-				mu_sq += mu[i]*mu[i];
-			}
-		}
-		
-		return  ins->x_sq() + mu_sq - 2*dot(mu,ins->fea);
-	}
-};
-
-/*
-class Cluster{
-
-	public:
-	int d;
-	set<Instance*>  members;
-	double*  sum;  //sum = mu * |cluster|, if |cluster|!=0 
-		       //      mu,             if |cluster|=0.
-	double mu_sq;
-	
-	Cluster(int _d){
-		
-		d = _d;
-		sum = new double[d];
-		for(int i=0;i<d;i++)
-			sum[i] = (double)rand()/RAND_MAX;
-		sum[0] = 0.0;
-		
-		mu_sq = -1;
-	}
-	
-	~Cluster(){
-		delete[] sum;
-	}
-	
-	double dist(Instance* ins){
-		
-		if( mu_sq == -1 ){
-
-			mu_sq = dot(sum,sum,d);
-			if( members.size() != 0 )
-				mu_sq /= (members.size()*members.size());
-		}
-		
-		if( members.size() != 0 )
-			return  ins->x_sq() + mu_sq - 2*dot(sum,ins->fea)/members.size();
-		else
-			return  ins->x_sq() + mu_sq - 2*dot(sum,ins->fea);
-	}
-
-	void add(Instance* ins){
-		
-		if( !members.insert(ins).second )
-			cerr << "instance " << ins->id << " already in cluster when added." << endl;
-
-		vadd(sum,ins->fea);
-		mu_sq = -1;
-	}
-
-	void remove(Instance* ins){
-		
-		if(members.erase(ins)==0)
-			cerr << "instance " << ins->id << "not in cluster when removed." << endl;
-
-		vsub(sum,ins->fea);
-		mu_sq = -1;
-	}
-};*/
-
 class ScoreComparator{
 	
 	private:
@@ -167,22 +99,6 @@ class ScoreComparator{
 	}
 };
 
-
-/** loss = \frac{1}{2} sum_{i,j}{ w_{ij}\| x_i - mu_j \|_2^2 },  w_{iz[i]}=1
- */
-double obj_loss( vector<Instance*>& data, int* z, map<int,Cluster*>& clusters ){
-	
-	double loss = 0.0;
-	for(int i=0;i<data.size();i++){
-		
-		Cluster* cluster = clusters.find( z[i] )->second;
-		Instance* ins = data[i];
-
-		loss += cluster->dist( ins )/2;
-	}
-	
-	return loss;
-}
 
 void read2D(char* fname, vector<Instance*>& data){
 	
@@ -203,7 +119,6 @@ void read2D(char* fname, vector<Instance*>& data){
 	}
 	fin.close();
 }
-
 
 void readFixDim(char* fname, vector<Instance*>& data, int D){
 	

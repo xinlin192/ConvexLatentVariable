@@ -13,7 +13,6 @@
 ################################################################*/
 
 #include "HDP.h"
-#include "exSparseMat.h"
 #include <cassert>
 
 /* algorithmic options */ 
@@ -518,90 +517,4 @@ void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
     // STEP SIX: put converged solution to destinated W
     esmat_copy (z, W);
     esmat_free (z);
-}
-
-// entry main function
-int main (int argc, char ** argv) {
-
-    // EXCEPTION control: illustrate the usage if get input of wrong format
-    if (argc < 3) {
-        cerr << "Usage: HDP [dataFile] [lambda_document] [lambda_topic] [lambda_block]" << endl;
-        cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
-        exit(-1);
-    }
-
-    // PARSE arguments
-    char * dataFile = argv[1];
-    vector<double> LAMBDAs (3, 0.0);
-    LAMBDAs[0] = atof(argv[2]); // lambda_document
-    LAMBDAs[1] = atof(argv[3]); // lambda_topic
-    LAMBDAs[2] = atof(argv[4]); // lambda_block
-
-    // READ in data
-    vector<Instance*> data;
-    //read2D (dataFile, data);  
-    // NOTE: need to change the number once switch to a new dataset
-    readFixDim (dataFile, data, 13);
-
-    // EDA: explore the data 
-    int dimensions = -1;
-    int N = data.size(); // data size
-    for (int i = 0; i < N; i++) {
-        vector< pair<int,double> > * f = &(data[i]->fea);
-        int last_index = f->size() - 1;
-        if (f->at(last_index).first > dimensions) {
-            dimensions = f->at(last_index).first;
-        }
-    }
-    int D = dimensions;
-    cerr << "D = " << D << endl; // # features
-    cerr << "N = " << N << endl; // # instances
-    cerr << "lambda_g = " << LAMBDAs[0] << endl;
-    cerr << "lambda_l = " << LAMBDAs[1] << endl;
-    cerr << "lambda_b = " << LAMBDAs[2] << endl;
-    cerr << "r = " << TRIM_THRESHOLD << endl;
-
-    int seed = time(NULL);
-    srand (seed);
-    cerr << "seed = " << seed << endl;
-
-    // restore matchness matrix in sparse representation
-    /* here we consider non-noise version of topic model
-    double ** match_mat = mat_init (N, N);
-    mat_zeros (match_mat, N, N);
-    */
-
-    // Run sparse convex clustering
-    Esmat* W = esmat_init (N, 1);
-    HDP (D, N, LAMBDAs, W);
-
-    // Output results
-    ofstream fout("result");
-
-    // get all topics
-    /*{{{*/
-    /*
-    vector<int> centroids = get_all_centroids(W, N, N); // contains index of all centroids
-    
-    int nCentroids = centroids.size();
-    for (int i = 0; i < N; i ++) {
-        // output identification and its belonging
-        fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
-        for (int j = 0; j < N; j ++) {
-            if( fabs(W[i][j]) > 3e-1 ) {
-                fout << j+1 << "(" << W[i][j] << "),\t";
-            }
-        }
-	fout << endl;
-
-        // output distance of one sample to each centroid 
-        fout << "dist_centroids: (";
-        for (int j = 0; j < nCentroids - 1; j ++) {
-            fout << dist_mat[i][ centroids[j] ] << ", ";
-        }
-        fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
-        fout << endl;
-    }
-    */
-/*}}}*/
 }
