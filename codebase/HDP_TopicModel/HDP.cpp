@@ -106,11 +106,11 @@ double get_global_topic_reg (Esmat* absZ, double lambda) {
 
 /* \lambda_l \sumn \maxk |\wnk| */
 double get_local_topic_reg (Esmat* absZ, double lambda) {
-    Esmat* maxk = esmat_init (Z->nRows, 1);
+    Esmat* maxk = esmat_init (absZ->nRows, 1);
     Esmat* sumn = esmat_init (1, 1);
     esmat_max_row (absZ, maxk);
     esmat_sum_col (maxk, sumn);
-    double local_topic_reg = LAMBDAs[1] * sumn->val[0].second; 
+    double local_topic_reg = lambda * sumn->val[0].second; 
     esmat_free (sumn);
     esmat_free (maxk);
     return local_topic_reg;
@@ -118,25 +118,27 @@ double get_local_topic_reg (Esmat* absZ, double lambda) {
 /* \lambdab \sumk \sum_v \max |\wnk^{(v)}| */
 double get_coverage_reg (Esmat* absZ, double lambda) {
     // TODO:
-    
+    return 0.0;
 }
 
-double sub_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO) {
+double sub_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda) {
     // STEP ONE: compute main term
     double main = -1.0;
     if (prob_index == 1) {
         // dummy_penalty = r dot (1 - sum_k w_nk)
         main = get_dummy_loss (W);
     } else {
+        Esmat* absW = esmat_init (W);
         esmat_abs (W, absW);
         if (prob_index == 2) {
-            main = get_global_topic_reg (absW);
+            main = get_global_topic_reg (absW, lambda);
         } else if (prob_index == 3) {
-            main = get_local_topic_reg (absW);
+            main = get_local_topic_reg (absW, lambda);
         } else if (prob_index == 4) {
             // TODO:
 
         }
+        esmat_free (absW);
     }
     Esmat* w_minus_z = esmat_init (W);
     // STEP TWO: compute linear term: linear = y^T dot (w - z) 
@@ -157,7 +159,7 @@ double sub_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO) 
 double original_objective (Esmat* Z, vector<double> LAMBDAs) {
 
     Esmat* absZ = esmat_init (Z);
-    esmat_abs (Z, absz);
+    esmat_abs (Z, absZ);
 
     // STEP ONE: compute dummy loss
     double dummy = get_dummy_loss (Z);
@@ -274,7 +276,7 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
         esmat_add (tempS, s, w_1);
 
         // compute value of objective function
-        penalty = sub1_objective (Y_1, Z_1, w_1, RHO, N);
+        penalty = sub_objective (1, Y_1, Z_1, w_1, RHO, 0.0);
         // cout << "within frank_wolfe_solver: step three finished" << endl;
         // report the #iter and objective function
         /*
@@ -307,7 +309,7 @@ void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double la
     int R = wbar->nRows; int C = wbar->nCols;
     
     // i is index of element in esmat->val, j is column index
-    int i = 0; j = 0;
+    int i = 0; int j = 0;
     int col_es_begin = wbar->val[0].first;
     vector< pair<int,double> > alpha_vec;
     while (i < SIZE && j < C) {
@@ -340,9 +342,9 @@ void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double la
                     double pos = wbar->val[esi].first;
                     double value = wbar->val[esi].second;
                     if (fabs(value) >= separator) 
-                        w_2->val.push_back(pos, max_term);
+                        w_2->val.push_back(make_pair(pos, max_term));
                     else 
-                        w_2->val.push_back(pos, max(value, 0.0));
+                        w_2->val.push_back(make_pair(pos, max(value, 0.0)));
                 }
             }
             // d) clear all elements in alpha_vec 
@@ -426,7 +428,7 @@ void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
 #endif
 */
         // resolve w_2
-        group_lasso_solver (y_2, z, w_2, RHO, LAMBDAs[0], N);
+        group_lasso_solver (y_2, z, w_2, RHO, LAMBDAs[0]);
         /*
 #ifdef ITERATION_TRACE_DUMP
         cout << "it is place 3 iteration #" << iter << endl;
@@ -434,9 +436,9 @@ void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
 #endif
 */
         // resolve w_3
-        group_lasso_solver (y_3, z, w_3, RHO, LAMBDAs[1], N);
+        group_lasso_solver (y_3, z, w_3, RHO, LAMBDAs[1]);
         // resolve w_4
-        group_lasso_solver (y_4, z, w_4, RHO, LAMBDAs[2], N);
+        group_lasso_solver (y_4, z, w_4, RHO, LAMBDAs[2]);
         
         // STEP TWO: update z by averaging w_1, w_2, w_3 and w_4
         Esmat* temp = esmat_init (0,0);

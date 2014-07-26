@@ -1,7 +1,9 @@
-cpps=$(shell ls *.cpp)
 
 all: 
-	g++ -O3 $(cpps) -o HDP 
+	g++ -O3 HDP.cpp -o HDP 
+
+test:
+	g++ -O3 exSparseMat.cpp -o exSparseMat
 
 clean:
-	rm HDP
+	rm -rf HDP exSparseMat
