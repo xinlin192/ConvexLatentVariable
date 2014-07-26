@@ -84,26 +84,67 @@ vector<int> get_all_centroids(double ** W, int nRows, int nCols) {
 */
 /*}}}*/
 
-double first_subproblm_obj (Esmat* Y_1, Esmat* Z_1, Esmat* W_1, double RHO, int N) {
+/* dummy_penalty = r dot (1 - sum_k w_nk) */
+double get_dummy_loss (Esmat* Z) {
+    Esmat* temp_vec = esmat_init (Z->nRows, 1);
+    esmat_sum_row (Z, temp_vec);
+    double dummy_loss = esmat_compute_dummy (temp_vec);   
+    esmat_free (temp_vec);
+    return dummy_loss;
+}
+/* \lambda_g \sumk \maxn |\wnk| */
+double get_global_topic_reg (Esmat* absZ, double lambda) {
+    Esmat* maxn = esmat_init (1, absZ->nCols);
+    Esmat* sumk = esmat_init (1, 1);
+    esmat_max_col (absZ, maxn);
+    esmat_sum_row (maxn, sumk);
+    double global_topic_reg = lambda * sumk->val[0].second; 
+    esmat_free (sumk);
+    esmat_free (maxn);
+    return global_topic_reg;
+}
 
-    Esmat* w_minus_z = esmat_init (W_1);
-    // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk) -> loss
-    /* this term do not exist since we did not consider noise
-    esmat_times (W_1, dist_mat, temp);
-    double sum1 = 0.5 * esmat_sum (temp);
-    */
+/* \lambda_l \sumn \maxk |\wnk| */
+double get_local_topic_reg (Esmat* absZ, double lambda) {
+    Esmat* maxk = esmat_init (Z->nRows, 1);
+    Esmat* sumn = esmat_init (1, 1);
+    esmat_max_row (absZ, maxk);
+    esmat_sum_col (maxk, sumn);
+    double local_topic_reg = LAMBDAs[1] * sumn->val[0].second; 
+    esmat_free (sumn);
+    esmat_free (maxk);
+    return local_topic_reg;
+}
+/* \lambdab \sumk \sum_v \max |\wnk^{(v)}| */
+double get_coverage_reg (Esmat* absZ, double lambda) {
+    // TODO
+    
+}
 
-    // sum2 = y_1^T dot (w_1 - z) -> linear
-    esmat_sub (W_1, Z_1, w_minus_z); // temp = w_1 - z_1
-    double linear = esmat_fdot (Y_1, w_minus_z);
+double sub_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO) {
+    // STEP ONE: compute main term
+    double main = -1.0;
+    if (prob_index == 1) {
+        // dummy_penalty = r dot (1 - sum_k w_nk)
+        main = get_dummy_loss (W);
+    } else {
+        esmat_abs (W, absW);
+        if (prob_index == 2) {
+            main = get_global_topic_reg (absW);
+        } else if (prob_index == 3) {
+            main = get_local_topic_reg (absW);
+        } else if (prob_index == 4) {
+            // TODO:
 
-    // sum3 = 0.5 * RHO * || w_1 - z_1 ||^2 -> quadratic
+        }
+    }
+    Esmat* w_minus_z = esmat_init (W);
+    // STEP TWO: compute linear term: linear = y^T dot (w - z) 
+    esmat_sub (W, Z, w_minus_z); // temp = w - z
+    double linear = esmat_fdot (Y, w_minus_z);
+    // STEP THREE: compute quadratic term: quadratic = 0.5 * RHO * || w - z ||^2 
     double quadratic = 0.5 * RHO * esmat_fnorm (w_minus_z);
-
-    // dummy_penalty = r dot (1 - sum_k w_nk)
-    Esmat* temp_vec = esmat_init (W_1->nRows, W_1->nCols);
-    esmat_sum_row (W_1, temp_vec);
-    double dummy = esmat_compute_dummy (temp_vec);
+    esmat_free (w_minus_z);
     /*
 #ifdef FRANK_WOLFE_DUMP
     cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
@@ -111,12 +152,27 @@ double first_subproblm_obj (Esmat* Y_1, Esmat* Z_1, Esmat* W_1, double RHO, int 
          <<  ")" << endl;
 #endif
 */
-    esmat_free (temp_vec);
-    esmat_free (w_minus_z);
-
-    return linear+qudratic+dummy;
+    return main + linear + quadratic;
 }
+double original_objective (Esmat* Z, vector<double> LAMBDAs) {
 
+    Esmat* absZ = esmat_init (Z);
+    esmat_abs (Z, absz);
+
+    // STEP ONE: compute dummy loss
+    double dummy = get_dummy_loss (Z);
+    // cout << "dummy =" << dummy << endl;
+
+    // STEP TWO: compute "GLOBAL TOPIC" group-lasso regularization
+    double global_topic_reg = get_global_topic_reg (absZ, LAMBDAs[0]);
+    // STEP THREE: compute "LOCAL TOPIC" group-lasso regularization
+    double local_topic_reg = get_local_topic_reg (absZ, LAMBDAs[1]);
+    // STEP FOUR: TODO compute "TOPIC COVERAGE" group-lasso regularization
+    double coverage_reg = 0.0;
+
+    esmat_free (absZ);    
+    return dummy + global_topic_reg + local_topic_reg + coverage_reg;
+}
 void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int N) {
 
     bool is_global_optimal_reached = false;
@@ -218,7 +274,7 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
         esmat_add (tempS, s, w_1);
 
         // compute value of objective function
-        penalty = first_subproblm_obj (Y_1, Z_1, w_1, RHO, N);
+        penalty = sub1_objective (Y_1, Z_1, w_1, RHO, N);
         // cout << "within frank_wolfe_solver: step three finished" << endl;
         // report the #iter and objective function
         /*
@@ -237,64 +293,30 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
     // cout << "end frank_wolfe_solver: finished! " << endl;
 }
 
-double second_subproblem_obj (Esmat* Y_2, Esmat* Z, Esmat* W_2, double RHO, int N, double lambda) {
-    // reg = 0.5 * sum_k max_n | w_nk |  -> group-lasso
-    Esmat* absW = esmat_init (W_2);
-    Esmat* maxn = esmat_init (1, W_2->nCols);
-    Esmat* sumk = esmat_init (1, 1);
-    esmat_abs (W_2, absW);
-    esmat_max_col (absW, maxn);
-    esmat_sum_row (maxn, sumk);
-    double group_lasso = lambda * sumk->val[0].second; 
 
-    // sum2 = y_2^T dot (w_2 - Z) -> linear
-    Esmat* w_minus_z = esmat_init (W_2);
-    esmat_sub (W_2, Z, w_minus_z);
-    double linear = esmat_fdot (Y_2, w_minus_z);
 
-    // sum3 = 0.5 * RHO * || w_2 - Z ||^2 -> quadratic 
-    double quadratic = 0.5 * RHO * esmat_fnorm (w_minus_z);
-
-    // ouput values of each components
-#ifdef BLOCKWISE_DUMP
-    cout << "[Blockwise] (group_lasso, linear, quadratic) = ("
-        << group_lasso << ", " << sum2 << ", " << sum3
-        << ")" << endl;
-#endif
-
-    esmat_free (w_minus_z);
-    esmat_free (sumk);
-    esmat_free (maxn);
-    esmat_free (absW);
-    //cerr << group_lasso << ", " << sum2 << ", " << sum3 << endl;
-    return group_lasso + linear + quadratic;
-}
-
-void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double lambda, int N) {
+void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double lambda) {
 
     // STEP ONE: compute the optimal solution for truncated problem
-    Esmat* wbar = esmat_init (N, N);
+    Esmat* wbar = esmat_init (w_2);
     esmat_zeros (wbar);
-    esmat_dot (RHO, Z, wbar); // wbar = RHO * z_2
+    esmat_scalar_mult (RHO, Z, wbar); // wbar = RHO * z_2
     esmat_sub (wbar, Y_2, wbar); // wbar = RHO * z_2 - y_2
-    esmat_dot (1.0/RHO, wbar, wbar); // wbar = (RHO * z_2 - y_2) / RHO
+    esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z_2 - y_2) / RHO
 
     // STEP TWO: find the closed-form solution for second subproblem
-    for (int j = 0; j < N; j ++) {
+    for (int j = 0; j < w_2->nCols; j ++) {
         // 1. bifurcate the set of values
         vector< pair<int,double> > alpha_vec;
-        for (int i = 0; i < N; i ++) {
+        for (int i = 0; i < w_2->nRows; i ++) {
             double value = wbar[i][j];
-            /*if( wbar[i][j] < 0 ){
-              cerr << "wbar[" << i << "][" << j << "]" << endl;
-              exit(0);
-              }*/
             alpha_vec.push_back (make_pair(i, abs(value)));
         }
 
         // 2. sorting
         std::sort (alpha_vec.begin(), alpha_vec.end(), pairComparator);
-        /*
+        /* 
+          // check the decreasing order 
            for (int i = 0; i < N; i ++) {
            if (alpha_vec[i].second != 0)
            cout << alpha_vec[i].second << endl;
@@ -318,7 +340,7 @@ void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double la
 
         // 4. assign closed-form solution to w_2
         if( max_term < 0 ){
-            for(int i=0;i<N;i++)
+            for(int i = 0; i < N; i++)
                 w_2[i][j] = 0.0;
             continue;
         }
@@ -336,72 +358,15 @@ void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double la
     }
 
     // compute value of objective function
-    double penalty = second_subproblem_obj (Y_2, Z, w_2, RHO, N, lambda);
+    double penalty = sub2_objective (Y_2, Z, w_2, RHO, lambda);
     // report the #iter and objective function
-    /*cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
+    /*cout << "[Blockwise] sub2_objective: " << penalty << endl;
       cout << endl;*/
 
     // STEP THREE: recollect temporary variable - wbar
     esmat_free (wbar);
 }
 
-/* TODO: 
-    1. clarify the definition of new loss
-    2. extend opt_objective to three regularizers (data structure dependent) 
-*/
-double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
-    // N is number of entities in "data", and z is N by N.
-    // z is current valid solution (average of w_1 and w_2)
-    
-    double sum = 0.0;
-    for(int i=0;i<N;i++)
-	    for(int j=0;j<N;j++)
-		    sum += z[i][j];
-    cerr << "sum=" << sum/N << endl;
-
-    // STEP ONE: compute loss function
-    double normSum = 0.0;
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            normSum += z[i][j] * dist_mat[i][j];
-        }
-    }
-    
-    // sum4 = r dot (1 - sum_k w_nk) -> dummy
-    double * temp_vec = new double [N];
-    mat_sum_row (z, temp_vec, N, N);
-    //double dummy_penalty=0.0;
-    double avg=0.0;
-    for (int i = 0; i < N; i ++) {
-        avg += temp_vec[i];
-        //dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
-    }
-    
-    double loss = 0.5 * (normSum/*+dummy_penalty*/);
-    cout << "loss=" << loss << endl;
-
-    // STEP TWO: compute group-lasso regularization
-    double * maxn = new double [N]; 
-    for (int i = 0;i < N; i ++) { // Ian: need initial 
-        maxn[i] = -INF;
-    }
-
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            if ( fabs(z[i][j]) > maxn[j])
-                maxn[j] = fabs(z[i][j]);
-        }
-    }
-    double sumk = 0.0;
-    for (int i = 0; i < N; i ++) {
-        sumk += maxn[i];
-    }
-    double reg = lambda * sumk; 
-    cout << "reg=" << reg << endl;
-
-    //delete[] temp_vec;
-    return loss + reg;
-}
 
 /* Compute the mutual distance of input instances contained within "data" */
 /*
@@ -417,10 +382,9 @@ void compute_match_mat (vector<Instance*>& data, double ** dist_mat, int N, int 
 }
 */
 
-void HDP (int D, int N, vector<double> LAMBDAs, double ** W) {
-
+void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
     // SET MODEL-RELEVANT PARAMETERS 
-    assert (LAMBDAs.size == 2);
+    assert (LAMBDAs.size() == 3);
     double LABMDA_DOC = LAMBDAs[0];
     double LAMBDA_TOPIC = LAMBDAs[1];
     double LAMBDA_BLOCK = LAMBDAs[2];
@@ -457,13 +421,11 @@ void HDP (int D, int N, vector<double> LAMBDAs, double ** W) {
         esmat_zeros (w_2);
         esmat_zeros (w_3);
         esmat_zeros (w_4);
-
         /*
 #ifdef ITERATION_TRACE_DUMP
         cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe_solvere"  << endl;
 #endif
 */
-
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
         frank_wolfe_solver ( y_1, z, w_1, RHO, N); 
@@ -474,9 +436,8 @@ void HDP (int D, int N, vector<double> LAMBDAs, double ** W) {
         cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_solver"<< endl;
 #endif
 */
-
         // resolve w_2
-        group_lasso_solver (y_2, z, w_2, RHO, lambda, N);
+        group_lasso_solver (y_2, z, w_2, RHO, LAMBDAs[0], N);
         /*
 #ifdef ITERATION_TRACE_DUMP
         cout << "it is place 3 iteration #" << iter << endl;
@@ -484,12 +445,12 @@ void HDP (int D, int N, vector<double> LAMBDAs, double ** W) {
 #endif
 */
         // resolve w_3
-        group_lasso_solver (y_3, z, w_3, RHO, lambda, N);
+        group_lasso_solver (y_3, z, w_3, RHO, LAMBDAs[1], N);
         // resolve w_4
-        group_lasso_solver (y_4, z, w_4, RHO, lambda, N);
+        group_lasso_solver (y_4, z, w_4, RHO, LAMBDAs[2], N);
         
         // STEP TWO: update z by averaging w_1, w_2, w_3 and w_4
-        temp = esmat_init ();
+        Esmat* temp = esmat_init (0,0);
         esmat_add (w_1, w_2, z);
         esmat_copy (z, temp);
         esmat_add (temp, w_3, z);
@@ -503,7 +464,6 @@ void HDP (int D, int N, vector<double> LAMBDAs, double ** W) {
         cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
 #endif
 */
-
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         esmat_sub (w_1, z, diff_1);
         // double trace_wone_minus_z = esmat_norm2 (diff_1); 
@@ -533,7 +493,7 @@ void HDP (int D, int N, vector<double> LAMBDAs, double ** W) {
         /*
         if (iter % 1 == 0) {
             // 1. trace the error
-            error = opt_objective (dist_mat, lambda, N, z);
+            error = original_objective (dist_mat, lambda, N, z);
             cout << "[Overall] iter = " << iter 
                  << ", Overall Error: " << error;
             /
@@ -605,8 +565,10 @@ int main (int argc, char ** argv) {
     int D = dimensions;
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
-    cerr << "lambda = " << lambda << endl;
-    cerr << "r = " << r << endl;
+    cerr << "lambda_g = " << LAMBDAs[0] << endl;
+    cerr << "lambda_l = " << LAMBDAs[1] << endl;
+    cerr << "lambda_b = " << LAMBDAs[2] << endl;
+    cerr << "r = " << TRIM_THRESHOLD << endl;
 
     int seed = time(NULL);
     srand (seed);
@@ -620,7 +582,7 @@ int main (int argc, char ** argv) {
 
     // Run sparse convex clustering
     Esmat* W = esmat_init (N, 1);
-    HDP (dist_mat, D, N, lambda, W);
+    HDP (D, N, LAMBDAs, W);
 
     // Output results
     ofstream fout("result");
