@@ -15,6 +15,7 @@
 #include "assert.h"
 #include "math.h"
 
+
 using namespace std;
 /* Global variables */
 const double TRIM_THRESHOLD = 10e-5;
@@ -318,7 +319,12 @@ void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt) {
     dest->nCols = 1;
     dest->val.clear();
 
-    vector<double> temp (A->nRows, 0.0);
+    double init_value = 0.0; 
+    /* TODO
+    if (opt == *min) init_value = INF;
+    else if (opt == *max) init_value = -INF;
+    */
+    vector<double> temp (A->nRows, init_value);
     
     for (int i = 0; i < sizeA; i ++) {
         int row_idx = dest->val[i].first % A->nRows;
@@ -341,7 +347,12 @@ void esmat_operate_col (Esmat* A, Esmat* dest, Operation opt) {
     dest->nCols = A->nCols;
     dest->val.clear();
 
-    vector<double> temp (A->nCols, 0.0);
+    double init_value = 0.0;
+    /* TODO
+    if (opt == *min) init_value = INF;
+    else if (opt == *max) init_value = -INF;
+    */
+    vector<double> temp (A->nCols, init_value);
     
     for (int i = 0; i < sizeA; i ++) {
         int col_idx = dest->val[i].first / A->nRows;

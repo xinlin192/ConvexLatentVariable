@@ -25,9 +25,8 @@ Inventory
 TODOs
 ---------------
 1. test availability of esmat API functions
-2. modify frank\_wolfe\_solver by utilizing esmat
-3. modify frank\_wolfe\_solver to respect the new loss function (dummy only)
-4. modify group\_lasso\_solver by using esmat
+2. genralize group\_lasso\_solver to two newly added regularizers
+3. generate experimental dataset
 
 DEVELOPMENT LOGS
 ---------------
@@ -46,3 +45,6 @@ DEVELOPMENT LOGS
 
 6. [Fri Jul 25 17:18:40 2014 by Jimmy] updated write-up to record the
    theoretical details. 
+
+7. [Fri Jul 25 21:45:06 2014 by Jimmy] modify group\_lasso\_solver by using
+   esmat
