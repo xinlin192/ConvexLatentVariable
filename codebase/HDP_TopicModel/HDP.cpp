@@ -13,7 +13,6 @@
 ################################################################*/
 
 #include "HDP.h"
-#include <cassert>
 
 /* algorithmic options */ 
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
@@ -23,7 +22,6 @@
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define NTOPIC_DUMP
-
 
 double sign (int input) {
     if (input > 0) return 1.0;

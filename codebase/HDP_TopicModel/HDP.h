@@ -19,14 +19,13 @@
 #include<set>
 #include<algorithm>
 #include <cmath>    
+#include <cassert>
 
 #include "../util.h"
-#include "exSparseMat.h"
 
 using namespace std;
 
-vector<string>* voc_list_read (string fname) {
-    vector<string>* vocList = new vector<string> ();
+void voc_list_read (string fname, vector<string>* vocList) {
    	ifstream fin(fname);
 
 	string line;
@@ -36,8 +35,6 @@ vector<string>* voc_list_read (string fname) {
         vocList->push_back (line);
 	}
 	fin.close(); 
-
-    return vocList;
 }
 
 void voc_list_print (vector<string>* vocList) {
@@ -47,9 +44,34 @@ void voc_list_print (vector<string>* vocList) {
     }
 }
 
-void voc_list_free (vector<string>* vocList) {
-    delete vocList;
-}
+void document_list_read (string fname, vector< pair<int,int> >* doc_lookup, vector<int>* word_lookup) {
+
+   	ifstream fin(fname);
+
+	string line;
+    int doc_index_begin = 0;
+    int doc_index_end = 0;
+    int d = 0; w = 0;
+	while (!fin.eof()) {
+        fin >> line;
+		if ( fin.eof() ) break;
+        // process new document
+        doc_index_begin = w;
+        // TODO: split the string to several field (delimiter: whitespace) 
+        for () {
+            // for each word, split voc_index and frequency by ":"
+            int voc_index = ; 
+            int frequency = ;
+            // push to word_lookup table
+            word_lookup->push_back(voc_index);
+            ++ w;
+        }
+        doc_index_end = w;
+        doc_lookup->push_back(make_pair(doc_index_begin, doc_index_end));
+        ++ d;
+	}
+	fin.close(); 
+} 
 
 class Instance{
 	
@@ -129,10 +151,10 @@ void readFixDim(char* fname, vector<Instance*>& data, int D){
 	while(!fin.eof()){
 		
 		fin >> tmp;
-		if( fin.eof() )break;
+		if ( fin.eof() ) break;
 		
 		Instance* ins = new Instance(id++);
-	       	for(int j=0;j<D;j++){
+	       	for(int j=0;j<D;j++) {
 			fin >> val;
 			ins->fea.push_back(make_pair(j+1,val));
 		}

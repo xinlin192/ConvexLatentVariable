@@ -18,13 +18,14 @@
 bool test_vocabulary_read () {
     bool success = false;
     string fname = "voc.txt";
-    vector<string>* vocabularies = voc_list_read (fname);
+    vector<string>* vocabularies = new vector<string> ();
+    voc_list_read (fname, vocabularies);
     if ( !(*vocabularies)[0].compare("AAA") &&
          !(*vocabularies)[1].compare("BBB") &&
          !(*vocabularies)[2].compare("CCC") &&
          !(*vocabularies)[3].compare("DDD") )
         success = true;
-    voc_list_free (vocabularies);
+    delete vocabularies;
     return success; 
 }
 
