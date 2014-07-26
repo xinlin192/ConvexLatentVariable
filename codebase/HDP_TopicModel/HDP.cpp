@@ -1,6 +1,6 @@
 /*###############################################################
 ## MODULE: HDP.cpp
-## VERSION: 1.0 
+## VERSION: 2.0 
 ## SINCE 2014-07-21
 ## AUTHOR:
 ##     Jimmy Lin (xl5224) - JimmyLin@utexas.edu  
@@ -32,7 +32,7 @@ double sign (int input) {
     else return 0.0;
 }
 
-bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
+bool pair_Second_Elem_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
     // sort pairs by second element with *decreasing order*
     return firstElem.second > secondElem.second;
 }
@@ -88,7 +88,7 @@ vector<int> get_all_centroids(double ** W, int nRows, int nCols) {
 double get_dummy_loss (Esmat* Z) {
     Esmat* temp_vec = esmat_init (Z->nRows, 1);
     esmat_sum_row (Z, temp_vec);
-    double dummy_loss = esmat_compute_dummy (temp_vec);   
+    double dummy_loss = esmat_compute_dummy (temp_vec);
     esmat_free (temp_vec);
     return dummy_loss;
 }
@@ -117,7 +117,7 @@ double get_local_topic_reg (Esmat* absZ, double lambda) {
 }
 /* \lambdab \sumk \sum_v \max |\wnk^{(v)}| */
 double get_coverage_reg (Esmat* absZ, double lambda) {
-    // TODO
+    // TODO:
     
 }
 
@@ -293,8 +293,6 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
     // cout << "end frank_wolfe_solver: finished! " << endl;
 }
 
-
-
 void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double lambda) {
 
     // STEP ONE: compute the optimal solution for truncated problem
@@ -305,60 +303,69 @@ void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double la
     esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z_2 - y_2) / RHO
 
     // STEP TWO: find the closed-form solution for second subproblem
-    for (int j = 0; j < w_2->nCols; j ++) {
-        // 1. bifurcate the set of values
-        vector< pair<int,double> > alpha_vec;
-        for (int i = 0; i < w_2->nRows; i ++) {
-            double value = wbar[i][j];
-            alpha_vec.push_back (make_pair(i, abs(value)));
-        }
-
-        // 2. sorting
-        std::sort (alpha_vec.begin(), alpha_vec.end(), pairComparator);
-        /* 
-          // check the decreasing order 
-           for (int i = 0; i < N; i ++) {
-           if (alpha_vec[i].second != 0)
-           cout << alpha_vec[i].second << endl;
-           }
-           */
-
-        // 3. find mstar
-        int mstar = 0; // number of elements support the sky
-        double separator;
-        double max_term = -INF, new_term;
-        double sum_alpha = 0.0;
-        for (int i = 0; i < N; i ++) {
-            sum_alpha += alpha_vec[i].second;
-            new_term = (sum_alpha - lambda) / (i + 1.0);
-            if ( new_term > max_term ) {
-                separator = alpha_vec[i].second;
-                max_term = new_term;
-                mstar = i;
+    int SIZE = wbar->val.size();
+    int R = wbar->nRows; int C = wbar->nCols;
+    
+    // i is index of element in esmat->val, j is column index
+    int i = 0; j = 0;
+    int col_es_begin = wbar->val[0].first;
+    vector< pair<int,double> > alpha_vec;
+    while (i < SIZE && j < C) {
+        int begin_idx = j * R;
+        int end_idx = (j+1) * R;
+        int esWBAR_index = wbar->val[i].first;
+        if (esWBAR_index >= end_idx || i == SIZE - 1) { 
+            // a) sort existing temp_vec
+            std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
+            // b) find mstar
+            int mstar = 0; // number of elements support the sky
+            double separator;
+            double max_term = -INF, new_term;
+            double sum_alpha = 0.0;
+            int nValidAlpha = alpha_vec.size();
+            for (int v = 0; v < nValidAlpha; v ++) {
+                sum_alpha += alpha_vec[i].second;
+                new_term = (sum_alpha - lambda) / (v + 1.0);
+                if ( new_term > max_term ) {
+                    separator = alpha_vec[v].second;
+                    max_term = new_term;
+                    ++ mstar;
+                }
             }
-        }
-
-        // 4. assign closed-form solution to w_2
-        if( max_term < 0 ){
-            for(int i = 0; i < N; i++)
-                w_2[i][j] = 0.0;
-            continue;
-        }
-
-        for (int i = 0; i < N; i ++) {
-            // harness vector of pair
-            double value = wbar[i][j];
-            if ( abs(value) >= separator ) {
-                w_2[i][j] = max_term;
+            // c) assign closed-form solution of current column to w_2
+            if (nValidAlpha == 0 || max_term < 0) {
+                ; // this column of w_2 is all-zero, hence we do nothing for that 
             } else {
-                // its ranking is above m*, directly inherit the wbar
-                w_2[i][j] = max(wbar[i][j],0.0);
+                for (int esi = col_es_begin; wbar->val[esi].first < end_idx; esi ++) {
+                    double pos = wbar->val[esi].first;
+                    double value = wbar->val[esi].second;
+                    if (fabs(value) >= separator) 
+                        w_2->val.push_back(pos, max_term);
+                    else 
+                        w_2->val.push_back(pos, max(value, 0.0));
+                }
             }
+            // d) clear all elements in alpha_vec 
+            alpha_vec.clear();
+            // e) push current element to the cleared alpha_vec
+            double value = wbar->val[i].second;
+            alpha_vec.push_back (make_pair(esWBAR_index % R, fabs(value)));
+            // f) go to operate next element and next column
+            col_es_begin = i;
+            ++ i; ++ j;
+        } else if (esWBAR_index >= begin_idx) {
+            // a) push current element to the cleared temp_vec
+            double value = wbar->val[i].second;
+            alpha_vec.push_back (make_pair(esWBAR_index % R, fabs(value)));
+            // b) go to operate next element with fixed column index (j)
+            ++ i; 
+        } else { // impossible to occur
+            assert (false);
         }
     }
-
+    
     // compute value of objective function
-    double penalty = sub2_objective (Y_2, Z, w_2, RHO, lambda);
+    double penalty = sub_objective (2, Y_2, Z, w_2, RHO, lambda);
     // report the #iter and objective function
     /*cout << "[Blockwise] sub2_objective: " << penalty << endl;
       cout << endl;*/
@@ -367,47 +374,29 @@ void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double la
     esmat_free (wbar);
 }
 
-
-/* Compute the mutual distance of input instances contained within "data" */
-/*
-void compute_match_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
-
-    // STEP ONE: convert input sparse data to desired format
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            ;
-        }
-    }
-    // STEP TWO: check correctness by assertion
-}
-*/
-
 void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 3);
-    double LABMDA_DOC = LAMBDAs[0];
-    double LAMBDA_TOPIC = LAMBDAs[1];
-    double LAMBDA_BLOCK = LAMBDAs[2];
     double ALPHA = 1.0;
     double RHO = 1.0;
 
     /* DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
-    Esmat* w_1 = esmat_init (N, N);
-    Esmat* w_2 = esmat_init (N, N);
-    Esmat* w_3 = esmat_init (N, N);
-    Esmat* w_4 = esmat_init (N, N);
+    Esmat* w_1 = esmat_init (N, 1);
+    Esmat* w_2 = esmat_init (N, 1);
+    Esmat* w_3 = esmat_init (N, 1);
+    Esmat* w_4 = esmat_init (N, 1);
 
-    Esmat* y_1 = esmat_init (N, N);
-    Esmat* y_2 = esmat_init (N, N);
-    Esmat* y_3 = esmat_init (N, N);
-    Esmat* y_4 = esmat_init (N, N);
+    Esmat* y_1 = esmat_init (N, 1);
+    Esmat* y_2 = esmat_init (N, 1);
+    Esmat* y_3 = esmat_init (N, 1);
+    Esmat* y_4 = esmat_init (N, 1);
 
-    Esmat* z = esmat_init (N, N);
+    Esmat* z = esmat_init (N, 1);
 
-    Esmat* diff_1 = esmat_init (N, N);
-    Esmat* diff_2 = esmat_init (N, N);
-    Esmat* diff_3 = esmat_init (N, N);
-    Esmat* diff_4 = esmat_init (N, N);
+    Esmat* diff_1 = esmat_init (N, 1);
+    Esmat* diff_2 = esmat_init (N, 1);
+    Esmat* diff_3 = esmat_init (N, 1);
+    Esmat* diff_4 = esmat_init (N, 1);
 
     /* SET ITERATION-RELEVANT VARIABLES */
     double error = INF;
