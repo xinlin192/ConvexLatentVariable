@@ -292,14 +292,13 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
     // cout << "end frank_wolfe_solver: finished! " << endl;
 }
 
-void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double lambda) {
-
+void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
     // STEP ONE: compute the optimal solution for truncated problem
-    Esmat* wbar = esmat_init (w_2);
+    Esmat* wbar = esmat_init (w);
     esmat_zeros (wbar);
-    esmat_scalar_mult (RHO, Z, wbar); // wbar = RHO * z_2
-    esmat_sub (wbar, Y_2, wbar); // wbar = RHO * z_2 - y_2
-    esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z_2 - y_2) / RHO
+    esmat_scalar_mult (RHO, Z, wbar); // wbar = RHO * z
+    esmat_sub (wbar, Y, wbar); // wbar = RHO * z - y
+    esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z - y) / RHO
 
     // STEP TWO: find the closed-form solution for second subproblem
     int SIZE = wbar->val.size();
@@ -331,17 +330,17 @@ void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double la
                     ++ mstar;
                 }
             }
-            // c) assign closed-form solution of current column to w_2
+            // c) assign closed-form solution of current column to w
             if (nValidAlpha == 0 || max_term < 0) {
-                ; // this column of w_2 is all-zero, hence we do nothing for that 
+                ; // this column of w is all-zero, hence we do nothing for that 
             } else {
                 for (int esi = col_es_begin; wbar->val[esi].first < end_idx; esi ++) {
                     double pos = wbar->val[esi].first;
                     double value = wbar->val[esi].second;
                     if (fabs(value) >= separator) 
-                        w_2->val.push_back(make_pair(pos, max_term));
+                        w->val.push_back(make_pair(pos, max_term));
                     else 
-                        w_2->val.push_back(make_pair(pos, max(value, 0.0)));
+                        w->val.push_back(make_pair(pos, max(value, 0.0)));
                 }
             }
             // d) clear all elements in alpha_vec 
@@ -364,13 +363,23 @@ void group_lasso_solver (Esmat* Y_2, Esmat* Z, Esmat* w_2, double RHO, double la
     }
     
     // compute value of objective function
-    double penalty = sub_objective (2, Y_2, Z, w_2, RHO, lambda);
+    double penalty = sub_objective (2, Y, Z, w, RHO, lambda);
     // report the #iter and objective function
     /*cout << "[Blockwise] sub2_objective: " << penalty << endl;
       cout << endl;*/
 
     // STEP THREE: recollect temporary variable - wbar
     esmat_free (wbar);
+}
+
+void global_topic_subproblem () {
+
+}
+void local_topic_subproblem () {
+
+}
+void coverage_subproblem () {
+
 }
 
 void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
@@ -425,7 +434,7 @@ void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
 #endif
 */
         // resolve w_2
-        group_lasso_solver (y_2, z, w_2, RHO, LAMBDAs[0]);
+        global_topic_subproblem (y_2, z, w_2, RHO, LAMBDAs[0]);
         /*
 #ifdef ITERATION_TRACE_DUMP
         cout << "it is place 3 iteration #" << iter << endl;
@@ -433,9 +442,9 @@ void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
 #endif
 */
         // resolve w_3
-        group_lasso_solver (y_3, z, w_3, RHO, LAMBDAs[1]);
+        local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[1]);
         // resolve w_4
-        group_lasso_solver (y_4, z, w_4, RHO, LAMBDAs[2]);
+        coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2]);
         
         // STEP TWO: update z by averaging w_1, w_2, w_3 and w_4
         Esmat* temp = esmat_init (0,0);
