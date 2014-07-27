@@ -19,42 +19,36 @@
 int main (int argc, char ** argv) {
 
     // EXCEPTION control: illustrate the usage if get input of wrong format
-    if (argc < 3) {
-        cerr << "Usage: HDP [dataFile] [lambda_document] [lambda_topic] [lambda_block]" << endl;
-        cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
+    if (argc < 5) {
+        cerr << "Usage: HDP [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local] [lambda_coverage]" << endl;
         exit(-1);
     }
 
     // PARSE arguments
-    char * dataFile = argv[1];
+    string voc_file (argv[1]);
+    string doc_file (argv[2]);
     vector<double> LAMBDAs (3, 0.0);
-    LAMBDAs[0] = atof(argv[2]); // lambda_document
-    LAMBDAs[1] = atof(argv[3]); // lambda_topic
-    LAMBDAs[2] = atof(argv[4]); // lambda_block
+    LAMBDAs[0] = atof(argv[3]); // lambda_document
+    LAMBDAs[1] = atof(argv[4]); // lambda_topic
+    LAMBDAs[2] = atof(argv[5]); // lambda_block
 
-    // READ in data
-    vector<Instance*> data;
-    //read2D (dataFile, data);  
-    // NOTE: need to change the number once switch to a new dataset
-    readFixDim (dataFile, data, 13);
-
-    // EDA: explore the data 
-    int dimensions = -1;
-    int N = data.size(); // data size
-    for (int i = 0; i < N; i++) {
-        vector< pair<int,double> > * f = &(data[i]->fea);
-        int last_index = f->size() - 1;
-        if (f->at(last_index).first > dimensions) {
-            dimensions = f->at(last_index).first;
-        }
-    }
+    // preprocess the input dataset
+    Lookups lookup_tables;
+    vector<string> voc_list();
+    lookup_tables.doc_lookup = new vector< pair<int,int> >();
+    lookup_tables.word_lookup = new vector<int>();
+    lookup_tables.voc_lookup = new vector< vector<int> >();
+    
+    voc_list_read (voc_file, &voc_list);
+    document_list_read (doc_file, &lookup_tables)
+    
     int D = dimensions;
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
-    cerr << "lambda_g = " << LAMBDAs[0] << endl;
-    cerr << "lambda_l = " << LAMBDAs[1] << endl;
-    cerr << "lambda_b = " << LAMBDAs[2] << endl;
-    cerr << "r = " << TRIM_THRESHOLD << endl;
+    cerr << "lambda_global = " << LAMBDAs[0] << endl;
+    cerr << "lambda_local = " << LAMBDAs[1] << endl;
+    cerr << "lambda_coverage = " << LAMBDAs[2] << endl;
+    cerr << "TRIM_THRESHOLD = " << TRIM_THRESHOLD << endl;
 
     int seed = time(NULL);
     srand (seed);
@@ -68,12 +62,12 @@ int main (int argc, char ** argv) {
 
     // Run sparse convex clustering
     Esmat* W = esmat_init (N, 1);
-    HDP (D, N, LAMBDAs, W);
+    HDP (D, N, LAMBDAs, W, lookup_tables);
 
     // Output results
     ofstream fout("result");
 
-    // get all topics
+    // interpret result by means of voc_list
     /*{{{*/
     /*
     vector<int> centroids = get_all_centroids(W, N, N); // contains index of all centroids
@@ -99,4 +93,9 @@ int main (int argc, char ** argv) {
     }
     */
 /*}}}*/
+
+    // free resources
+    delete lookup_tables.doc_lookup;
+    delete lookup_tables.word_lookup;
+    delete lookup_tables.voc_lookup;
 }

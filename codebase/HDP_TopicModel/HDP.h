@@ -25,6 +25,12 @@
 
 using namespace std;
 
+typedef struct {
+    vector< pair<int,int> >* doc_lookup;
+    vector<int>* word_lookup;
+    vector< vector<int> >* voc_lookup;
+} Lookups ;
+
 /* Note that operations within this function do not destroy original input */
 void split (string input, vector<string>* elements, string delimiter) {
     string str (input);
@@ -58,10 +64,12 @@ void voc_list_print (vector<string>* vocList) {
     }
 }
 /* word_lookup table restore the index in voc_list of vocabulary to which a word coresponds */
-void document_list_read (string fname, vector< pair<int,int> >* doc_lookup, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
+void document_list_read (string fname, Lookups* tables) {
+    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
+    vector<int>* word_lookup = tables->word_lookup; 
+    vector< vector<int> >* voc_lookup = tables->voc_lookup;
 
    	ifstream fin(fname);
-
 	string line = "";
     int doc_index_begin = 0;
     int doc_index_end = 0;

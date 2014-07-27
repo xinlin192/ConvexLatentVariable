@@ -127,7 +127,6 @@ double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >*
 }
 /* \lambdab \sum_k \sum_{w \in voc(k)} \underset{word(n) = w}{\text{max}} |\wnk|  */
 double get_coverage_reg (Esmat* absZ, double lambda, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
-    // TODO:
     // STEP ONE: initialize sub matrix for each vocabulary
     int nVocs = voc_lookup->size();
     vector<Esmat*> sub_absZ (nVocs);
@@ -482,11 +481,14 @@ void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambd
     double penalty = subproblem_objective (4, Y, Z, w, RHO, lambda);
 }
 
-void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
+void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 3);
     double ALPHA = 1.0;
     double RHO = 1.0;
+    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
+    vector<int>* word_lookup = tables->word_lookup; 
+    vector< vector<int> >* voc_lookup = tables->voc_lookup;
 
     /* DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
     Esmat* w_1 = esmat_init (N, 1);
@@ -547,7 +549,7 @@ cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
         coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2], word_lookup, voc_lookup);
 
         // STEP TWO: update z by averaging w_1, w_2, w_3 and w_4
-        Esmat* temp = esmat_init (0,0);
+        Esmat* temp = esmat_init ();
         esmat_add (w_1, w_2, z);
         esmat_copy (z, temp);
         esmat_add (temp, w_3, z);
