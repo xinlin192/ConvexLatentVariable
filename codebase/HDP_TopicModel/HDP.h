@@ -38,6 +38,7 @@ void split (string input, vector<string>* elements, string delimiter) {
         elements->push_back(str) ;  
 }
 
+/* TODO: consider the vocabulary is 0-based or 1-based */
 void voc_list_read (string fname, vector<string>* vocList) {
    	ifstream fin(fname);
 
@@ -57,7 +58,7 @@ void voc_list_print (vector<string>* vocList) {
     }
 }
 /* word_lookup table restore the index in voc_list of vocabulary to which a word coresponds */
-void document_list_read (string fname, vector< pair<int,int> >* doc_lookup, vector<int>* word_lookup) {
+void document_list_read (string fname, vector< pair<int,int> >* doc_lookup, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
 
    	ifstream fin(fname);
 
@@ -87,4 +88,10 @@ void document_list_read (string fname, vector< pair<int,int> >* doc_lookup, vect
         ++ d;
 	}
 	fin.close(); 
+    int nWords = w;
+    for (int i = 0; i < nWords; i ++) {
+        // TODO: 0-based or 1-based???
+        (*voc_lookup)[ (*word_lookup)[i]-1 ].push_back(i);
+    }
 } 
+

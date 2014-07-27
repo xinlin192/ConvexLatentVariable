@@ -19,6 +19,7 @@ using namespace std;
 /* Global variables */
 const double DUMMY_PENALTY_RATE = 1000.0;
 const double TRIM_THRESHOLD = 10e-5;
+const double INFINITY = 10e300;
 
 /* Definition of Data structure for Extensible Sparse Matrix (Esmat*) */
 typedef struct {
@@ -52,12 +53,17 @@ void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt);
 /* Allocation and De-allocation */
 Esmat* esmat_init (int nRows, int nCols);
 Esmat* esmat_init (Esmat * A);
+Esmat* esmat_init ();
+void esmat_init_all (vector<Esmat*>* src);
 void esmat_free (Esmat* src);
+void esmat_free_all (vector<Esmat*> src);
 /* Rearrange one esmat */
 void esmat_align (Esmat* mat) {
 /* submat and merge */
 void esmat_submat_row (int start_index, int end_index, Esmat* mat, Esmat* submat);
+void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector<int>* word_lookup, vector< vector<int> >* voc_lookup);
 void esmat_merge_row (Esmat* submat, int start_index, int end_index, Esmat* mat);
+void esmat_merge_row (Esmat* submat, vector<int>* sub_voc_lookup, Esmat* mat);
 /* frobenius product and norm */
 double esmat_fdot (Esmat* A, Esmat* B);
 double esmat_sum (Esmat* A);
@@ -89,17 +95,17 @@ void esmat_sub (Esmat* A, Esmat* B, Esmat* dest)
 
 /* min, max and sum over column elements */
 void esmat_min_col (Esmat* A, Esmat* dest) 
-{ esmat_operate_col (A, dest, min); }
+{ esmat_operate_col (A, dest, min, INFINITY); }
 void esmat_max_col (Esmat* A, Esmat* dest) 
-{ esmat_operate_col (A, dest, max); }
+{ esmat_operate_col (A, dest, max, -INFINITY); }
 void esmat_sum_col (Esmat* A, Esmat* dest) 
-{ esmat_operate_col (A, dest, sum); }
+{ esmat_operate_col (A, dest, sum, 0.0); }
 
 /* min, max and sum over row elements */
 void esmat_min_row (Esmat* A, Esmat* dest) 
-{ esmat_operate_row (A, dest, min); }
+{ esmat_operate_row (A, dest, min, INFINITY); }
 void esmat_max_row (Esmat* A, Esmat* dest) 
-{ esmat_operate_row (A, dest, max); }
+{ esmat_operate_row (A, dest, max, -INFINITY); }
 void esmat_sum_row (Esmat* A, Esmat* dest) 
-{ esmat_operate_row (A, dest, sum); }
+{ esmat_operate_row (A, dest, sum, 0.0); }
 

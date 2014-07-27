@@ -27,16 +27,25 @@ Esmat* esmat_init (int nRows, int nCols) {
 }
 Esmat* esmat_init (Esmat* src) {
     return esmat_init (src->nRows, src->nCols);
-};
+}
+Esmat* esmat_init () {
+    return esmat_init (0, 0);
+}
+void esmat_init_all (vector<Esmat*>* src) {
+    int N = src->size();
+    for (int i = 0; i < N; i++) {
+        (*src)[i] = esmat_init();
+    }
+}
 /* Deallocate given Esmat */
 void esmat_free (Esmat* src) {
     src->val.clear();
     delete src;
 }
 void esmat_free_all (vector<Esmat*> src) {
-    for (int i = 0; i < src.size(); i ++) {
-        src[i]->val.clear();
-        delete src[i];
+    int N = src.size();
+    for (int i = 0; i < N; i ++) {
+        esmat_free(src[i])
     }
 }
 void esmat_zeros (Esmat* A) {
@@ -75,15 +84,42 @@ void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector< pair<int,int>
             end_index = look_up[d].second;
         }
         // get value of that entry
-        int value = mat->val[i].second;
+        double value = mat->val[i].second;
         // compute corresponding position in submats
         int submat_row_index = mat_row_index - start_index;
         int submat_col_index = mat_col_index;
         int submat_index = submat_row_index + submat_col_index * submats[d]->nRows;
         submats[d]->val.push_back(make_pair(submat_index, value));
+        ++ i;
+    }
+}
+// This submat_row version is for coverage_subproblem
+void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
+    int nVocs = voc_lookup->size();
+    // STEP ONE: renew the characteristics of submats
+    for (int v = 0; v < nVocs; v ++) {
+        submats[v]->nRows = (*voc_lookup)[v].size();
+        submats[v]->nCols = mat->nCols;
+        submats[v]->val.clear();
+    }
+    // STEP TWO:
+    int mat_size = mat->val.size();
+    for (int i = 0; i < mat_size; i ++) {
+        int mat_index = mat->val[i].first;
+        int mat_row_index = mat_index % mat->nRows;
+        int mat_col_index = mat_index / mat->nRows;
+
+        int v = (*word_lookup)[mat_row_index] - 1;
+        int submat_row_index = (*voc_lookup)[v].find(mat_row_index);
+        int submat_col_index = mat_col_index;
+        int submat_index = submat_row_index + submat_col_index * submats[v]->nRows;
+
+        double value = mat->val[i].second;
+        submats[v]->push_back(make_pair(submat_index, value));
     }
 }
 /* put submat to specified position of mat */
+// this merge_row version is for local_topic_subproblem
 void esmat_merge_row (Esmat* submat, int start_index, int end_index, Esmat* mat) {
     assert (start_index < end_index);
 
@@ -93,15 +129,32 @@ void esmat_merge_row (Esmat* submat, int start_index, int end_index, Esmat* mat)
         int submat_row_index = submat_index % submat->nRows;
         int submat_col_index = submat_index / submat->nRows;
         // get value of that entry
-        int value = submat->val[i].second;
+        double value = submat->val[i].second;
         // compute corresponding position in submat
         int mat_row_index = submat_row_index + start_index;
         int mat_col_index = submat_col_index;
         int mat_index = mat_row_index + mat_col_index * mat->nRows;
-        mat->val.push_back(make_pair(submat_index, value));
+        mat->val.push_back(make_pair(mat_index, value));
     }
-    // realign the mat->val with index-increasing order
-    esmat_align (mat);
+}
+// this merge_row version is for coverage_subproblem
+void esmat_merge_row (Esmat* submat, vector<int>* sub_voc_lookup, Esmat* mat) {
+    int nWords = sub_voc_lookup->size(); // related to one vocabulary
+    assert (submat->nRows == nWords);
+
+    int submat_size = submat->val.size();
+    for (int i = 0; i < submat_size; i ++) {
+        int submat_index = submat->val[i].first;
+        int submat_row_index = submat_index % submat->nRows;
+        int submat_col_index = submat_index / submat->nRows;
+        
+        int mat_row_index = (*sub_voc_lookup)[submat_row_index];
+        int mat_col_index = submat_col_index;
+        int mat_index = mat_row_index + mat_col_index * mat->nRows;
+
+        double value = submat->val[i].second;
+        mat->val.push_back(make_pair(mat_index, value));
+    }
 }
 /* frobenius product */
 double esmat_fdot (Esmat* A, Esmat* B) {
@@ -233,12 +286,6 @@ void esmat_copy (Esmat* A, Esmat* D) {
     }
 }
 
-/* regularization for penalizing number of vocabularies used by topics */
-/*
-mat_nonzero_index_col {
-}
-*/
-
 void esmat_trim (Esmat* A) {
     int sizeA = A->val.size();
 	for (int i = 0; i < sizeA; i ++) {
@@ -296,7 +343,7 @@ void esmat_bin_operate (Esmat* A, Esmat* B, Esmat* dest, Operation opt) {
     }
 }
 /* Framework for operating over each row of esmat A */
-void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt) {
+void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt, double init_value) {
 
     int sizeA = A->val.size();
 
@@ -305,11 +352,6 @@ void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt) {
     dest->nCols = 1;
     dest->val.clear();
 
-    double init_value = 0.0; 
-    /* TODO
-    if (opt == *min) init_value = INF;
-    else if (opt == *max) init_value = -INF;
-    */
     vector<double> temp (A->nRows, init_value);
     
     for (int i = 0; i < sizeA; i ++) {
@@ -324,7 +366,7 @@ void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt) {
     }
 }
 /* Framework for operating over each column of esmat A */
-void esmat_operate_col (Esmat* A, Esmat* dest, Operation opt) {
+void esmat_operate_col (Esmat* A, Esmat* dest, Operation opt, double init_value) {
     
     int sizeA = A->val.size();
 
@@ -333,11 +375,6 @@ void esmat_operate_col (Esmat* A, Esmat* dest, Operation opt) {
     dest->nCols = A->nCols;
     dest->val.clear();
 
-    double init_value = 0.0;
-    /* TODO
-    if (opt == *min) init_value = INF;
-    else if (opt == *max) init_value = -INF;
-    */
     vector<double> temp (A->nCols, init_value);
     
     for (int i = 0; i < sizeA; i ++) {

@@ -56,7 +56,8 @@ bool test_doc_lookup () {
     string fname = "doc.txt";
     vector< pair<int,int> > doc_lookup;
     vector<int> word_lookup;
-    document_list_read (fname, &doc_lookup, &word_lookup);
+    vector< vector<int> > voc_lookup (4, vector<int>(0));
+    document_list_read (fname, &doc_lookup, &word_lookup, &voc_lookup);
     // check doc_lookup table
     if ( doc_lookup.size() == 3 &&
         doc_lookup[0].first == 0 && doc_lookup[0].second == 2 &&
@@ -76,12 +77,28 @@ bool test_word_lookup () {
     string fname = "doc.txt";
     vector< pair<int,int> > doc_lookup;
     vector<int> word_lookup;
-    document_list_read (fname, &doc_lookup, &word_lookup);
+    vector< vector<int> > voc_lookup (4, vector<int>(0));
+    document_list_read (fname, &doc_lookup, &word_lookup, &voc_lookup);
     // check doc_lookup table
     if ( word_lookup.size() == 6 &&
          word_lookup[0] == 1 &&  word_lookup[1] == 3 &&
          word_lookup[2] == 2 &&  word_lookup[3] == 4 &&
          word_lookup[4] == 1 &&  word_lookup[5] == 4 )
+        success = true;
+    return success;
+}
+bool test_voc_lookup () {
+    bool success = false;
+    string fname = "doc.txt";
+    vector< pair<int,int> > doc_lookup;
+    vector<int> word_lookup;
+    vector< vector<int> > voc_lookup (4, vector<int>(0));
+    document_list_read (fname, &doc_lookup, &word_lookup, &voc_lookup);
+    // check doc_lookup table
+    if ( voc_lookup.size() == 4 &&
+         voc_lookup[0][0] == 0 &&  voc_lookup[0][1] == 4 &&
+         voc_lookup[1][0] == 2 &&  voc_lookup[2][0] == 1 &&
+         voc_lookup[3][0] == 3 &&  voc_lookup[3][1] == 5 )
         success = true;
     return success;
 }
@@ -91,12 +108,14 @@ int main (int args, char ** argv) {
     string result_string_split = test_string_split() ? PASS : FAIL;
     string result_doc_lookup = test_doc_lookup() ? PASS : FAIL;
     string result_word_lookup = test_word_lookup() ? PASS : FAIL;
+    string result_voc_lookup = test_voc_lookup() ? PASS : FAIL;
 
     cout << "Test Cases:" << endl;
     cout << "  test_vocabulary_read: " << result_vocabulary_read << endl;
     cout << "  test_string_split: " << result_string_split << endl;
     cout << "  test_doc_lookup: " << result_doc_lookup<< endl;
     cout << "  test_word_lookup: " << result_word_lookup<< endl;
+    cout << "  test_voc_lookup: " << result_voc_lookup<< endl;
 
     return 0;
 }

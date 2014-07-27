@@ -126,10 +126,19 @@ double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >*
     return local_topic_reg;
 }
 /* \lambdab \sum_k \sum_{w \in voc(k)} \underset{word(n) = w}{\text{max}} |\wnk|  */
-double get_coverage_reg (Esmat* absZ, double lambda) {
+double get_coverage_reg (Esmat* absZ, double lambda, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
     // TODO:
-
-    return 0.0;
+    // STEP ONE: initialize sub matrix for each vocabulary
+    int nVocs = voc_lookup->size();
+    vector<Esmat*> sub_absZ (nVocs);
+    esmat_init_all (&sub_absZ);
+    esmat_submat_row (absZ, sub_absZ, word_lookup, voc_lookup);
+    double coverage_reg = 0.0;
+    for (int v = 0; v < nVocs; v ++) {
+        coverage_reg += get_global_topic_reg (sub_absZ[v], lambda); 
+    }
+    esmat_free_all (sub_absZ);
+    return coverage_reg;
 }
 
 double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda) {
@@ -146,8 +155,7 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
         } else if (prob_index == 3) {
             main = get_local_topic_reg (absW, lambda);
         } else if (prob_index == 4) {
-            // TODO:
-            ;
+            main = get_coverage_reg (absW, lambda, word_lookup);
         }
         esmat_free (absW);
     }
@@ -179,10 +187,9 @@ double original_objective (Esmat* Z, vector<double> LAMBDAs) {
     // STEP TWO: compute "GLOBAL TOPIC" group-lasso regularization
     double global_topic_reg = get_global_topic_reg (absZ, LAMBDAs[0]);
     // STEP THREE: compute "LOCAL TOPIC" group-lasso regularization
-    double local_topic_reg = get_local_topic_reg (absZ, LAMBDAs[1]);
+    double local_topic_reg = get_local_topic_reg (absZ, LAMBDAs[1], doc_lookup);
     // STEP FOUR: TODO compute "TOPIC COVERAGE" group-lasso regularization
-    double coverage_reg = 0.0;
-
+    double coverage_reg = get_coverage_reg (absZ, LAMBDAs[2], word_lookup);
     esmat_free (absZ);    
     return dummy + global_topic_reg + local_topic_reg + coverage_reg;
 }
@@ -408,16 +415,18 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
     esmat_submat_row (Y, subY, doc_lookup);
     esmat_submat_row (Z, subZ, doc_lookup);
 
-    for (int i = 0; i < nDocs; i ++) {
+    for (int d = 0; d < nDocs; d ++) {
         // STEP TWO: invoke group_lasso_solver to each individual group
-        group_lasso_solver (subY[i], subZ[i], subW[i], RHO, lambda);
+        group_lasso_solver (subY[d], subZ[d], subW[d], RHO, lambda);
 
         // STEP TREE: merge solution of each individual group (place back)
         // NOTE: all esmat position has to be recomputed
-        int start_row = (*doc_lookup)[i].first;
-        int end_row = (*doc_lookup)[i].second;
-        esmat_merge_row (subW[i], start_row, end_row, tempW);
+        int start_row = (*doc_lookup)[d].first;
+        int end_row = (*doc_lookup)[d].second;
+        esmat_merge_row (subW[d], start_row, end_row, tempW);
     }
+    // realign the mat->val with index-increasing order
+    esmat_align (tempW);
     // STEP FIVE: free auxiliary resource
     for (int d = 0; d < nDocs; d ++) {
         esmat_free (subW[d]);
@@ -431,8 +440,45 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
     // compute value of objective function (for tracing result)
     double penalty = subproblem_objective (3, Y, Z, w, RHO, lambda);
 }
-void coverage_subproblem () {
-    
+void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
+    int nVocs = voc_lookup->size();
+    Esmat* tempW = esmat_init (w);
+    vector<Esmat*> subW (nVocs); 
+    vector<Esmat*> subY (nVocs);
+    vector<Esmat*> subZ (nVocs);
+    // STEP ZERO: initialize all submats
+    for (int v = 0; v < nVocs; v++) {
+        subW[v] = esmat_init (0,0);
+        subY[v] = esmat_init (0,0);
+        subZ[v] = esmat_init (0,0);
+    }
+    // STEP ONE: separate esmat Y, Z, w to multiple small-sized esmat
+    // NOTE: all esmat position has to be recomputed
+    esmat_submat_row (w, subW, word_lookup, voc_lookup);
+    esmat_submat_row (Y, subY, word_lookup, voc_lookup);
+    esmat_submat_row (Z, subZ, word_lookup, voc_lookup);
+
+    for (int v = 0; v < nVocs; v++) {
+        // STEP TWO: invoke group_lasso_solver to each individual group
+        group_lasso_solver (subY[v], subZ[v], subW[v], RHO, lambda);
+
+        // STEP TREE: merge solution of each individual group (place back)
+        // NOTE: all esmat position has to be recomputed
+        esmat_merge_row (subW[v], &((*voc_lookup)[v]), tempW);
+    }
+    // realign the mat->val with index-increasing order
+    esmat_align (tempW);
+    // STEP FIVE: free auxiliary resource
+    for (int v = 0; v < nVocs; v ++) {
+        esmat_free (subW[v]);
+        esmat_free (subY[v]);
+        esmat_free (subZ[v]);
+    }
+
+    // FINAL: update merged solution to w
+    esmat_copy (tempW, w);
+
+    // compute value of objective function (for tracing result)
     double penalty = subproblem_objective (4, Y, Z, w, RHO, lambda);
 }
 
@@ -496,9 +542,9 @@ cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
 #endif
 */
         // resolve w_3
-        local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[1]);
+        local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[1], doc_lookup);
         // resolve w_4
-        coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2]);
+        coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2], word_lookup, voc_lookup);
 
         // STEP TWO: update z by averaging w_1, w_2, w_3 and w_4
         Esmat* temp = esmat_init (0,0);
