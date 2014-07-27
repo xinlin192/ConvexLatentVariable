@@ -6,15 +6,17 @@
 #######################################################################	
 
 all: 
-	g++ -O3 driver.cpp -o driver
+	g++ -O3 HDP.cpp -o HDP
+
+test: testEsmat testHDP
 
 testEsmat:
-	g++ -O3 exSparseMat.cpp -o exSparseMat
+	g++ -O3 testEsmat.cpp -o testEsmat
+	./testEsmat
 
 testHDP:
 	g++ -O3 testHDP.cpp -o testHDP
 	./testHDP 
 
-
 clean:
-	rm -rf HDP exSparseMat testHDP
+	rm -rf HDP testEsmat testHDP

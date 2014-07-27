@@ -15,13 +15,11 @@
 #include<fstream>
 #include<stdlib.h>
 #include<vector>
-#include<map>
-#include<set>
-#include<algorithm>
-#include <cmath>    
-#include <cassert>
+#include<cmath>    
+#include<cassert>
 
 #include "../util.h"
+#include "exSparseMat.h"
 
 using namespace std;
 
@@ -30,6 +28,8 @@ typedef struct {
     vector<int>* word_lookup;
     vector< vector<int> >* voc_lookup;
 } Lookups ;
+
+void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W, Lookups* tables);
 
 /* Note that operations within this function do not destroy original input */
 void split (string input, vector<string>* elements, string delimiter) {
@@ -63,6 +63,7 @@ void voc_list_print (vector<string>* vocList) {
         cout << (*vocList)[v] << endl;
     }
 }
+
 /* word_lookup table restore the index in voc_list of vocabulary to which a word coresponds */
 void document_list_read (string fname, Lookups* tables) {
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;

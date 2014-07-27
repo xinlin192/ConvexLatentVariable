@@ -34,8 +34,6 @@ bool pair_Second_Elem_Comparator (const std::pair<int, double>& firstElem, const
     return firstElem.second > secondElem.second;
 }
 
-typedef double (* dist_func) (Instance*, Instance*, int); 
-
 /*{{{*/
 /*
 int get_nCentroids (double ** W, int nRows, int nCols) {
@@ -312,7 +310,7 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
     // cout << "end frank_wolfe_solver: finished! " << endl;
 }
 
-void group_lasso_solver (int prob_index, Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
+void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
     // STEP ONE: compute the optimal solution for truncated problem
     Esmat* wbar = esmat_init (w);
     esmat_zeros (wbar);
@@ -626,4 +624,91 @@ cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
     // STEP SIX: put converged solution to destinated W
     esmat_copy (z, W);
     esmat_free (z);
+}
+
+// entry main function
+int main (int argc, char ** argv) {
+
+    // EXCEPTION control: illustrate the usage if get input of wrong format
+    if (argc < 5) {
+        cerr << "Usage: HDP [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local] [lambda_coverage]" << endl;
+        exit(-1);
+    }
+
+    // PARSE arguments
+    string voc_file (argv[1]);
+    string doc_file (argv[2]);
+    vector<double> LAMBDAs (3, 0.0);
+    LAMBDAs[0] = atof(argv[3]); // lambda_document
+    LAMBDAs[1] = atof(argv[4]); // lambda_topic
+    LAMBDAs[2] = atof(argv[5]); // lambda_block
+
+    // preprocess the input dataset
+    vector<string> voc_list;
+    voc_list_read (voc_file, &voc_list);
+    int nVocs = voc_list.size();
+
+    vector< pair<int,int> > doc_lookup;
+    vector<int> word_lookup;
+    vector< vector<int> > voc_lookup (nVocs, vector<int>());
+    Lookups lookup_tables;
+    lookup_tables.doc_lookup = &doc_lookup;
+    lookup_tables.word_lookup = &word_lookup;
+    lookup_tables.voc_lookup = &voc_lookup;
+    document_list_read (doc_file, &lookup_tables);
+    
+    int nDocs = lookup_tables.doc_lookup->size();
+    int nWords = lookup_tables.word_lookup->size();
+    cerr << "nVocs = " << nVocs << endl; // # vocabularies
+    cerr << "nDocs = " << nDocs << endl; // # documents
+    cerr << "nWords = " << nWords << endl; // # words
+    cerr << "lambda_global = " << LAMBDAs[0] << endl;
+    cerr << "lambda_local = " << LAMBDAs[1] << endl;
+    cerr << "lambda_coverage = " << LAMBDAs[2] << endl;
+    cerr << "TRIM_THRESHOLD = " << TRIM_THRESHOLD << endl;
+
+    int seed = time(NULL);
+    srand (seed);
+    cerr << "seed = " << seed << endl;
+
+    // restore matchness matrix in sparse representation
+    /* here we consider non-noise version of topic model
+    double ** match_mat = mat_init (N, N);
+    mat_zeros (match_mat, N, N);
+    */
+
+    // Run sparse convex clustering
+    Esmat* W = esmat_init (nWords, 1);
+    HDP (nDocs, nWords, LAMBDAs, W, lookup_tables);
+
+    // Output results
+    ofstream fout("result");
+
+    // interpret result by means of voc_list
+    /*{{{*/
+    /*
+    vector<int> centroids = get_all_centroids(W, N, N); // contains index of all centroids
+    
+    int nCentroids = centroids.size();
+    for (int i = 0; i < N; i ++) {
+        // output identification and its belonging
+        fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
+        for (int j = 0; j < N; j ++) {
+            if( fabs(W[i][j]) > 3e-1 ) {
+                fout << j+1 << "(" << W[i][j] << "),\t";
+            }
+        }
+	fout << endl;
+
+        // output distance of one sample to each centroid 
+        fout << "dist_centroids: (";
+        for (int j = 0; j < nCentroids - 1; j ++) {
+            fout << dist_mat[i][ centroids[j] ] << ", ";
+        }
+        fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
+        fout << endl;
+    }
+    */
+/*}}}*/
+
 }
