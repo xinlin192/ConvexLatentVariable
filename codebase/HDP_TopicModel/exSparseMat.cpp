@@ -33,6 +33,12 @@ void esmat_free (Esmat* src) {
     src->val.clear();
     delete src;
 }
+void esmat_free_all (vector<Esmat*> src) {
+    for (int i = 0; i < src.size(); i ++) {
+        src[i]->val.clear();
+        delete src[i];
+    }
+}
 void esmat_zeros (Esmat* A) {
     A->val.clear();
 }
@@ -43,29 +49,38 @@ void esmat_align (Esmat* mat) {
 
 /* submat and merge */
 /* pick subset of rows and form a new esmat */
-void esmat_submat_row (int start_index, int end_index, Esmat* mat, Esmat* submat) {
-    assert (start_index < end_index);
-
-    // renew the characteristics of submat
-    submat->nRows = end_index - start_index;
-    submat->nCols = mat->nCols;
-    submat->val.clear();
+void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector< pair<int,int> > look_up) {
+    // renew the characteristics of submats
+    for (int d = 0; d < nDocs; d ++) {
+        int end_index = look_up[d].second;
+        int start_index = look_up[d].first;
+        submats[d]->nRows = end_index - start_index;
+        submats[d]->nCols = mat->nCols;
+        submats[d]->val.clear();
+    }
 
     int mat_size = mat->val.size();
-    for (int i = 0; i < mat_size; i ++) {
+    int i = 0, d = 0;
+    int start_index = look_up[d].first;
+    int end_index = look_up[d].second;
+    while (i < mat_size) {
         int mat_index = mat->val[i].first;
         int mat_row_index = mat_index % mat->nRows;
         int mat_col_index = mat_index / mat->nRows;
-        // if element of that entry is in required submat
-        if (start_index <= mat_row_index && mat_row_index < end_index) {
-            // get value of that entry
-            int value = mat->val[i].second;
-            // compute corresponding position in submat
-            int submat_row_index = mat_row_index - start_index;
-            int submat_col_index = mat_col_index;
-            int submat_index = submat_row_index + submat_col_index * submat->nRows;
-            submat->val.push_back(make_pair(submat_index, value));
+        // find a corresponding submats
+        while (!(start_index <= mat_row_index && mat_row_index < end_index)) {
+            ++ d;
+            if (d >= nDocs) d = 0;
+            start_index = look_up[d].first;
+            end_index = look_up[d].second;
         }
+        // get value of that entry
+        int value = mat->val[i].second;
+        // compute corresponding position in submats
+        int submat_row_index = mat_row_index - start_index;
+        int submat_col_index = mat_col_index;
+        int submat_index = submat_row_index + submat_col_index * submats[d]->nRows;
+        submats[d]->val.push_back(make_pair(submat_index, value));
     }
 }
 /* put submat to specified position of mat */

@@ -101,26 +101,38 @@ double get_global_topic_reg (Esmat* absZ, double lambda) {
     return global_topic_reg;
 }
 
-/* TODO: need to modify this part. 
- * \lambdal \sum_d \sum_k \underset{n \in d}{\text{max}} |\wnk| */
-double get_local_topic_reg (Esmat* absZ, double lambda) {
-    Esmat* maxk = esmat_init (absZ->nRows, 1);
-    Esmat* sumn = esmat_init (1, 1);
-    esmat_max_row (absZ, maxk);
-    esmat_sum_col (maxk, sumn);
-    double local_topic_reg = lambda * sumn->val[0].second; 
-    esmat_free (sumn);
-    esmat_free (maxk);
+/* \lambdal \sum_d \sum_k \underset{n \in d}{\text{max}} |\wnk| */
+double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >* doc_lookup) {
+    // STEP ONE: initialize sub matrix for each document
+    int nDocs = doc_lookup->size();
+    vector<Esmat*> sub_absZ (nDocs);
+    for (int d = 0; d < nDocs; d ++) {
+        sub_absZ[d] = esmat_init (0,0);
+    }
+
+    // STEP TWO: separate entire Z to submat Z
+    esmat_submat_row (absZ, sub_absZ, doc_lookup);
+
+    // STEP THREE: compute global topic regularizer for each localized doc
+    double local_topic_reg = 0.0;
+    for (int d = 0; d < nDocs; d ++) {
+        local_topic_reg += get_global_topic_reg (sub_absZ[d], lambda); 
+    }
+
+    // Final: free resource
+    for (int d = 0; d < nDocs; d ++) {
+        esmat_free (sub_absZ[d]);
+    }
     return local_topic_reg;
 }
 /* \lambdab \sum_k \sum_{w \in voc(k)} \underset{word(n) = w}{\text{max}} |\wnk|  */
 double get_coverage_reg (Esmat* absZ, double lambda) {
     // TODO:
-    
+
     return 0.0;
 }
 
-double sub_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda) {
+double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda) {
     // STEP ONE: compute main term
     double main = -1.0;
     if (prob_index == 1) {
@@ -148,9 +160,9 @@ double sub_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, 
     esmat_free (w_minus_z);
     /*
 #ifdef FRANK_WOLFE_DUMP
-    cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
-         << sum1 << ", " << sum2 << ", " << sum3 << ", " << dummy_penalty << ", " << total
-         <<  ")" << endl;
+cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
+<< sum1 << ", " << sum2 << ", " << sum3 << ", " << dummy_penalty << ", " << total
+<<  ")" << endl;
 #endif
 */
     return main + linear + quadratic;
@@ -275,7 +287,7 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
         esmat_add (tempS, s, w_1);
 
         // compute value of objective function
-        penalty = sub_objective (1, Y_1, Z_1, w_1, RHO, 0.0);
+        penalty = subproblem_objective (1, Y_1, Z_1, w_1, RHO, 0.0);
         // cout << "within frank_wolfe_solver: step three finished" << endl;
         // report the #iter and objective function
         /*
@@ -294,7 +306,7 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
     // cout << "end frank_wolfe_solver: finished! " << endl;
 }
 
-void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
+void group_lasso_solver (int prob_index, Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
     // STEP ONE: compute the optimal solution for truncated problem
     Esmat* wbar = esmat_init (w);
     esmat_zeros (wbar);
@@ -364,8 +376,6 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
         }
     }
     
-    // compute value of objective function
-    double penalty = sub_objective (2, Y, Z, w, RHO, lambda);
     // report the #iter and objective function
     /*cout << "[Blockwise] sub2_objective: " << penalty << endl;
       cout << endl;*/
@@ -377,46 +387,53 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
 /* three subproblems that employed group_lasso_solver in different ways */
 void global_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
     group_lasso_solver (Y, Z, w, RHO, lambda);
+    // compute value of objective function
+    double penalty = subproblem_objective (2, Y, Z, w, RHO, lambda);
 }
 void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, vector< pair<int,int> >* doc_lookup) {
     int nDocs = doc_lookup->size();
     Esmat* tempW = esmat_init (w);
-    Esmat* subW = esmat_init (1, 1);
-    Esmat* subY = esmat_init (1, 1);
-    Esmat* subZ = esmat_init (1, 1);
+    vector<Esmat*> subW (nDocs); 
+    vector<Esmat*> subY (nDocs);
+    vector<Esmat*> subZ (nDocs);
+    // STEP ZERO: initialize all submats
+    for (int d = 0; d < nDocs; d ++) {
+        subW[d] = esmat_init (0,0);
+        subY[d] = esmat_init (0,0);
+        subZ[d] = esmat_init (0,0);
+    }
+    // STEP ONE: separate esmat Y, Z, w to multiple small-sized esmat
+    // NOTE: all esmat position has to be recomputed
+    esmat_submat_row (w, subW, doc_lookup);
+    esmat_submat_row (Y, subY, doc_lookup);
+    esmat_submat_row (Z, subZ, doc_lookup);
 
     for (int i = 0; i < nDocs; i ++) {
-        // STEP ONE: separate esmat Y, Z, w to multiple small-sized esmat
-        // NOTE: all esmat position has to be recomputed
-        int start_row = (*doc_lookup)[i].first;
-        int end_row = (*doc_lookup)[i].second;
-        // int nWordsInDocs = end_row - start_row;
-        esmat_submat_row (start_row, end_row, w, subW);
-        esmat_submat_row (start_row, end_row, Y, subY);
-        esmat_submat_row (start_row, end_row, Z, subZ);
-        
         // STEP TWO: invoke group_lasso_solver to each individual group
-        group_lasso_solver (subY, subZ, subW, RHO, lambda);
+        group_lasso_solver (subY[i], subZ[i], subW[i], RHO, lambda);
 
         // STEP TREE: merge solution of each individual group (place back)
         // NOTE: all esmat position has to be recomputed
-        esmat_merge_row (subW, start_row, end_row, tempW);
-
-        // STEP FOUR: clear sub esmat
-        esmat_zeros (subW);
-        esmat_zeros (subY);
-        esmat_zeros (subZ);
+        int start_row = (*doc_lookup)[i].first;
+        int end_row = (*doc_lookup)[i].second;
+        esmat_merge_row (subW[i], start_row, end_row, tempW);
     }
     // STEP FIVE: free auxiliary resource
-    esmat_free (subW);
-    esmat_free (subY);
-    esmat_free (subZ);
+    for (int d = 0; d < nDocs; d ++) {
+        esmat_free (subW[d]);
+        esmat_free (subY[d]);
+        esmat_free (subZ[d]);
+    }
 
     // FINAL: update merged solution to w
     esmat_copy (tempW, w);
+
+    // compute value of objective function (for tracing result)
+    double penalty = subproblem_objective (3, Y, Z, w, RHO, lambda);
 }
 void coverage_subproblem () {
     
+    double penalty = subproblem_objective (4, Y, Z, w, RHO, lambda);
 }
 
 void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
