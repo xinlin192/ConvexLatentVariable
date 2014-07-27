@@ -5,7 +5,6 @@
 # DO NOT EDIT THIS MAKEFILE UNLESS YOU KNOW WHAT YOU ARE DOING. 
 #######################################################################	
 
-
 all: 
 	g++ -O3 driver.cpp -o driver
 

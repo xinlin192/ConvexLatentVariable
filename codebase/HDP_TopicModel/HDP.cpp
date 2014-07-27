@@ -101,7 +101,8 @@ double get_global_topic_reg (Esmat* absZ, double lambda) {
     return global_topic_reg;
 }
 
-/* \lambda_l \sumn \maxk |\wnk| */
+/* TODO: need to modify this part. 
+ * \lambdal \sum_d \sum_k \underset{n \in d}{\text{max}} |\wnk| */
 double get_local_topic_reg (Esmat* absZ, double lambda) {
     Esmat* maxk = esmat_init (absZ->nRows, 1);
     Esmat* sumn = esmat_init (1, 1);
@@ -112,9 +113,10 @@ double get_local_topic_reg (Esmat* absZ, double lambda) {
     esmat_free (maxk);
     return local_topic_reg;
 }
-/* \lambdab \sumk \sum_v \max |\wnk^{(v)}| */
+/* \lambdab \sum_k \sum_{w \in voc(k)} \underset{word(n) = w}{\text{max}} |\wnk|  */
 double get_coverage_reg (Esmat* absZ, double lambda) {
     // TODO:
+    
     return 0.0;
 }
 
@@ -133,7 +135,7 @@ double sub_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, 
             main = get_local_topic_reg (absW, lambda);
         } else if (prob_index == 4) {
             // TODO:
-
+            ;
         }
         esmat_free (absW);
     }
@@ -372,14 +374,49 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
     esmat_free (wbar);
 }
 
-void global_topic_subproblem () {
-
+/* three subproblems that employed group_lasso_solver in different ways */
+void global_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
+    group_lasso_solver (Y, Z, w, RHO, lambda);
 }
-void local_topic_subproblem () {
+void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, vector< pair<int,int> >* doc_lookup) {
+    int nDocs = doc_lookup->size();
+    Esmat* tempW = esmat_init (w);
+    Esmat* subW = esmat_init (1, 1);
+    Esmat* subY = esmat_init (1, 1);
+    Esmat* subZ = esmat_init (1, 1);
 
+    for (int i = 0; i < nDocs; i ++) {
+        // STEP ONE: separate esmat Y, Z, w to multiple small-sized esmat
+        // NOTE: all esmat position has to be recomputed
+        int start_row = (*doc_lookup)[i].first;
+        int end_row = (*doc_lookup)[i].second;
+        // int nWordsInDocs = end_row - start_row;
+        esmat_submat_row (start_row, end_row, w, subW);
+        esmat_submat_row (start_row, end_row, Y, subY);
+        esmat_submat_row (start_row, end_row, Z, subZ);
+        
+        // STEP TWO: invoke group_lasso_solver to each individual group
+        group_lasso_solver (subY, subZ, subW, RHO, lambda);
+
+        // STEP TREE: merge solution of each individual group (place back)
+        // NOTE: all esmat position has to be recomputed
+        esmat_merge_row (subW, start_row, end_row, tempW);
+
+        // STEP FOUR: clear sub esmat
+        esmat_zeros (subW);
+        esmat_zeros (subY);
+        esmat_zeros (subZ);
+    }
+    // STEP FIVE: free auxiliary resource
+    esmat_free (subW);
+    esmat_free (subY);
+    esmat_free (subZ);
+
+    // FINAL: update merged solution to w
+    esmat_copy (tempW, w);
 }
 void coverage_subproblem () {
-
+    
 }
 
 void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
@@ -420,7 +457,7 @@ void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
         esmat_zeros (w_4);
         /*
 #ifdef ITERATION_TRACE_DUMP
-        cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe_solvere"  << endl;
+cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe_solvere"  << endl;
 #endif
 */
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
@@ -429,23 +466,23 @@ void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
 
         /*
 #ifdef ITERATION_TRACE_DUMP
-        cout << "frank_wolfe_solver done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
-        cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_solver"<< endl;
+cout << "frank_wolfe_solver done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
+cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_solver"<< endl;
 #endif
 */
         // resolve w_2
         global_topic_subproblem (y_2, z, w_2, RHO, LAMBDAs[0]);
         /*
 #ifdef ITERATION_TRACE_DUMP
-        cout << "it is place 3 iteration #" << iter << endl;
-        cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
+cout << "it is place 3 iteration #" << iter << endl;
+cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
 #endif
 */
         // resolve w_3
         local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[1]);
         // resolve w_4
         coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2]);
-        
+
         // STEP TWO: update z by averaging w_1, w_2, w_3 and w_4
         Esmat* temp = esmat_init (0,0);
         esmat_add (w_1, w_2, z);
@@ -457,8 +494,8 @@ void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
 
         /*
 #ifdef ITERATION_TRACE_DUMP
-        cout << "it is place 4 iteration #" << iter << endl;
-        cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
+cout << "it is place 4 iteration #" << iter << endl;
+cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
 #endif
 */
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z

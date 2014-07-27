@@ -20,7 +20,8 @@ bool test_vocabulary_read () {
     string fname = "voc.txt";
     vector<string>* vocabularies = new vector<string> ();
     voc_list_read (fname, vocabularies);
-    if ( !(*vocabularies)[0].compare("AAA") &&
+    if ( vocabularies->size() == 4 &&
+         !(*vocabularies)[0].compare("AAA") &&
          !(*vocabularies)[1].compare("BBB") &&
          !(*vocabularies)[2].compare("CCC") &&
          !(*vocabularies)[3].compare("DDD") )
@@ -29,9 +30,73 @@ bool test_vocabulary_read () {
     return success; 
 }
 
+bool test_string_split () {
+    bool success = false;
+    string test_string = "abc:132 bcd:ef fg:he li:ne";
+    vector<string> elements;
+    split (test_string, &elements, " ");
+    if (elements.size() == 4 &&
+        !(elements)[0].compare("abc:132") &&
+        !(elements)[1].compare("bcd:ef") &&
+        !(elements)[2].compare("fg:he") &&
+        !(elements)[3].compare("li:ne") )
+        success = true;
+
+    if (!success) {
+        cout << elements.size() << endl;
+        for (int i = 0; i < elements.size(); i ++) {
+            cout << (elements)[i] << endl;
+        }
+    }
+    return success;
+}
+
+bool test_doc_lookup () {
+    bool success = false;
+    string fname = "doc.txt";
+    vector< pair<int,int> > doc_lookup;
+    vector<int> word_lookup;
+    document_list_read (fname, &doc_lookup, &word_lookup);
+    // check doc_lookup table
+    if ( doc_lookup.size() == 3 &&
+        doc_lookup[0].first == 0 && doc_lookup[0].second == 2 &&
+        doc_lookup[1].first == 2 && doc_lookup[1].second == 4 &&
+        doc_lookup[2].first == 4 && doc_lookup[2].second == 6 )
+        success = true;
+    if (!success) {
+        cout << doc_lookup.size() << endl;
+        cout << doc_lookup[0].first << "," << doc_lookup[0].second << endl;
+        cout << doc_lookup[1].first << "," << doc_lookup[1].second << endl;
+        cout << doc_lookup[2].first << "," << doc_lookup[2].second << endl;
+    }
+    return success;
+}
+bool test_word_lookup () {
+    bool success = false;
+    string fname = "doc.txt";
+    vector< pair<int,int> > doc_lookup;
+    vector<int> word_lookup;
+    document_list_read (fname, &doc_lookup, &word_lookup);
+    // check doc_lookup table
+    if ( word_lookup.size() == 6 &&
+         word_lookup[0] == 1 &&  word_lookup[1] == 3 &&
+         word_lookup[2] == 2 &&  word_lookup[3] == 4 &&
+         word_lookup[4] == 1 &&  word_lookup[5] == 4 )
+        success = true;
+    return success;
+}
+
 int main (int args, char ** argv) {
-    string result_vocabulary_read = test_vocabulary_read()? PASS : FAIL;
+    string result_vocabulary_read = test_vocabulary_read() ? PASS : FAIL;
+    string result_string_split = test_string_split() ? PASS : FAIL;
+    string result_doc_lookup = test_doc_lookup() ? PASS : FAIL;
+    string result_word_lookup = test_word_lookup() ? PASS : FAIL;
+
     cout << "Test Cases:" << endl;
     cout << "  test_vocabulary_read: " << result_vocabulary_read << endl;
+    cout << "  test_string_split: " << result_string_split << endl;
+    cout << "  test_doc_lookup: " << result_doc_lookup<< endl;
+    cout << "  test_word_lookup: " << result_word_lookup<< endl;
+
     return 0;
 }

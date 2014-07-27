@@ -25,6 +25,19 @@
 
 using namespace std;
 
+/* Note that operations within this function do not destroy original input */
+void split (string input, vector<string>* elements, string delimiter) {
+    string str (input);
+    int index = str.find_first_of(delimiter);
+    while (!(index < 0)) {
+        elements->push_back(str.substr(0, index));
+        str = str.substr(index+1);
+        index = str.find_first_of(delimiter);
+    }
+    if (str.size() > 0) 
+        elements->push_back(str) ;  
+}
+
 void voc_list_read (string fname, vector<string>* vocList) {
    	ifstream fin(fname);
 
@@ -43,25 +56,28 @@ void voc_list_print (vector<string>* vocList) {
         cout << (*vocList)[v] << endl;
     }
 }
-
+/* word_lookup table restore the index in voc_list of vocabulary to which a word coresponds */
 void document_list_read (string fname, vector< pair<int,int> >* doc_lookup, vector<int>* word_lookup) {
 
    	ifstream fin(fname);
 
-	string line;
+	string line = "";
     int doc_index_begin = 0;
     int doc_index_end = 0;
-    int d = 0; w = 0;
+    int d = 0, w = 0;
 	while (!fin.eof()) {
-        fin >> line;
+        getline(fin, line);
 		if ( fin.eof() ) break;
         // process new document
         doc_index_begin = w;
-        // TODO: split the string to several field (delimiter: whitespace) 
-        for () {
+        // split the string to several field (delimiter: whitespace) 
+        vector<string> fields;
+        split (line, &fields, " ");
+        for (int f = 0; f < fields.size(); f ++) {
+            vector<string> voc_freq_pair;
+            split (fields[f], &voc_freq_pair, ":");
             // for each word, split voc_index and frequency by ":"
-            int voc_index = ; 
-            int frequency = ;
+            int voc_index = stoi(voc_freq_pair[0]);
             // push to word_lookup table
             word_lookup->push_back(voc_index);
             ++ w;
@@ -72,95 +88,3 @@ void document_list_read (string fname, vector< pair<int,int> >* doc_lookup, vect
 	}
 	fin.close(); 
 } 
-
-class Instance{
-	
-	public:
-	int id;
-	int label;
-	vector<pair<int,double> > fea;
-	Instance(int _id){
-		id = _id;
-		_x_sq = -1.0;
-	}
-	
-	double x_sq(){
-		
-		// Pre-calculated
-		if( _x_sq != -1.0 ){
-			return _x_sq;
-		}
-		
-		// Calculate and Cache
-		_x_sq = 0.0;
-		double tmp;
-		for(int i=0;i<fea.size();i++){
-			tmp = fea[i].second;
-			_x_sq += tmp*tmp;
-		}
-
-		return _x_sq;
-	}
-
-	private:
-	double _x_sq;
-};
-
-class ScoreComparator{
-	
-	private:
-	vector<double>* score_vec;
-
-	public:
-	ScoreComparator(vector<double>* vec){
-		score_vec = vec;
-	}
-
-	bool operator() (int i,int j) { 
-		return score_vec->at(i) < score_vec->at(j); 
-	}
-};
-
-
-void read2D(char* fname, vector<Instance*>& data){
-	
-	ifstream fin(fname);
-	int tmp;
-	double x,y;
-	int id=0;
-	while(!fin.eof()){
-		
-		fin >> tmp >> x >> y;
-		if( fin.eof() )break;
-
-		Instance* ins = new Instance(id++);
-		ins->fea.push_back(make_pair(1,x));
-		ins->fea.push_back(make_pair(2,y));
-		
-		data.push_back(ins);
-	}
-	fin.close();
-}
-
-void readFixDim(char* fname, vector<Instance*>& data, int D){
-	
-	ifstream fin(fname);
-	int tmp;
-	double val;
-	int id=0;
-	while(!fin.eof()){
-		
-		fin >> tmp;
-		if ( fin.eof() ) break;
-		
-		Instance* ins = new Instance(id++);
-	       	for(int j=0;j<D;j++) {
-			fin >> val;
-			ins->fea.push_back(make_pair(j+1,val));
-		}
-		
-		data.push_back(ins);
-		id++;
-	}
-	fin.close();
-}

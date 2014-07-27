@@ -53,6 +53,11 @@ void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt);
 Esmat* esmat_init (int nRows, int nCols);
 Esmat* esmat_init (Esmat * A);
 void esmat_free (Esmat* src);
+/* Rearrange one esmat */
+void esmat_align (Esmat* mat) {
+/* submat and merge */
+void esmat_submat_row (int start_index, int end_index, Esmat* mat, Esmat* submat);
+void esmat_merge_row (Esmat* submat, int start_index, int end_index, Esmat* mat);
 /* frobenius product and norm */
 double esmat_fdot (Esmat* A, Esmat* B);
 double esmat_sum (Esmat* A);

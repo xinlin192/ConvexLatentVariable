@@ -48,3 +48,8 @@ DEVELOPMENT LOGS
 
 7. [Fri Jul 25 21:45:06 2014 by Jimmy] modify group\_lasso\_solver by using
    esmat
+
+8. [Sat Jul 26 20:55:33 2014 by Jimmy] write functions that read voc.txt and
+   doc.txt, test the availability. (Designed tests all passed.)
+
+9. [Sat Jul 26 21:56:09 2014 by Jimmy] extend esmat API for subsetting esmat

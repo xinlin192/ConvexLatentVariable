@@ -12,6 +12,11 @@
 
 #include "exSparseMat.h"
 
+bool pair_First_Elem_inc_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
+    // sort pairs by second element with *incremental order*
+    return firstElem.first < secondElem.first;
+}
+
 /* Allocate one extensible sparse matrix with all zero entries */
 Esmat* esmat_init (int nRows, int nCols) {
     Esmat* freshman = new Esmat ();
@@ -30,6 +35,58 @@ void esmat_free (Esmat* src) {
 }
 void esmat_zeros (Esmat* A) {
     A->val.clear();
+}
+/* esmat alignment: place entry of sparse matrix in index-increasing order */
+void esmat_align (Esmat* mat) {
+    std::sort(mat->val.begin(), mat->val.end(), pair_First_Elem_inc_Comparator);
+}
+
+/* submat and merge */
+/* pick subset of rows and form a new esmat */
+void esmat_submat_row (int start_index, int end_index, Esmat* mat, Esmat* submat) {
+    assert (start_index < end_index);
+
+    // renew the characteristics of submat
+    submat->nRows = end_index - start_index;
+    submat->nCols = mat->nCols;
+    submat->val.clear();
+
+    int mat_size = mat->val.size();
+    for (int i = 0; i < mat_size; i ++) {
+        int mat_index = mat->val[i].first;
+        int mat_row_index = mat_index % mat->nRows;
+        int mat_col_index = mat_index / mat->nRows;
+        // if element of that entry is in required submat
+        if (start_index <= mat_row_index && mat_row_index < end_index) {
+            // get value of that entry
+            int value = mat->val[i].second;
+            // compute corresponding position in submat
+            int submat_row_index = mat_row_index - start_index;
+            int submat_col_index = mat_col_index;
+            int submat_index = submat_row_index + submat_col_index * submat->nRows;
+            submat->val.push_back(make_pair(submat_index, value));
+        }
+    }
+}
+/* put submat to specified position of mat */
+void esmat_merge_row (Esmat* submat, int start_index, int end_index, Esmat* mat) {
+    assert (start_index < end_index);
+
+    int submat_size = submat->val.size();
+    for (int i = 0; i < submat_size; i ++) {
+        int submat_index = submat->val[i].first;
+        int submat_row_index = submat_index % submat->nRows;
+        int submat_col_index = submat_index / submat->nRows;
+        // get value of that entry
+        int value = submat->val[i].second;
+        // compute corresponding position in submat
+        int mat_row_index = submat_row_index + start_index;
+        int mat_col_index = submat_col_index;
+        int mat_index = mat_row_index + mat_col_index * mat->nRows;
+        mat->val.push_back(make_pair(submat_index, value));
+    }
+    // realign the mat->val with index-increasing order
+    esmat_align (mat);
 }
 /* frobenius product */
 double esmat_fdot (Esmat* A, Esmat* B) {
