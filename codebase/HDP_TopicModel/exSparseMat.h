@@ -21,6 +21,7 @@ using namespace std;
 /* Global variables */
 const double DUMMY_PENALTY_RATE = 1000.0;
 const double TRIM_THRESHOLD = 10e-5;
+const double EPISILON = 10e-3;
 
 /* Definition of Data structure for Extensible Sparse Matrix (Esmat*) */
 typedef struct {
@@ -149,24 +150,37 @@ Esmat* esmat_read (string fname) {
 bool esmat_equal (Esmat* esmat, double **mat) {
     bool isequal = true;
     int esmat_size = esmat->val.size();
-    int i = 0, esmat_index = esmat->val[i].first, mat_index = 0;
+    int mat_capacity = esmat->nRows * esmat->nCols;
+    int i = 0, esmat_index = 0, mat_index = 0;
     while (true) {
         esmat_index = esmat->val[i].first;
+        double mat_value = mat[mat_index%esmat->nRows][mat_index/esmat->nRows];
         if (esmat_index > mat_index) {
             // there is non-zero value in mat but no in esmat, hence not equal
-            if (fabs(mat[mat_index % esmat->nRows][mat_index/esmat->nRows]) > TRIM_THRESHOLD) {
+            if (fabs(mat_value) > TRIM_THRESHOLD) {
+                // cout << esmat_index << "," << mat_index << endl;
                 isequal = false; 
                 break;
             }
             ++ mat_index;
         } else if (esmat_index == mat_index) {
+            double esmat_value = esmat->val[i].second;
             // element in the same position is not equal to each other
-            if (esmat->val[i].second != mat[mat_index % esmat->nRows][mat_index/esmat->nRows]) {
+            if (fabs(esmat_value - mat_value) > EPISILON) {
                 isequal = false; 
                 break;
             }
             ++ i; ++ mat_index;
+            if (i >= esmat_size) break;
         }
+    }
+    while (mat_index < mat_capacity) {
+        double mat_value = mat[mat_index%esmat->nRows][mat_index/esmat->nRows];
+        if (fabs(mat_value) > TRIM_THRESHOLD) {
+            isequal = false; 
+            break;
+        }
+        ++ mat_index;
     }
     return isequal;
 }

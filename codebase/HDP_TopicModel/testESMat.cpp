@@ -17,27 +17,34 @@
 
 #define PASS "PASS"
 #define FAIL "FAIL"
-#define result(x) x?PASS:FAIL
+#define RESULT(x) x?PASS:FAIL
 
 using namespace std;
+double **mat_A, **mat_B;
+Esmat *esmat_A, *esmat_B;
+
+bool test_esmat_read () {
+    return esmat_equal(esmat_A, mat_A) && esmat_equal(esmat_B, mat_B);
+}
 
 int main (int args, char ** argv) {
     string mat_A_fname = "mat_A.txt";
     string mat_B_fname = "mat_B.txt";
-    cout << "haah" << endl;
 
-    double **mat_A, **mat_B;
-    Esmat *esmat_A, *esmat_B;
     int nRows_A, nCols_A, nCols_B, nRows_B;
     mat_A = mat_read (mat_A_fname, &nRows_A, &nCols_A);
     mat_B = mat_read (mat_B_fname, &nRows_B, &nCols_B);
     esmat_A = esmat_read (mat_A_fname);
     esmat_B = esmat_read (mat_B_fname);
 
-    // string result_esmat_read = result(esmat_equal(esmat_A, mat_A)&&esmat_equal(esmat_B, mat_B));
+    // cout << esmat_toString(esmat_A) << endl;
+    // mat_print(mat_A, nRows_A, nCols_A);
+
+    string result_esmat_read = RESULT(test_esmat_read());
+    // string result_esmat_min_row = RESULT();
 
     std::cout << "Test Cases for exSparseMat:" << endl;
-    // std::cout << "  test_esmat_read: " << result_esmat_read << endl;
+    std::cout << "  test_esmat_read: " << result_esmat_read << endl;
     /*
     cout << "  test_esmat_min_row: " << result_esmat_min_row << endl;
     cout << "  test_esmat_max_row: " << result_esmat_max_row << endl;
@@ -47,10 +54,8 @@ int main (int args, char ** argv) {
     cout << "  test_esmat_sum_col: " << result_esmat_sum_col << endl;
     */
 
-    /*
     esmat_free (esmat_A);
     esmat_free (esmat_B);
-    */
     mat_free (mat_A, nRows_A, nCols_A);
     mat_free (mat_B, nRows_B, nCols_B);
     return 0;

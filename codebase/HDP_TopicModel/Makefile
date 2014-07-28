@@ -10,7 +10,7 @@ all:
 
 test: testEsmat testHDP
 
-testEsmat:
+testEsmat: testEsmat.cpp
 	g++ -O3 testEsmat.cpp -o testEsmat
 	./testEsmat
 
