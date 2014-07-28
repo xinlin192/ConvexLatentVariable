@@ -547,29 +547,62 @@ void esmat_compare_col (Esmat* A, Esmat* dest, Comparator cmp) {
     dest->nCols = A->nCols;
     dest->val.clear();
 
-    int opt_value = 0;
+    double opt_value = 0;
     int opt_col_index = -1;
     int opt_index = -1;
+    int sparse_index = -1;
+    int prev_esmat_index = -1;
+    
     for (int i = 0; i < sizeA; i++) {
         int esmat_index = A->val[i].first;
-        double value = A->val[i].second;
         int col_index = esmat_index / A->nRows;
         int row_index = esmat_index % A->nRows;
+        double value = A->val[i].second;
         if (col_index > opt_col_index) {
             if (opt_index >= 0 && opt_col_index >= 0) {
-                dest->val.push_back(make_pair(opt_col_index*dest->nRows+opt_index, 1));
+                if (cmp(0, opt_value) && sparse_index >= 0) {
+                    // cout << "sparse_index: " << sparse_index << endl;
+                    dest->val.push_back(make_pair(opt_col_index*dest->nRows+sparse_index, 1));
+                } else {
+                  //  cout << "push: " << opt_col_index*dest->nRows+opt_index << endl;
+                    dest->val.push_back(make_pair(opt_col_index*dest->nRows+opt_index, 1));
+                }
+                for (int j = opt_col_index+1; j < col_index; j ++) {
+                    dest->val.push_back(make_pair(j*dest->nRows, 1));
+                }
+                if (row_index > 0) 
+                    sparse_index = 0;
+                else  // row_index == 0, first element
+                    sparse_index = -1;
             }
             opt_col_index = col_index;
             opt_value = value;
+           //  cout << "new opt_value: " << opt_value << endl;
             opt_index = row_index;
         } else if (col_index == opt_col_index) {
             if (cmp(value, opt_value)) {
                 opt_value = value;
                 opt_index = row_index;   
             }
+           // cout << value << "," << opt_value  << endl;
+            if (esmat_index > prev_esmat_index + 1) {
+                if (sparse_index < 0) 
+                    sparse_index = prev_esmat_index % dest->nRows + 1;
+            }
         } else {
             assert(false);
         }
+        prev_esmat_index = esmat_index;
+    }
+    if (cmp(0, opt_value) && sparse_index >= 0) {
+        // cout << "sparse_index: " << sparse_index << endl;
+        dest->val.push_back(make_pair(sparse_index, 1));
+    } else {
+        // cout <<  opt_col_index*dest->nRows+opt_index << endl;
+        dest->val.push_back(make_pair(opt_col_index*dest->nRows+opt_index, 1));
+    }
+    for (int j = opt_col_index+1; j < A->nCols; j ++) {
+        dest->val.push_back(make_pair(j*dest->nRows, 1));
     }
 }
 void esmat_compare_row (Esmat* A, Esmat* dest, Comparator cmp) {
@@ -587,9 +620,11 @@ void esmat_compare_row (Esmat* A, Esmat* dest, Comparator cmp) {
         int esmat_index = A->val[i].first;
         if (esmat_index > prev_esmat_index + 1) {
             for (int j = prev_esmat_index + 1; j < esmat_index; j++) {
-                sparse_index[j%dest->nRows] = j/dest->nRows;
+                if (sparse_index[j%(dest->nRows)] < 0)
+                    sparse_index[j%(dest->nRows)] = j/(dest->nRows);
             }
         }
+        prev_esmat_index = esmat_index;
         double value = A->val[i].second;
         int col_index = esmat_index / A->nRows;
         int row_index = esmat_index % A->nRows;
@@ -601,10 +636,14 @@ void esmat_compare_row (Esmat* A, Esmat* dest, Comparator cmp) {
             opt_index[row_index] = col_index;
         }
     }
-    cout << "===========" << endl;
     for (int i = 0; i < A->nRows; i ++) {
-      //  cout << opt_index [i] << endl;
-      //  cout << opt_value [i] << endl;
+        // cout << opt_index [i] << endl;
+        // cout << opt_value [i] << endl;
+        // cout << sparse_index [i] << endl;
+        if (sparse_index[i] >= 0 && (cmp(0, opt_value[i]) || opt_index[i] < 0)) {
+            dest->val.push_back(make_pair(sparse_index[i]*(dest->nRows)+i, 1));
+            continue;
+        }
         if (opt_index[i] >= 0)
             dest->val.push_back(make_pair((opt_index[i] * (dest->nRows))+i, 1));
     }

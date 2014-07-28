@@ -40,14 +40,18 @@ bool test_esmat_min_row () {
 
     bool success = true;
     success = success && esmat_equal(esmat_minR_A, mat_minR_A);
-    success = success && esmat_equal(esmat_minR_B, mat_minR_B);
-
     if (!success) {
         cout << "Dump for esmat_minR_A: " << endl;
         cout << esmat_toString(esmat_minR_A);
         mat_print (mat_minR_A, nRows_A, nCols_A);
+    }
+    success = success && esmat_equal(esmat_minR_B, mat_minR_B);
+    if (!success) {
+        cout << "Dump for esmat_minR_B: " << endl;
+        cout << esmat_toString(esmat_minR_B);
         mat_print (mat_minR_B, nRows_B, nCols_B);
     }
+    
     esmat_free(esmat_minR_A);
     esmat_free(esmat_minR_B);
     mat_free (mat_minR_A, nRows_A, nCols_A);
@@ -67,11 +71,16 @@ bool test_esmat_max_col () {
 
     bool success = true;
     success = success && esmat_equal(esmat_maxC_A, mat_maxC_A);
-    success = success && esmat_equal(esmat_maxC_B, mat_maxC_B);
     if (!success) {
         cout << "Dump for esmat_maxC_A: " << endl;
         cout << esmat_toString(esmat_maxC_A);
         mat_print (mat_maxC_A, nRows_A, nCols_A);
+    } 
+    success = success && esmat_equal(esmat_maxC_B, mat_maxC_B);
+    if (!success) {
+        cout << "Dump for esmat_maxC_B: " << endl;
+        cout << esmat_toString(esmat_maxC_B);
+        mat_print (mat_maxC_B, nRows_B, nCols_B);
     }
     esmat_free(esmat_maxC_A);
     esmat_free(esmat_maxC_B);
