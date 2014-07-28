@@ -1,0 +1,14 @@
+Dataset argument
+--------------
+./simdata_HDP 1000 100 5 10 10 100
+
+Alpha-Lambda relationship
+------------------
+alpha = exp(-lambda)
+5 10 10 are the alphas that determine lambdas
+log(alpha_1/alpha_2) = lambda_2 - lambda_1
+
+Lambdas to use
+---------------
+1.69315     1     1
+lambda1   lambda2   lambda3
