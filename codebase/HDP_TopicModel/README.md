@@ -53,3 +53,4 @@ DEVELOPMENT LOGS
    doc.txt, test the availability. (Designed tests all passed.)
 
 9. [Sat Jul 26 21:56:09 2014 by Jimmy] extend esmat API for subsetting esmat
+

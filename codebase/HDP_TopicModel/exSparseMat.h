@@ -29,13 +29,35 @@ typedef struct {
     vector< pair<int, double> >  val;
 } Esmat ;
 
-typedef double (* Operation) (double, double); 
+typedef double (* Operator) (double, double); 
+typedef bool (* Comparator) (double, double); 
+
+/* Powerful function pointers and definition of instantiated operators */
+double min (double a, double b) { return a < b ? a : b; }
+double max (double a, double b) { return a > b ? a : b; }
+double sum (double a, double b) { return a + b; }
+double diff (double a, double b) { return a - b; } // non-symmetric 
+double times (double a, double b) { return a * b; }
+double power2 (double val, double counter) 
+    { return counter + val * val; } // non-symmetric
+double dummy_penalty (double val, double counter) 
+    { return counter + DUMMY_PENALTY_RATE * (1 - val); }
+double count (double value, double counter) { 
+    // note that for this "count" function, two input is not symmetric
+    if (fabs(value) > TRIM_THRESHOLD) counter += 1.0;
+    return counter; 
+}
+
+bool gt (double a, double b) { return a > b; }
+bool lt (double a, double b) { return a < b; }
 
 /* Prototype for fundamental functions, typically computational frameworks*/
-double esmat_unary_operate (Esmat *A, Operation opt);
-void esmat_bin_operate (Esmat* A, Esmat* B, Esmat* dest, Operation opt);
-void esmat_operate_col (Esmat* A, Esmat* dest, Operation opt, double init_value);
-void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt, double init_value);
+double esmat_unary_operate (Esmat *A, Operator opt);
+void esmat_bin_operate (Esmat* A, Esmat* B, Esmat* dest, Operator opt);
+void esmat_operate_col (Esmat* A, Esmat* dest, Operator opt, double init_value);
+void esmat_operate_row (Esmat* A, Esmat* dest, Operator opt, double init_value);
+void esmat_compare_col (Esmat* A, Esmat* dest, Comparator cmp);
+void esmat_compare_row (Esmat* A, Esmat* dest, Comparator cmp);
 
 /* Allocation and De-allocation */
 Esmat* esmat_init (int nRows, int nCols);
@@ -88,21 +110,7 @@ void esmat_min_row (Esmat* A, Esmat* dest);
 void esmat_max_row (Esmat* A, Esmat* dest);
 void esmat_sum_row (Esmat* A, Esmat* dest); 
 
-/* Powerful function pointers and definition of instantiated operators */
-double min (double a, double b) { return a < b ? a : b; }
-double max (double a, double b) { return a > b ? a : b; }
-double sum (double a, double b) { return a + b; }
-double diff (double a, double b) { return a - b; } // non-symmetric 
-double times (double a, double b) { return a * b; }
-double power2 (double val, double counter) 
-    { return counter + val * val; } // non-symmetric
-double dummy_penalty (double val, double counter) 
-    { return counter + DUMMY_PENALTY_RATE * (1 - val); }
-double count (double value, double counter) { 
-    // note that for this "count" function, two input is not symmetric
-    if (fabs(value) > TRIM_THRESHOLD) counter += 1.0;
-    return counter; 
-}
+
 bool pair_First_Elem_inc_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
     // sort pairs by second element with *incremental order*
     return firstElem.first < secondElem.first;
@@ -386,7 +394,6 @@ bool esmat_isValid (Esmat* A, Esmat* B, int mode) {
 }
 
 string esmat_toString (Esmat* A) {
-
     assert (A->nRows > 0);
     assert (A->nCols > 0);
 
@@ -454,7 +461,7 @@ void esmat_trim (Esmat* A) {
 // doing. 
 // ========================================================
 /* Framework of unary operation for Esmat A */
-double esmat_unary_operate (Esmat * A, Operation opt) {
+double esmat_unary_operate (Esmat * A, Operator opt) {
     double result = 0.0;
     int sizeA = A->val.size();
     for (int i = 0; i < sizeA; i++) {
@@ -463,7 +470,7 @@ double esmat_unary_operate (Esmat * A, Operation opt) {
     return result;
 }
 /* Framework of binary operation for Esmat A */
-void esmat_bin_operate (Esmat* A, Esmat* B, Esmat* dest, Operation opt) {
+void esmat_bin_operate (Esmat* A, Esmat* B, Esmat* dest, Operator opt) {
     assert (esmat_isValid (A, B, 1));
 
     dest->nRows = A->nRows;
@@ -493,10 +500,8 @@ void esmat_bin_operate (Esmat* A, Esmat* B, Esmat* dest, Operation opt) {
     }
 }
 /* Framework for operating over each row of esmat A */
-void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt, double init_value) {
-
+void esmat_operate_row (Esmat* A, Esmat* dest, Operator opt, double init_value) {
     int sizeA = A->val.size();
-
     // set up dest esmat, here assume it has been initialized
     dest->nRows = A->nRows;
     dest->nCols = 1;
@@ -516,10 +521,8 @@ void esmat_operate_row (Esmat* A, Esmat* dest, Operation opt, double init_value)
     }
 }
 /* Framework for operating over each column of esmat A */
-void esmat_operate_col (Esmat* A, Esmat* dest, Operation opt, double init_value) {
-    
+void esmat_operate_col (Esmat* A, Esmat* dest, Operator opt, double init_value) {
     int sizeA = A->val.size();
-
     // set up dest esmat, here assume it has been initialized
     dest->nRows = 1;
     dest->nCols = A->nCols;
@@ -538,6 +541,75 @@ void esmat_operate_col (Esmat* A, Esmat* dest, Operation opt, double init_value)
             dest->val.push_back(make_pair(j, temp[j]));
     }
 }
+void esmat_compare_col (Esmat* A, Esmat* dest, Comparator cmp) {
+    int sizeA = A->val.size();
+    dest->nRows = A->nRows;
+    dest->nCols = A->nCols;
+    dest->val.clear();
+
+    int opt_value = 0;
+    int opt_col_index = -1;
+    int opt_index = -1;
+    for (int i = 0; i < sizeA; i++) {
+        int esmat_index = A->val[i].first;
+        double value = A->val[i].second;
+        int col_index = esmat_index / A->nRows;
+        int row_index = esmat_index % A->nRows;
+        if (col_index > opt_col_index) {
+            if (opt_index >= 0 && opt_col_index >= 0) {
+                dest->val.push_back(make_pair(opt_col_index*dest->nRows+opt_index, 1));
+            }
+            opt_col_index = col_index;
+            opt_value = value;
+            opt_index = row_index;
+        } else if (col_index == opt_col_index) {
+            if (cmp(value, opt_value)) {
+                opt_value = value;
+                opt_index = row_index;   
+            }
+        } else {
+            assert(false);
+        }
+    }
+}
+void esmat_compare_row (Esmat* A, Esmat* dest, Comparator cmp) {
+    int sizeA = A->val.size();
+    dest->nRows = A->nRows;
+    dest->nCols = A->nCols;
+    dest->val.clear();
+
+    vector<double> opt_value (A->nRows, 0.0);
+    vector<int> opt_index (A->nRows, -1);
+    vector<int> sparse_index (A->nRows, -1);
+
+    int prev_esmat_index = -1;
+    for (int i = 0; i < sizeA; i++) {
+        int esmat_index = A->val[i].first;
+        if (esmat_index > prev_esmat_index + 1) {
+            for (int j = prev_esmat_index + 1; j < esmat_index; j++) {
+                sparse_index[j%dest->nRows] = j/dest->nRows;
+            }
+        }
+        double value = A->val[i].second;
+        int col_index = esmat_index / A->nRows;
+        int row_index = esmat_index % A->nRows;
+        if (opt_index[row_index] < 0) { // first element on this row
+            opt_value[row_index] = value;
+            opt_index[row_index] = col_index;
+        } else if (cmp(value, opt_value[row_index])) { // not first element
+            opt_value[row_index] = value;
+            opt_index[row_index] = col_index;
+        }
+    }
+    cout << "===========" << endl;
+    for (int i = 0; i < A->nRows; i ++) {
+      //  cout << opt_index [i] << endl;
+      //  cout << opt_value [i] << endl;
+        if (opt_index[i] >= 0)
+            dest->val.push_back(make_pair((opt_index[i] * (dest->nRows))+i, 1));
+    }
+    esmat_align (dest);
+}
 /* Sum of all element on one matrix */
 double esmat_sum (Esmat* A) 
 { return esmat_unary_operate (A, sum); }
@@ -554,20 +626,17 @@ void esmat_add (Esmat* A, Esmat* B, Esmat* dest)
 void esmat_sub (Esmat* A, Esmat* B, Esmat* dest) 
 { esmat_bin_operate (A, B, dest, diff); }
 
-/* min, max and sum over column elements */
-void esmat_min_col (Esmat* A, Esmat* dest) 
-{ esmat_operate_col (A, dest, min, 10e300); }
-void esmat_max_col (Esmat* A, Esmat* dest) 
-{ esmat_operate_col (A, dest, max, -10e300); }
+/* sum over column or row elements */
 void esmat_sum_col (Esmat* A, Esmat* dest) 
 { esmat_operate_col (A, dest, sum, 0.0); }
-
-/* min, max and sum over row elements */
-void esmat_min_row (Esmat* A, Esmat* dest) 
-{ esmat_operate_row (A, dest, min, 10e300); }
-void esmat_max_row (Esmat* A, Esmat* dest) 
-{ esmat_operate_row (A, dest, max, -10e300); }
 void esmat_sum_row (Esmat* A, Esmat* dest) 
 { esmat_operate_row (A, dest, sum, 0.0); }
 
-
+void esmat_min_row (Esmat* A, Esmat* dest) 
+{ esmat_compare_row (A, dest, lt); }
+void esmat_max_row (Esmat* A, Esmat* dest) 
+{ esmat_compare_row (A, dest, gt); }
+void esmat_min_col (Esmat* A, Esmat* dest) 
+{ esmat_compare_col (A, dest, lt); }
+void esmat_max_col (Esmat* A, Esmat* dest) 
+{ esmat_compare_col (A, dest, gt); }
