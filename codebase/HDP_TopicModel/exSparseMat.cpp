@@ -11,6 +11,7 @@
 ################################################################*/
 
 #include "exSparseMat.h"
+
 /* Powerful function pointers and definition of instantiated operators */
 double min (double a, double b) { return a < b ? a : b; }
 double max (double a, double b) { return a > b ? a : b; }
@@ -168,8 +169,9 @@ void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector<int>* word_loo
         int mat_col_index = mat_index / mat->nRows;
 
         int v = (*word_lookup)[mat_row_index] - 1;
-        // TODO: 
-        int submat_row_index = (*voc_lookup)[v].find(mat_row_index);
+        vector<int>::iterator it;
+        it = find((*voc_lookup)[v].begin(), (*voc_lookup)[v].end(), mat_row_index);
+        int submat_row_index = *it;
         int submat_col_index = mat_col_index;
         int submat_index = submat_row_index + submat_col_index * submats[v]->nRows;
 
@@ -478,4 +480,5 @@ void esmat_max_row (Esmat* A, Esmat* dest)
 { esmat_operate_row (A, dest, max, -10e300); }
 void esmat_sum_row (Esmat* A, Esmat* dest) 
 { esmat_operate_row (A, dest, sum, 0.0); }
+
 

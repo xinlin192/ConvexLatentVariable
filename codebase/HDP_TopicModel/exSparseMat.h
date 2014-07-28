@@ -14,6 +14,7 @@
 #include<vector>
 #include<fstream>
 #include<cassert>
+#include <algorithm>
 #include"math.h"
 using namespace std;
 
@@ -44,6 +45,7 @@ Esmat* esmat_read (string fname);
 bool esmat_equal (Esmat* esmat, double **mat);
 void esmat_free (Esmat* src);
 void esmat_free_all (vector<Esmat*> src);
+void esmat_zeros (Esmat* A);
 
 /* Rearrange one esmat */
 void esmat_align (Esmat* mat);
@@ -51,12 +53,13 @@ void esmat_copy (Esmat* A, Esmat* D);
 void esmat_trim (Esmat* A);
 
 /* submat and merge */
-void esmat_submat_row (int start_index, int end_index, Esmat* mat, Esmat* submat);
+void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector< pair<int,int> >* look_up);
 void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector<int>* word_lookup, vector< vector<int> >* voc_lookup);
 void esmat_merge_row (Esmat* submat, int start_index, int end_index, Esmat* mat);
 void esmat_merge_row (Esmat* submat, vector<int>* sub_voc_lookup, Esmat* mat);
 
 /* frobenius product and norm */
+void esmat_abs (Esmat* A, Esmat* dest);
 double esmat_fdot (Esmat* A, Esmat* B);
 double esmat_sum (Esmat* A);
 double esmat_fnorm (Esmat* A);

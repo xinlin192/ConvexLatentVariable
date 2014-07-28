@@ -24,12 +24,15 @@
 using namespace std;
 
 typedef struct {
+    int nWords;
+    int nVocs;
+    int nDocs;
     vector< pair<int,int> >* doc_lookup;
     vector<int>* word_lookup;
     vector< vector<int> >* voc_lookup;
 } Lookups ;
 
-void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W, Lookups* tables);
+void HDP (vector<double> LAMBDAs, Esmat* W, Lookups* tables);
 
 /* Note that operations within this function do not destroy original input */
 void split (string input, vector<string>* elements, string delimiter) {
