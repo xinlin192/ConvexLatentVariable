@@ -34,8 +34,6 @@ bool pair_Second_Elem_Comparator (const std::pair<int, double>& firstElem, const
     return firstElem.second > secondElem.second;
 }
 
-typedef double (* dist_func) (Instance*, Instance*, int); 
-
 /*{{{*/
 /*
 int get_nCentroids (double ** W, int nRows, int nCols) {
@@ -120,14 +118,11 @@ double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >*
     }
 
     // Final: free resource
-    for (int d = 0; d < nDocs; d ++) {
-        esmat_free (sub_absZ[d]);
-    }
+    esmat_free_all (sub_absZ);
     return local_topic_reg;
 }
 /* \lambdab \sum_k \sum_{w \in voc(k)} \underset{word(n) = w}{\text{max}} |\wnk|  */
 double get_coverage_reg (Esmat* absZ, double lambda, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
-    // TODO:
     // STEP ONE: initialize sub matrix for each vocabulary
     int nVocs = voc_lookup->size();
     vector<Esmat*> sub_absZ (nVocs);
@@ -141,7 +136,12 @@ double get_coverage_reg (Esmat* absZ, double lambda, vector<int>* word_lookup, v
     return coverage_reg;
 }
 
-double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda) {
+double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda, Lookups* tables) {
+
+    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
+    vector<int>* word_lookup = tables->word_lookup; 
+    vector< vector<int> >* voc_lookup = tables->voc_lookup;
+
     // STEP ONE: compute main term
     double main = -1.0;
     if (prob_index == 1) {
@@ -153,9 +153,9 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
         if (prob_index == 2) {
             main = get_global_topic_reg (absW, lambda);
         } else if (prob_index == 3) {
-            main = get_local_topic_reg (absW, lambda);
+            main = get_local_topic_reg (absW, lambda, doc_lookup);
         } else if (prob_index == 4) {
-            main = get_coverage_reg (absW, lambda, word_lookup);
+            main = get_coverage_reg (absW, lambda, word_lookup, voc_lookup);
         }
         esmat_free (absW);
     }
@@ -175,11 +175,13 @@ cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = ("
 */
     return main + linear + quadratic;
 }
-double original_objective (Esmat* Z, vector<double> LAMBDAs) {
+double original_objective (Esmat* Z, vector<double> LAMBDAs, Lookups* tables) {
+    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
+    vector<int>* word_lookup = tables->word_lookup; 
+    vector< vector<int> >* voc_lookup = tables->voc_lookup;
 
     Esmat* absZ = esmat_init (Z);
     esmat_abs (Z, absZ);
-
     // STEP ONE: compute dummy loss
     double dummy = get_dummy_loss (Z);
     // cout << "dummy =" << dummy << endl;
@@ -189,8 +191,8 @@ double original_objective (Esmat* Z, vector<double> LAMBDAs) {
     // STEP THREE: compute "LOCAL TOPIC" group-lasso regularization
     double local_topic_reg = get_local_topic_reg (absZ, LAMBDAs[1], doc_lookup);
     // STEP FOUR: TODO compute "TOPIC COVERAGE" group-lasso regularization
-    double coverage_reg = get_coverage_reg (absZ, LAMBDAs[2], word_lookup);
-    esmat_free (absZ);    
+    double coverage_reg = get_coverage_reg (absZ, LAMBDAs[2], word_lookup, voc_lookup);
+    esmat_free (absZ); 
     return dummy + global_topic_reg + local_topic_reg + coverage_reg;
 }
 void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int N) {
@@ -293,8 +295,6 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
         esmat_copy (w_1, tempS);
         esmat_add (tempS, s, w_1);
 
-        // compute value of objective function
-        penalty = subproblem_objective (1, Y_1, Z_1, w_1, RHO, 0.0);
         // cout << "within frank_wolfe_solver: step three finished" << endl;
         // report the #iter and objective function
         /*
@@ -313,7 +313,7 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
     // cout << "end frank_wolfe_solver: finished! " << endl;
 }
 
-void group_lasso_solver (int prob_index, Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
+void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
     // STEP ONE: compute the optimal solution for truncated problem
     Esmat* wbar = esmat_init (w);
     esmat_zeros (wbar);
@@ -394,11 +394,14 @@ void group_lasso_solver (int prob_index, Esmat* Y, Esmat* Z, Esmat* w, double RH
 /* three subproblems that employed group_lasso_solver in different ways */
 void global_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
     group_lasso_solver (Y, Z, w, RHO, lambda);
-    // compute value of objective function
-    double penalty = subproblem_objective (2, Y, Z, w, RHO, lambda);
 }
-void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, vector< pair<int,int> >* doc_lookup) {
-    int nDocs = doc_lookup->size();
+void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, Lookups* tables) {
+
+    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
+    vector<int>* word_lookup = tables->word_lookup; 
+    vector< vector<int> >* voc_lookup = tables->voc_lookup;
+
+    int nDocs = tables->nDocs;
     Esmat* tempW = esmat_init (w);
     vector<Esmat*> subW (nDocs); 
     vector<Esmat*> subY (nDocs);
@@ -436,12 +439,14 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
 
     // FINAL: update merged solution to w
     esmat_copy (tempW, w);
-
-    // compute value of objective function (for tracing result)
-    double penalty = subproblem_objective (3, Y, Z, w, RHO, lambda);
 }
-void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
-    int nVocs = voc_lookup->size();
+void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, Lookups* tables) {
+
+    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
+    vector<int>* word_lookup = tables->word_lookup; 
+    vector< vector<int> >* voc_lookup = tables->voc_lookup;
+
+    int nVocs = tables->nVocs;
     Esmat* tempW = esmat_init (w);
     vector<Esmat*> subW (nVocs); 
     vector<Esmat*> subY (nVocs);
@@ -477,16 +482,14 @@ void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambd
 
     // FINAL: update merged solution to w
     esmat_copy (tempW, w);
-
-    // compute value of objective function (for tracing result)
-    double penalty = subproblem_objective (4, Y, Z, w, RHO, lambda);
 }
 
-void HDP (int D, int N, vector<double> LAMBDAs, Esmat* W) {
+void HDP (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 3);
     double ALPHA = 1.0;
     double RHO = 1.0;
+    int N = tables->nWords;
 
     /* DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
     Esmat* w_1 = esmat_init (N, 1);
@@ -525,8 +528,8 @@ cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe_
 */
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
-        frank_wolfe_solver ( y_1, z, w_1, RHO, N); 
-
+        frank_wolfe_solver (y_1, z, w_1, RHO, N); 
+        double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables);
         /*
 #ifdef ITERATION_TRACE_DUMP
 cout << "frank_wolfe_solver done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
@@ -535,6 +538,8 @@ cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_
 */
         // resolve w_2
         global_topic_subproblem (y_2, z, w_2, RHO, LAMBDAs[0]);
+        // compute value of objective function
+        double sub2_obj = subproblem_objective (2, y_2, z, w_2, RHO, LAMBDAs[0],tables);
         /*
 #ifdef ITERATION_TRACE_DUMP
 cout << "it is place 3 iteration #" << iter << endl;
@@ -542,12 +547,14 @@ cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
 #endif
 */
         // resolve w_3
-        local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[1], doc_lookup);
+        local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[1], tables);
+        double sub3_obj = subproblem_objective (3, y_3, z, w_3, RHO, LAMBDAs[1], tables);
         // resolve w_4
-        coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2], word_lookup, voc_lookup);
+        coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2], tables);
+        double sub4_obj = subproblem_objective(4, y_4, z, w_4, RHO, LAMBDAs[2], tables);
 
         // STEP TWO: update z by averaging w_1, w_2, w_3 and w_4
-        Esmat* temp = esmat_init (0,0);
+        Esmat* temp = esmat_init ();
         esmat_add (w_1, w_2, z);
         esmat_copy (z, temp);
         esmat_add (temp, w_3, z);
@@ -624,4 +631,92 @@ cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
     // STEP SIX: put converged solution to destinated W
     esmat_copy (z, W);
     esmat_free (z);
+}
+
+// entry main function
+int main (int argc, char ** argv) {
+
+    // EXCEPTION control: illustrate the usage if get input of wrong format
+    if (argc < 5) {
+        cerr << "Usage: HDP [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local] [lambda_coverage]" << endl;
+        exit(-1);
+    }
+
+    // PARSE arguments
+    string voc_file (argv[1]);
+    string doc_file (argv[2]);
+    vector<double> LAMBDAs (3, 0.0);
+    LAMBDAs[0] = atof(argv[3]); // lambda_document
+    LAMBDAs[1] = atof(argv[4]); // lambda_topic
+    LAMBDAs[2] = atof(argv[5]); // lambda_block
+
+    // preprocess the input dataset
+    vector<string> voc_list;
+    voc_list_read (voc_file, &voc_list);
+    int nVocs = voc_list.size();
+
+    vector< pair<int,int> > doc_lookup;
+    vector<int> word_lookup;
+    vector< vector<int> > voc_lookup (nVocs, vector<int>());
+    Lookups lookup_tables;
+    lookup_tables.doc_lookup = &doc_lookup;
+    lookup_tables.word_lookup = &word_lookup;
+    lookup_tables.voc_lookup = &voc_lookup;
+    document_list_read (doc_file, &lookup_tables);
+    
+    lookup_tables.nDocs = lookup_tables.doc_lookup->size();
+    lookup_tables.nWords = lookup_tables.word_lookup->size();
+    lookup_tables.nVocs = nVocs;
+    cerr << "nVocs = " << lookup_tables.nVocs << endl; // # vocabularies
+    cerr << "nDocs = " << lookup_tables.nDocs << endl; // # documents
+    cerr << "nWords = " << lookup_tables.nWords << endl; // # words
+    cerr << "lambda_global = " << LAMBDAs[0] << endl;
+    cerr << "lambda_local = " << LAMBDAs[1] << endl;
+    cerr << "lambda_coverage = " << LAMBDAs[2] << endl;
+    cerr << "TRIM_THRESHOLD = " << TRIM_THRESHOLD << endl;
+
+    int seed = time(NULL);
+    srand (seed);
+    cerr << "seed = " << seed << endl;
+
+    // restore matchness matrix in sparse representation
+    /* here we consider non-noise version of topic model
+    double ** match_mat = mat_init (N, N);
+    mat_zeros (match_mat, N, N);
+    */
+
+    // Run sparse convex clustering
+    Esmat* W = esmat_init (lookup_tables.nWords, 1);
+    HDP (LAMBDAs, W, &lookup_tables);
+
+    // Output results
+    ofstream fout("result");
+
+    // interpret result by means of voc_list
+    /*{{{*/
+    /*
+    vector<int> centroids = get_all_centroids(W, N, N); // contains index of all centroids
+    
+    int nCentroids = centroids.size();
+    for (int i = 0; i < N; i ++) {
+        // output identification and its belonging
+        fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
+        for (int j = 0; j < N; j ++) {
+            if( fabs(W[i][j]) > 3e-1 ) {
+                fout << j+1 << "(" << W[i][j] << "),\t";
+            }
+        }
+	fout << endl;
+
+        // output distance of one sample to each centroid 
+        fout << "dist_centroids: (";
+        for (int j = 0; j < nCentroids - 1; j ++) {
+            fout << dist_mat[i][ centroids[j] ] << ", ";
+        }
+        fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
+        fout << endl;
+    }
+    */
+/*}}}*/
+
 }
