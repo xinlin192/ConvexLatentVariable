@@ -1,0 +1,3 @@
+function loglike = DPloglike( alpha, K, m )
+
+loglike = K*ln(alpha) + sum(gammaln(m)) + gammaln(alpha) - gammaln(sum(m)+alpha);
