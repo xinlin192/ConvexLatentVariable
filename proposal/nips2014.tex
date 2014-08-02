@@ -367,6 +367,24 @@ Until Convergence.
 To handle large scale data and manage extensibility, we implement a new data
 structure - extensible sparse matrice. 
 
+\subsection{mono-topic variant}
+1. the constraint enforces single topic for each document is 
+\begin{align}
+    \forall d, \sum_k \max_{n \in d} |w_{nk}| = 1
+   \end{align}
+   
+2. first subproblem becomes
+\begin{align}
+    \min r_1 |1-\sum_k w_nk| + r_2 \big| 1-\sum_k \max_{n \in d} |w_{nk}| \big| + linear + quadratic
+   \end{align}
+
+3. no need to solve third subproblem
+
+4. fourth subproblem is modified
+\begin{align}
+    \min \lambda_b \sum_k \max \big((\sum_{w \in voc(k)} \max_{word(n)=w}
+    |w_{nk}|) -1, 0\big) + linear + quadratic
+   \end{align}
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Acknowledgments}
