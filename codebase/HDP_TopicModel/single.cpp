@@ -91,9 +91,15 @@ double get_dummy_loss (Esmat* Z) {
 double get_global_topic_reg (Esmat* absZ, double lambda) {
     Esmat* maxn = esmat_init (1, absZ->nCols);
     Esmat* sumk = esmat_init (1, 1);
-    esmat_max_col (absZ, maxn);
+    esmat_max_over_col (absZ, maxn);
     esmat_sum_row (maxn, sumk);
-    double global_topic_reg = lambda * sumk->val[0].second; 
+    cout << esmat_toString (maxn);
+    cout << esmat_toString (sumk);
+    double global_topic_reg;
+    if (sumk->val.size() > 0)
+        global_topic_reg = lambda * sumk->val[0].second; 
+    else 
+        global_topic_reg = 0.0;
     esmat_free (sumk);
     esmat_free (maxn);
     return global_topic_reg;
@@ -123,13 +129,16 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
     // STEP ONE: compute main term
     double main = -1.0;
     if (prob_index == 1) {
+        // cout << "begin to compute dummy loss" << endl;
         // dummy_penalty = r dot (1 - sum_k w_nk)
         main = get_dummy_loss (W);
+        cout << "dummy loss: " << main << endl;
     } else {
         Esmat* absW = esmat_init (W);
         esmat_abs (W, absW);
         if (prob_index == 2) {
             main = get_global_topic_reg (absW, lambda);
+            cout << "global_topic_reg: " << main << endl;
         }  else if (prob_index == 4) {
             main = get_coverage_reg (absW, lambda, word_lookup, voc_lookup);
         }
@@ -169,7 +178,7 @@ double original_objective (Esmat* Z, vector<double> LAMBDAs, Lookups* tables) {
     esmat_free (absZ); 
     return dummy + global_topic_reg + coverage_reg;
 }
-void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int N) {
+void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
 
     bool is_global_optimal_reached = false;
 
@@ -181,9 +190,9 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
 #ifndef EXACT_LINE_SEARCH
     int K = 300;
 #else
-    int K = 2;
-    Esmat * w_minus_s = esmat_init (w_1);
-    Esmat * w_minus_z = esmat_init (w_1);
+    int K = 10;
+    Esmat * w_minus_s = esmat_init ();
+    Esmat * w_minus_z = esmat_init ();
 #endif
 
     int k = 0; // iteration number
@@ -195,12 +204,31 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
     double sum1, sum2, sum3, sum4;
     // cout << "within frank_wolfe_solver: start iteration" << endl;
     while (k < K && !is_global_optimal_reached) {
+        // STEP ZERO: augment the matrix
+        esmat_augment (w_1);
+        esmat_augment (Y_1);
+        esmat_augment (Z_1);
+
         // STEP ONE: find s that minimizes <s, grad f>
         // gradient[i][j] = Y_1[i][j] + RHO * (w_1[i][j] - Z_1[i][j]) ;  //- r[i];
         esmat_sub (w_1, Z_1, tempS);
         esmat_scalar_mult (RHO, tempS);
         esmat_add (Y_1, tempS, gradient);
         esmat_min_row (gradient, s);
+        /*
+        cout << "=============================" << endl;
+        cout << "[w_1]" << endl;
+        cout << w_1->nRows << "," << w_1->nCols << "," << w_1->val.size() << endl;
+        cout << esmat_toString(w_1);
+
+        cout << "[gradient]" << endl;
+        cout << gradient->nRows << "," << gradient->nCols << "," << gradient->val.size() << endl;
+        cout << esmat_toString(gradient);
+        cout << endl;
+        cout << "[s]" << endl;
+        cout << s->nRows << "," << s->nCols << "," << s->val.size() << endl;
+        cout << esmat_toString(s);
+        */
 
         /*
 #ifdef FRANK_WOLFE_DUMP
@@ -227,6 +255,7 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
         // sum3 = - RHO * sum_n sum_k  (w - z) 
         // sum4 = sum_n sum_k RHO * (s - w)
         esmat_sub (w_1, s, w_minus_s);
+        // cout << esmat_toString(w_minus_s);
         esmat_sub (w_1, Z_1, w_minus_z);
 
         // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
@@ -245,7 +274,8 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
             sum3 = RHO * esmat_fdot (w_minus_z, w_minus_s);
             sum4 = RHO * esmat_fnorm (w_minus_s);
             // gamma should be within interval [0,1]
-            gamma = (sum1 + sum2 + sum3) / sum4;
+            // gamma = (sum1 + sum2 + sum3) / sum4;
+            gamma = (sum2 + sum3) / sum4;
 
 #ifdef FRANK_WOLFE_DUMP
             cout << "esmat_norm2 (w_minus_s)" << esmat_fnorm (w_minus_s) << endl;
@@ -265,9 +295,17 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
 #endif
         // update the w^(k+1)
         esmat_scalar_mult (gamma, s); 
+        /*
+        cout << "[gamma*s]" << endl;
+        cout << esmat_toString(s);
+        */
         esmat_scalar_mult (1.0-gamma, w_1);
         esmat_copy (w_1, tempS);
         esmat_add (tempS, s, w_1);
+        /*
+        cout << "[post w_1]" << endl;
+        cout << esmat_toString(w_1);
+        */
 
         // cout << "within frank_wolfe_solver: step three finished" << endl;
         // report the #iter and objective function
@@ -286,11 +324,9 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO, int 
     esmat_free (s);
     // cout << "end frank_wolfe_solver: finished! " << endl;
 }
-
 void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
     // STEP ONE: compute the optimal solution for truncated problem
     Esmat* wbar = esmat_init (w);
-    esmat_zeros (wbar);
     esmat_scalar_mult (RHO, Z, wbar); // wbar = RHO * z
     esmat_sub (wbar, Y, wbar); // wbar = RHO * z - y
     esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z - y) / RHO
@@ -460,10 +496,10 @@ void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambd
 
 void single (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
-    assert (LAMBDAs.size() == 3);
+    assert (LAMBDAs.size() == 2);
     double ALPHA = 1.0;
     double RHO = 1.0;
-    int N = tables->nWords;
+    int N = tables->nDocs;
 
     /* DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
     Esmat* w_1 = esmat_init (N, 0);
@@ -498,8 +534,9 @@ cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe_
 */
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
-        frank_wolfe_solver (y_1, z, w_1, RHO, N); 
+        frank_wolfe_solver (y_1, z, w_1, RHO); 
         double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables);
+        cout << "sub1_objective: " << sub1_obj << endl;
         /*
 #ifdef ITERATION_TRACE_DUMP
 cout << "frank_wolfe_solver done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
@@ -507,15 +544,17 @@ cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_
 #endif
 */
         // resolve w_2
+        esmat_resize (w_2, w_1);
+        esmat_resize (y_2, w_1);
+        esmat_resize (z, y_1);
         global_topic_subproblem (y_2, z, w_2, RHO, LAMBDAs[0]);
         // compute value of objective function
         double sub2_obj = subproblem_objective (2, y_2, z, w_2, RHO, LAMBDAs[0],tables);
-        /*
-#ifdef ITERATION_TRACE_DUMP
-cout << "it is place 3 iteration #" << iter << endl;
-cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
-#endif
-*/
+        cout << esmat_toString (w_2);
+        cout << "sub2_objective: " << sub2_obj << endl;
+
+        return ;
+       
         // resolve w_4
         coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2], tables);
         double sub4_obj = subproblem_objective (4, y_4, z, w_4, RHO, LAMBDAs[2], tables);
@@ -527,12 +566,7 @@ cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
         esmat_add (temp, w_4, z);
         esmat_scalar_mult (0.25, z);
 
-        /*
-#ifdef ITERATION_TRACE_DUMP
-cout << "it is place 4 iteration #" << iter << endl;
-cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
-#endif
-*/
+      
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         esmat_sub (w_1, z, diff_1);
         // double trace_wone_minus_z = esmat_norm2 (diff_1); 

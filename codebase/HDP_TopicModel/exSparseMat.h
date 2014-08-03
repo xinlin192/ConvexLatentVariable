@@ -69,6 +69,8 @@ bool esmat_equal (Esmat* esmat, double **mat);
 void esmat_free (Esmat* src);
 void esmat_free_all (vector<Esmat*> src);
 void esmat_zeros (Esmat* A);
+void esmat_augment (Esmat* A);
+void esmat_resize (Esmat* A, Esmat* B);
 
 /* Rearrange one esmat */
 void esmat_align (Esmat* mat);
@@ -103,13 +105,15 @@ void esmat_add (Esmat* A, Esmat* B, Esmat* dest);
 void esmat_sub (Esmat* A, Esmat* B, Esmat* dest);
 
 /* min, max and sum over column and row elements */
-void esmat_min_col (Esmat* A, Esmat* dest);
-void esmat_max_col (Esmat* A, Esmat* dest);
+void esmat_max_over_col (Esmat* A, Esmat* dest); 
 void esmat_sum_col (Esmat* A, Esmat* dest);
-void esmat_min_row (Esmat* A, Esmat* dest);
-void esmat_max_row (Esmat* A, Esmat* dest);
 void esmat_sum_row (Esmat* A, Esmat* dest); 
 
+/* min, max column and row elements */
+void esmat_min_col (Esmat* A, Esmat* dest);
+void esmat_max_col (Esmat* A, Esmat* dest);
+void esmat_min_row (Esmat* A, Esmat* dest);
+void esmat_max_row (Esmat* A, Esmat* dest);
 
 bool pair_First_Elem_inc_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
     // sort pairs by second element with *incremental order*
@@ -135,6 +139,10 @@ void esmat_init_all (vector<Esmat*>* src) {
     for (int i = 0; i < N; i++) {
         (*src)[i] = esmat_init();
     }
+}
+void esmat_resize (Esmat* A, Esmat* B) {
+    A->nRows = B->nRows;
+    A->nCols = B->nCols;
 }
 Esmat* esmat_read (string fname) {
    	ifstream fin(fname);
@@ -430,6 +438,10 @@ string esmat_toString (Esmat* A) {
     return str;
 }
 
+void esmat_augment (Esmat* A) {
+    A->nCols += 1;    
+}
+
 /* copy content of Esmat* A to Esmat* D */
 void esmat_copy (Esmat* A, Esmat* D) {
 
@@ -477,25 +489,42 @@ void esmat_bin_operate (Esmat* A, Esmat* B, Esmat* dest, Operator opt) {
     dest->nCols = A->nCols;
     dest->val.clear();
 
-    int i = 0; int j = 0;
-    int indexA, indexB;
     int sizeA = A->val.size();
     int sizeB = B->val.size();
+    int indexA, indexB;
+    double value;
 
+    int i = 0; int j = 0;
     while (i < sizeA && j < sizeB) {
         indexA = A->val[i].first;
-        indexB = B->val[i].first;
+        indexB = B->val[j].first;
 
         if (indexA < indexB) {
-            dest->val.push_back(make_pair(indexA, A->val[i].second));
+            value = opt(A->val[i].second, 0);
+            dest->val.push_back(make_pair(indexA, value));
             ++i; 
         } else if (indexA > indexB) {
-            dest->val.push_back(make_pair(indexB, B->val[i].second));
+            value = opt(0, B->val[j].second);
+            dest->val.push_back(make_pair(indexB, value));
             ++j;
         } else { // equality
-            double value = opt(A->val[i].second, B->val[i].second);
+            value = opt(A->val[i].second, B->val[j].second);
             dest->val.push_back(make_pair(indexA, value));
             ++i; ++j;
+        }
+    }
+
+    if (i == sizeA && j < sizeB) {
+        for (; j < sizeB; j ++) {
+            indexB = B->val[j].first;
+            value = opt(0, B->val[j].second);
+            dest->val.push_back(make_pair(indexB, value));
+        }
+    } else if (j == sizeB && i < sizeA) {
+        for (; i < sizeA; i ++) {
+            indexA = A->val[i].first;
+            value = opt(A->val[i].second, 0);
+            dest->val.push_back(make_pair(indexA, value));
         }
     }
 }
@@ -510,8 +539,9 @@ void esmat_operate_row (Esmat* A, Esmat* dest, Operator opt, double init_value) 
     vector<double> temp (A->nRows, init_value);
     
     for (int i = 0; i < sizeA; i ++) {
-        int row_idx = dest->val[i].first % A->nRows;
-        temp[row_idx] = opt(dest->val[i].second, temp[row_idx]);
+        int row_idx = A->val[i].first % A->nRows;
+        double value = A->val[i].second;
+        temp[row_idx] = opt(value, temp[row_idx]);
     }
 
     for (int j = 0; j < A->nRows; j ++) {
@@ -529,13 +559,17 @@ void esmat_operate_col (Esmat* A, Esmat* dest, Operator opt, double init_value) 
     dest->val.clear();
 
     vector<double> temp (A->nCols, init_value);
+    vector< vector<int> > counter (A->nCols, vector<int> ());
     
     for (int i = 0; i < sizeA; i ++) {
-        int col_idx = dest->val[i].first / A->nRows;
-        temp[col_idx] = opt(dest->val[i].second, temp[col_idx]);
+        int col_idx = A->val[i].first / A->nRows;
+        temp[col_idx] = opt(A->val[i].second, temp[col_idx]);
+        counter[col_idx].push_back(1);
     }
-
     for (int j = 0; j < A->nCols; j ++) {
+        if (counter[j].size() < A->nRows) {
+            temp[j] = opt(0, temp[j]);
+        }
         // trim very small term
         if (fabs(temp[j]) > TRIM_THRESHOLD)
             dest->val.push_back(make_pair(j, temp[j]));
@@ -605,29 +639,47 @@ void esmat_compare_col (Esmat* A, Esmat* dest, Comparator cmp) {
         dest->val.push_back(make_pair(j*dest->nRows, 1));
     }
 }
+int find_first_zero_index (vector<int> vec, int max_index) {
+    int size = vec.size();
+    if (size == 0) {
+        return -1; // no zero entry
+    } else if (vec[0] > 0) {
+        return 0;
+    } else if (size == max_index) {
+        return -1;
+    }
+    for (int i = 1; i < size; i ++) {
+        if (vec[i] == vec[i-1]+1) {
+            continue;
+        } else {
+            return vec[i-1]+1;
+        }
+    }
+    return vec[size-1]+1;
+}
 void esmat_compare_row (Esmat* A, Esmat* dest, Comparator cmp) {
     int sizeA = A->val.size();
     dest->nRows = A->nRows;
     dest->nCols = A->nCols;
     dest->val.clear();
 
+    if (sizeA == 0 && dest->nCols > 0) {
+        for (int i = 0; i < A->nRows; i ++) {
+            dest->val.push_back(make_pair(i, 1));
+        }
+        return ;
+    }
+
     vector<double> opt_value (A->nRows, 0.0);
     vector<int> opt_index (A->nRows, -1);
-    vector<int> sparse_index (A->nRows, -1);
+    vector< vector<int> > counter (A->nRows, vector<int> ()); 
 
-    int prev_esmat_index = -1;
-    for (int i = 0; i < sizeA; i++) {
+    for (int i = 0; i < sizeA; i ++) {
         int esmat_index = A->val[i].first;
-        if (esmat_index > prev_esmat_index + 1) {
-            for (int j = prev_esmat_index + 1; j < esmat_index; j++) {
-                if (sparse_index[j%(dest->nRows)] < 0)
-                    sparse_index[j%(dest->nRows)] = j/(dest->nRows);
-            }
-        }
-        prev_esmat_index = esmat_index;
         double value = A->val[i].second;
         int col_index = esmat_index / A->nRows;
         int row_index = esmat_index % A->nRows;
+        counter[row_index].push_back(col_index);
         if (opt_index[row_index] < 0) { // first element on this row
             opt_value[row_index] = value;
             opt_index[row_index] = col_index;
@@ -637,15 +689,13 @@ void esmat_compare_row (Esmat* A, Esmat* dest, Comparator cmp) {
         }
     }
     for (int i = 0; i < A->nRows; i ++) {
-        // cout << opt_index [i] << endl;
-        // cout << opt_value [i] << endl;
-        // cout << sparse_index [i] << endl;
-        if (sparse_index[i] >= 0 && (cmp(0, opt_value[i]) || opt_index[i] < 0)) {
-            dest->val.push_back(make_pair(sparse_index[i]*(dest->nRows)+i, 1));
+        if (counter[i].size() < A->nCols && 
+                (cmp(0, opt_value[i]) || opt_index[i] < 0)) {
+            int sparse_index = find_first_zero_index (counter[i], A->nCols);
+            dest->val.push_back(make_pair(sparse_index*(dest->nRows)+i, 1));
             continue;
-        }
-        if (opt_index[i] >= 0)
-            dest->val.push_back(make_pair((opt_index[i] * (dest->nRows))+i, 1));
+        } else if (opt_index[i] >= 0)
+            dest->val.push_back(make_pair((opt_index[i]*(dest->nRows))+i, 1));
     }
     esmat_align (dest);
 }
@@ -670,6 +720,9 @@ void esmat_sum_col (Esmat* A, Esmat* dest)
 { esmat_operate_col (A, dest, sum, 0.0); }
 void esmat_sum_row (Esmat* A, Esmat* dest) 
 { esmat_operate_row (A, dest, sum, 0.0); }
+
+void esmat_max_over_col (Esmat* A, Esmat* dest) 
+{ esmat_operate_col (A, dest, max, -INF); }
 
 void esmat_min_row (Esmat* A, Esmat* dest) 
 { esmat_compare_row (A, dest, lt); }
