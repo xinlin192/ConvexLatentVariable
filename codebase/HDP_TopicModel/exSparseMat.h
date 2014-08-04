@@ -71,6 +71,7 @@ void esmat_free_all (vector<Esmat*> src);
 void esmat_zeros (Esmat* A);
 void esmat_augment (Esmat* A);
 void esmat_resize (Esmat* A, Esmat* B);
+void esmat_resize (Esmat* A, int nRows, int nCols);
 
 /* Rearrange one esmat */
 void esmat_align (Esmat* mat);
@@ -143,6 +144,10 @@ void esmat_init_all (vector<Esmat*>* src) {
 void esmat_resize (Esmat* A, Esmat* B) {
     A->nRows = B->nRows;
     A->nCols = B->nCols;
+}
+void esmat_resize (Esmat* A, int nRows, int nCols) {
+    A->nRows = nRows;
+    A->nCols = nCols;
 }
 Esmat* esmat_read (string fname) {
    	ifstream fin(fname);
@@ -712,9 +717,15 @@ double esmat_compute_dummy (Esmat* A)
 
 /* Add and Subtract two extensible sparse matrices */
 void esmat_add (Esmat* A, Esmat* B, Esmat* dest) 
-{ esmat_bin_operate (A, B, dest, sum); }
+{ 
+    esmat_bin_operate (A, B, dest, sum);
+    esmat_trim (dest);
+}
 void esmat_sub (Esmat* A, Esmat* B, Esmat* dest) 
-{ esmat_bin_operate (A, B, dest, diff); }
+{ 
+    esmat_bin_operate (A, B, dest, diff);
+    esmat_trim (dest);
+}
 
 /* sum over column or row elements */
 void esmat_sum_col (Esmat* A, Esmat* dest) 

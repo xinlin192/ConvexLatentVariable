@@ -22,6 +22,7 @@
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define NTOPIC_DUMP
+#define SUBPROBLEM_DUMP
 
 double sign (int input) {
     if (input > 0) return 1.0;
@@ -93,8 +94,8 @@ double get_global_topic_reg (Esmat* absZ, double lambda) {
     Esmat* sumk = esmat_init (1, 1);
     esmat_max_over_col (absZ, maxn);
     esmat_sum_row (maxn, sumk);
-    cout << esmat_toString (maxn);
-    cout << esmat_toString (sumk);
+    // cout << esmat_toString (maxn);
+    // cout << esmat_toString (sumk);
     double global_topic_reg;
     if (sumk->val.size() > 0)
         global_topic_reg = lambda * sumk->val[0].second; 
@@ -128,7 +129,7 @@ double get_coverage_reg (Esmat* absZ, double lambda, vector<int>* word_lookup, v
 }
 
 double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda, Lookups* tables) {
-
+    string title = "";
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
     vector<int>* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
@@ -136,17 +137,18 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
     // STEP ONE: compute main term
     double main = -1.0;
     if (prob_index == 1) {
+        title = "Dummy_Loss";
         // cout << "begin to compute dummy loss" << endl;
         // dummy_penalty = r dot (1 - sum_k w_nk)
         main = get_dummy_loss (W);
-        cout << "dummy loss: " << main << endl;
     } else {
         Esmat* absW = esmat_init (W);
         esmat_abs (W, absW);
         if (prob_index == 2) {
+            title = "Global_Reg";
             main = get_global_topic_reg (absW, lambda);
-            cout << "global_topic_reg: " << main << endl;
         }  else if (prob_index == 4) {
+            title = "Coverage_Reg";
             main = get_coverage_reg (absW, lambda, word_lookup, voc_lookup);
         }
         esmat_free (absW);
@@ -157,15 +159,15 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
     double linear = esmat_fdot (Y, w_minus_z);
     // STEP THREE: compute quadratic term: quadratic = 0.5 * RHO * || w - z ||^2 
     double quadratic = 0.5 * RHO * esmat_fnorm (w_minus_z);
+    double total = main + linear + quadratic;
     esmat_free (w_minus_z);
-    /*
-#ifdef FRANK_WOLFE_DUMP
-cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
-<< sum1 << ", " << sum2 << ", " << sum3 << ", " << dummy_penalty << ", " << total
-<<  ")" << endl;
+#ifdef SUBPROBLEM_DUMP
+    cout << title << ": " << main << ", ";
+    cout << "linear: " << linear << ", ";
+    cout << "quadratic: " << quadratic << ", ";
+    cout << "total: " << total << endl;
 #endif
-*/
-    return main + linear + quadratic;
+    return total;
 }
 double original_objective (Esmat* Z, vector<double> LAMBDAs, Lookups* tables) {
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
@@ -531,7 +533,7 @@ void single (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         // STEP ZERO: RESET ALL SUBPROBLEM SOLUTIONS (OPTIONAL) 
         esmat_zeros (w_1);
         esmat_zeros (w_2);
-        esmat_zeros (w_4);
+        // esmat_zeros (w_4);
         /*
 #ifdef ITERATION_TRACE_DUMP
 cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe_solvere"  << endl;
@@ -539,9 +541,12 @@ cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe_
 */
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
+        // esmat_resize(w_1, 0, 0);
         frank_wolfe_solver (y_1, z, w_1, RHO); 
         double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables);
-        cout << "sub1_objective: " << sub1_obj << endl;
+        cout << "[w_1]" << endl;
+        cout << esmat_toString (w_1);
+        // cout << "sub1_objective: " << sub1_obj << endl;
         /*
 #ifdef ITERATION_TRACE_DUMP
 cout << "frank_wolfe_solver done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
@@ -555,21 +560,22 @@ cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_
         global_topic_subproblem (y_2, z, w_2, RHO, LAMBDAs[0]);
         // compute value of objective function
         double sub2_obj = subproblem_objective (2, y_2, z, w_2, RHO, LAMBDAs[0],tables);
-        cout << esmat_toString (w_2);
-        cout << "sub2_objective: " << sub2_obj << endl;
+        // cout << "sub2_objective: " << sub2_obj << endl;
 
+        /*
         // resolve w_4
         coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2], tables);
         double sub4_obj = subproblem_objective (4, y_4, z, w_4, RHO, LAMBDAs[2], tables);
         cout << "sub4_objective: " << sub2_obj << endl;
         return;
+        */
 
         // STEP TWO: update z by averaging w_1, w_2 and w_4
         Esmat* temp = esmat_init ();
         esmat_add (w_1, w_2, z);
-        esmat_copy (z, temp);
-        esmat_add (temp, w_4, z);
-        esmat_scalar_mult (0.25, z);
+        // esmat_copy (z, temp);
+        // esmat_add (temp, w_4, z);
+        esmat_scalar_mult (0.5, z);
 
       
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
@@ -585,12 +591,16 @@ cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_
         esmat_copy (y_2, temp);
         esmat_add (temp, diff_2, y_2);
 
+        /*
         esmat_sub (w_4, z, diff_4);
         //double trace_wfour_minus_z = esmat_norm2 (diff_4); 
         esmat_scalar_mult (ALPHA, diff_4);
         esmat_copy (y_4, temp);
         esmat_add (temp, diff_4, y_4);
+        */
 
+        cout << "[z]" << endl;
+        cout << esmat_toString (z);
         // STEP FOUR: trace the objective function
         /*
         if (iter % 1 == 0) {
@@ -609,6 +619,7 @@ cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_
         */
 
         iter ++;
+        cout << "###################[iter:"<<iter<<"]#####################" << endl;
     }
     
     // STEP FIVE: memory recollection
