@@ -18,7 +18,7 @@
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
-// #define FRANK_WOLFE_DUMP
+#define FRANK_WOLFE_DEBUG
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define NTOPIC_DUMP
@@ -94,9 +94,7 @@ double get_global_topic_reg (Esmat* absZ, double lambda) {
     Esmat* sumk = esmat_init (1, 1);
     esmat_max_over_col (absZ, maxn);
     esmat_sum_row (maxn, sumk);
-    // cout << esmat_toString (maxn);
-    // cout << esmat_toString (sumk);
-    double global_topic_reg;
+    double global_topic_reg = -INF;
     if (sumk->val.size() > 0)
         global_topic_reg = lambda * sumk->val[0].second; 
     else 
@@ -105,7 +103,28 @@ double get_global_topic_reg (Esmat* absZ, double lambda) {
     esmat_free (maxn);
     return global_topic_reg;
 }
+/* \lambdal \sum_d \sum_k \underset{n \in d}{\text{max}} |\wnk| */
+double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >* doc_lookup) {
+    // STEP ONE: initialize sub matrix for each document
+    int nDocs = doc_lookup->size();
+    vector<Esmat*> sub_absZ (nDocs);
+    for (int d = 0; d < nDocs; d ++) {
+        sub_absZ[d] = esmat_init (0,0);
+    }
 
+    // STEP TWO: separate entire Z to submat Z
+    esmat_submat_row (absZ, sub_absZ, doc_lookup);
+
+    // STEP THREE: compute global topic regularizer for each localized doc
+    double local_topic_reg = 0.0;
+    for (int d = 0; d < nDocs; d ++) {
+        local_topic_reg += get_global_topic_reg (sub_absZ[d], lambda); 
+    }
+
+    // Final: free resource
+    esmat_free_all (sub_absZ);
+    return local_topic_reg;
+}
 /* \lambdab \sum_k \sum_{w \in voc(k)} \underset{word(n) = w}{\text{max}} |\wnk|  */
 double get_coverage_reg (Esmat* absZ, double lambda, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
     // STEP ONE: initialize sub matrix for each vocabulary
@@ -113,17 +132,10 @@ double get_coverage_reg (Esmat* absZ, double lambda, vector<int>* word_lookup, v
     vector<Esmat*> sub_absZ (nVocs);
     esmat_init_all (&sub_absZ);
     esmat_submat_row (absZ, sub_absZ, word_lookup, voc_lookup);
-    // TODO: for the modified version of fourth subproblem, old computing
-    // framework does not work anymore. need to create a 
-    //            vector< vector< pair<int, int> > >
-    // to restore the pairs of vocabulary and position within each vocabulary
-    // matrix. (for putting each document on separate vocabulary matrix)
     double coverage_reg = 0.0;
-    /*
     for (int v = 0; v < nVocs; v ++) {
         coverage_reg += get_global_topic_reg (sub_absZ[v], lambda); 
     }
-    */
     esmat_free_all (sub_absZ);
     return coverage_reg;
 }
@@ -147,7 +159,10 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
         if (prob_index == 2) {
             title = "Global_Reg";
             main = get_global_topic_reg (absW, lambda);
-        }  else if (prob_index == 4) {
+        } else if (prob_index == 3) {
+            title = "Local_Reg";
+            main = get_local_topic_reg (absW, lambda, doc_lookup);
+        } else if (prob_index == 4) {
             title = "Coverage_Reg";
             main = get_coverage_reg (absW, lambda, word_lookup, voc_lookup);
         }
@@ -214,9 +229,11 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
     // cout << "within frank_wolfe_solver: start iteration" << endl;
     while (k < K && !is_global_optimal_reached) {
         // STEP ZERO: augment the matrix
-        esmat_augment (w_1);
-        esmat_augment (Y_1);
-        esmat_augment (Z_1);
+        if (w_1->nCols < 10) {
+            esmat_augment (w_1);
+            esmat_augment (Y_1);
+            esmat_augment (Z_1);
+        }
 
         // STEP ONE: find s that minimizes <s, grad f>
         // gradient[i][j] = Y_1[i][j] + RHO * (w_1[i][j] - Z_1[i][j]) ;  //- r[i];
@@ -224,7 +241,7 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
         esmat_scalar_mult (RHO, tempS);
         esmat_add (Y_1, tempS, gradient);
         esmat_min_row (gradient, s);
-        /*
+#ifdef FRANK_WOLFE_DEBUG
         cout << "=============================" << endl;
         cout << "[w_1]" << endl;
         cout << w_1->nRows << "," << w_1->nCols << "," << w_1->val.size() << endl;
@@ -237,16 +254,7 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
         cout << "[s]" << endl;
         cout << s->nRows << "," << s->nCols << "," << s->val.size() << endl;
         cout << esmat_toString(s);
-        */
-
-        /*
-#ifdef FRANK_WOLFE_DUMP
-        cout << "esmat_norm2 (w_1): " <<  esmat_norm2 (w_1) << endl;
-        cout << "esmat_norm2 (Y_1): " <<  esmat_norm2 (Y_1) << endl;
-        cout << "esmat_norm2 (gradient): " <<  esmat_norm2 (gradient) << endl;
-        cout << "esmat_sum (s): " <<  esmat_sum (s) << endl;
-#endif
-*/
+#endif 
         // cout << "within frank_wolfe_solver: step one finished" << endl;
 
         // STEP TWO: apply exact or inexact line search to find solution
@@ -337,12 +345,19 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
     // STEP ONE: compute the optimal solution for truncated problem
     Esmat* wbar = esmat_init (w);
     esmat_scalar_mult (RHO, Z, wbar); // wbar = RHO * z
+    //  cout << wbar->nRows << "," << wbar->nCols << endl;
+    //  cout << Y->nRows << "," << Y->nCols << endl;
     esmat_sub (wbar, Y, wbar); // wbar = RHO * z - y
     esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z - y) / RHO
 
     // STEP TWO: find the closed-form solution for second subproblem
     int SIZE = wbar->val.size();
     int R = wbar->nRows; int C = wbar->nCols;
+
+    if (wbar->val.size() == 0) {
+        // no need to solve all-zero matrix w
+        return ;
+    }
     
     // i is index of element in esmat->val, j is column index
     int i = 0; int j = 0;
@@ -506,21 +521,24 @@ void single (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     assert (LAMBDAs.size() == 2);
     double ALPHA = 1.0;
     double RHO = 1.0;
-    int N = tables->nDocs;
+    int N = tables->nWords;
 
     /* DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
     Esmat* w_1 = esmat_init (N, 0);
     Esmat* w_2 = esmat_init (N, 0);
+    Esmat* w_3 = esmat_init (N, 0);
     Esmat* w_4 = esmat_init (N, 0);
 
     Esmat* y_1 = esmat_init (N, 0);
     Esmat* y_2 = esmat_init (N, 0);
+    Esmat* y_3 = esmat_init (N, 0);
     Esmat* y_4 = esmat_init (N, 0);
 
     Esmat* z = esmat_init (N, 0);
 
     Esmat* diff_1 = esmat_init (N, 0);
     Esmat* diff_2 = esmat_init (N, 0);
+    Esmat* diff_3 = esmat_init (N, 0);
     Esmat* diff_4 = esmat_init (N, 0);
 
     /* SET ITERATION-RELEVANT VARIABLES */
@@ -533,92 +551,90 @@ void single (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         // STEP ZERO: RESET ALL SUBPROBLEM SOLUTIONS (OPTIONAL) 
         esmat_zeros (w_1);
         esmat_zeros (w_2);
-        // esmat_zeros (w_4);
-        /*
-#ifdef ITERATION_TRACE_DUMP
-cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe_solvere"  << endl;
-#endif
-*/
+        esmat_zeros (w_3);
+        esmat_zeros (w_4);
+       
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
-        // esmat_resize(w_1, 0, 0);
+        // esmat_resize(w_1, N, 0);
+        cout << "[w_1] " << w_1->nRows << "," << w_1->nCols << endl;
+        cout << esmat_toString (w_1);
         frank_wolfe_solver (y_1, z, w_1, RHO); 
         double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables);
         cout << "[w_1]" << endl;
         cout << esmat_toString (w_1);
-        // cout << "sub1_objective: " << sub1_obj << endl;
-        /*
-#ifdef ITERATION_TRACE_DUMP
-cout << "frank_wolfe_solver done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
-cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_solver"<< endl;
-#endif
-*/
+        
         // resolve w_2
         esmat_resize (w_2, w_1);
         esmat_resize (y_2, w_1);
-        esmat_resize (z, y_1);
+        esmat_resize (z, w_1);
         global_topic_subproblem (y_2, z, w_2, RHO, LAMBDAs[0]);
         // compute value of objective function
         double sub2_obj = subproblem_objective (2, y_2, z, w_2, RHO, LAMBDAs[0],tables);
         // cout << "sub2_objective: " << sub2_obj << endl;
 
-        /*
+        esmat_resize (w_3, w_1);
+        esmat_resize (y_3, w_1);
+        local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[2], tables);
+        double sub3_obj = subproblem_objective (3, y_3, z, w_3, RHO, 10e3, tables);
+
         // resolve w_4
+        esmat_resize (w_4, w_1);
+        esmat_resize (y_4, w_1);
         coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2], tables);
-        double sub4_obj = subproblem_objective (4, y_4, z, w_4, RHO, LAMBDAs[2], tables);
-        cout << "sub4_objective: " << sub2_obj << endl;
-        return;
-        */
+        double sub4_obj = subproblem_objective (4, y_4, z, w_4, RHO, LAMBDAs[1], tables);
 
         // STEP TWO: update z by averaging w_1, w_2 and w_4
         Esmat* temp = esmat_init ();
         esmat_add (w_1, w_2, z);
-        // esmat_copy (z, temp);
-        // esmat_add (temp, w_4, z);
-        esmat_scalar_mult (0.5, z);
+        esmat_copy (z, temp);
+        esmat_add (temp, w_3, z);
+        esmat_copy (z, temp);
+        esmat_add (temp, w_4, z);
+        esmat_scalar_mult (0.25, z);
 
-      
+        cout << "[z]" << endl;
+        cout << esmat_toString (z);
+
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         esmat_sub (w_1, z, diff_1);
-        // double trace_wone_minus_z = esmat_norm2 (diff_1); 
         esmat_scalar_mult (ALPHA, diff_1);
         esmat_copy (y_1, temp);
         esmat_add (temp, diff_1, y_1);
 
         esmat_sub (w_2, z, diff_2);
-        //double trace_wtwo_minus_z = esmat_norm2 (diff_2); 
         esmat_scalar_mult (ALPHA, diff_2);
         esmat_copy (y_2, temp);
         esmat_add (temp, diff_2, y_2);
 
-        /*
+        esmat_sub (w_3, z, diff_3);
+        esmat_scalar_mult (ALPHA, diff_3);
+        esmat_copy (y_3, temp);
+        esmat_add (temp, diff_3, y_3);
+
         esmat_sub (w_4, z, diff_4);
-        //double trace_wfour_minus_z = esmat_norm2 (diff_4); 
         esmat_scalar_mult (ALPHA, diff_4);
         esmat_copy (y_4, temp);
         esmat_add (temp, diff_4, y_4);
-        */
 
-        cout << "[z]" << endl;
-        cout << esmat_toString (z);
+        // double trace_wone_minus_z = esmat_fnorm (diff_1); 
+        // double trace_wtwo_minus_z = esmat_fnorm (diff_2); 
+        // double trace_wtwo_minus_z = esmat_fnorm (diff_3); 
+        // double trace_wfour_minus_z = esmat_fnorm (diff_4); 
+        
+        cout << "[y_1]" << endl;
+        cout << esmat_toString (y_1);
+        cout << "[y_2]" << endl;
+        cout << esmat_toString (y_2);
+        cout << "[y_3]" << endl;
+        cout << esmat_toString (y_2);
+        cout << "[y_4]" << endl;
+        cout << esmat_toString (y_2);
+
         // STEP FOUR: trace the objective function
-        /*
-        if (iter % 1 == 0) {
-            // 1. trace the error
-            error = original_objective (dist_mat, lambda, N, z);
-            cout << "[Overall] iter = " << iter 
-                 << ", Overall Error: " << error;
-            /
-#ifdef NTOPIC_DUMP
-            // 2. get number of topic
-            int nTopics = get_nTopics(z, N, N);
-            cout << ", nTopics: " << nTopics;
-#endif
-            cout << endl;
-        }
-        */
 
         iter ++;
+        cout << endl;
         cout << "###################[iter:"<<iter<<"]#####################" << endl;
     }
     
@@ -672,6 +688,8 @@ int main (int argc, char ** argv) {
     lookup_tables.nDocs = lookup_tables.doc_lookup->size();
     lookup_tables.nWords = lookup_tables.word_lookup->size();
     lookup_tables.nVocs = nVocs;
+    int seed = time(NULL);
+    srand (seed);
     cerr << "###########################################" << endl;
     cerr << "nVocs = " << lookup_tables.nVocs << endl; // # vocabularies
     cerr << "nDocs = " << lookup_tables.nDocs << endl; // # documents
@@ -679,9 +697,6 @@ int main (int argc, char ** argv) {
     cerr << "lambda_global = " << LAMBDAs[0] << endl;
     cerr << "lambda_coverage = " << LAMBDAs[1] << endl;
     cerr << "TRIM_THRESHOLD = " << TRIM_THRESHOLD << endl;
-
-    int seed = time(NULL);
-    srand (seed);
     cerr << "seed = " << seed << endl;
     cerr << "###########################################" << endl;
 

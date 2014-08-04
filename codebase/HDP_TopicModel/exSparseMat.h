@@ -393,9 +393,7 @@ void esmat_scalar_mult (double scalar, Esmat* A, Esmat* dest) {
  *    2 - product alignment
  * */
 bool esmat_isValid (Esmat* A, Esmat* B, int mode) {
-
     bool success = false;
-
     if (mode == 1) {
         if (A->nRows == B->nRows && A->nCols == B->nCols) 
             success = true;
@@ -403,13 +401,12 @@ bool esmat_isValid (Esmat* A, Esmat* B, int mode) {
         if (A->nCols == B->nRows) 
             success = true;
     }
-
     return success;
 }
 
 string esmat_toString (Esmat* A) {
-    assert (A->nRows > 0);
-    assert (A->nCols > 0);
+    assert (A->nRows >= 0);
+    assert (A->nCols >= 0);
 
     string idx_val_separator = ":";
     string field_seperator = ",";

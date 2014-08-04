@@ -102,7 +102,6 @@ void document_list_read (string fname, Lookups* tables) {
 	fin.close(); 
     int nWords = w;
     for (int i = 0; i < nWords; i ++) {
-        // TODO: 0-based or 1-based???
         (*voc_lookup)[ (*word_lookup)[i]-1 ].push_back(i);
     }
 } 
