@@ -112,10 +112,17 @@ double get_coverage_reg (Esmat* absZ, double lambda, vector<int>* word_lookup, v
     vector<Esmat*> sub_absZ (nVocs);
     esmat_init_all (&sub_absZ);
     esmat_submat_row (absZ, sub_absZ, word_lookup, voc_lookup);
+    // TODO: for the modified version of fourth subproblem, old computing
+    // framework does not work anymore. need to create a 
+    //            vector< vector< pair<int, int> > >
+    // to restore the pairs of vocabulary and position within each vocabulary
+    // matrix. (for putting each document on separate vocabulary matrix)
     double coverage_reg = 0.0;
+    /*
     for (int v = 0; v < nVocs; v ++) {
         coverage_reg += get_global_topic_reg (sub_absZ[v], lambda); 
     }
+    */
     esmat_free_all (sub_absZ);
     return coverage_reg;
 }
@@ -451,7 +458,6 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
     esmat_copy (tempW, w);
 }
 void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, Lookups* tables) {
-
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
     vector<int>* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
@@ -489,7 +495,6 @@ void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambd
         esmat_free (subY[v]);
         esmat_free (subZ[v]);
     }
-
     // FINAL: update merged solution to w
     esmat_copy (tempW, w);
 }
@@ -553,11 +558,11 @@ cout << "it is place 1 iteration #" << iter << ", going to get into group_lasso_
         cout << esmat_toString (w_2);
         cout << "sub2_objective: " << sub2_obj << endl;
 
-        return ;
-       
         // resolve w_4
         coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2], tables);
         double sub4_obj = subproblem_objective (4, y_4, z, w_4, RHO, LAMBDAs[2], tables);
+        cout << "sub4_objective: " << sub2_obj << endl;
+        return;
 
         // STEP TWO: update z by averaging w_1, w_2 and w_4
         Esmat* temp = esmat_init ();
@@ -656,6 +661,7 @@ int main (int argc, char ** argv) {
     lookup_tables.nDocs = lookup_tables.doc_lookup->size();
     lookup_tables.nWords = lookup_tables.word_lookup->size();
     lookup_tables.nVocs = nVocs;
+    cerr << "###########################################" << endl;
     cerr << "nVocs = " << lookup_tables.nVocs << endl; // # vocabularies
     cerr << "nDocs = " << lookup_tables.nDocs << endl; // # documents
     cerr << "nWords = " << lookup_tables.nWords << endl; // # words
@@ -666,6 +672,7 @@ int main (int argc, char ** argv) {
     int seed = time(NULL);
     srand (seed);
     cerr << "seed = " << seed << endl;
+    cerr << "###########################################" << endl;
 
     // restore matchness matrix in sparse representation
     /* here we consider non-noise version of topic model

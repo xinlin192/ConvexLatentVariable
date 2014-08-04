@@ -220,7 +220,7 @@ void esmat_align (Esmat* mat) {
 }
 
 /* submat and merge */
-/* pick subset of rows and form a new esmat */
+/* pick subset of rows and form a new esmat, used local document penalty */
 void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector< pair<int,int> >* look_up) {
     int nDocs = look_up->size();
     // renew the characteristics of submats
@@ -284,6 +284,7 @@ void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector<int>* word_loo
         submats[v]->val.push_back(make_pair(submat_index, value));
     }
 }
+
 /* put submat to specified position of mat */
 // this merge_row version is for local_topic_subproblem
 void esmat_merge_row (Esmat* submat, int start_index, int end_index, Esmat* mat) {

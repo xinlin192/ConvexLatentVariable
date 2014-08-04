@@ -93,6 +93,7 @@ void document_list_read (string fname, Lookups* tables) {
             int voc_index = stoi(voc_freq_pair[0]);
             // push to word_lookup table
             word_lookup->push_back(voc_index);
+            (*voc_lookup)[voc_index].push_back(d);
             ++ w;
         }
         doc_index_end = w;
@@ -100,10 +101,12 @@ void document_list_read (string fname, Lookups* tables) {
         ++ d;
 	}
 	fin.close(); 
+    /*
     int nWords = w;
     for (int i = 0; i < nWords; i ++) {
         // TODO: 0-based or 1-based???
         (*voc_lookup)[ (*word_lookup)[i]-1 ].push_back(i);
     }
+    */
 } 
 
