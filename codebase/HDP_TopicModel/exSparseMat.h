@@ -265,6 +265,8 @@ void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector< pair<int,int>
 }
 // This submat_row version is for coverage_subproblem
 void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
+    // cout << esmat_toInfo (mat);
+    // cout << esmat_toString (mat);
     int nVocs = voc_lookup->size();
     // STEP ONE: renew the characteristics of submats
     for (int v = 0; v < nVocs; v ++) {
@@ -282,12 +284,17 @@ void esmat_submat_row (Esmat* mat, vector<Esmat*> submats, vector<int>* word_loo
         int v = (*word_lookup)[mat_row_index] - 1;
         vector<int>::iterator it;
         it = find((*voc_lookup)[v].begin(), (*voc_lookup)[v].end(), mat_row_index);
-        int submat_row_index = *it;
+        int submat_row_index = it - (*voc_lookup)[v].begin();
         int submat_col_index = mat_col_index;
-        int submat_index = submat_row_index + submat_col_index * submats[v]->nRows;
-
+        int submat_index = submat_row_index + submat_col_index * (submats[v]->nRows);
+       // cout << mat_row_index << "," << mat_col_index << "," << mat_index << ",v=" << v<< endl;
+       // cout << submat_row_index << "," << submat_col_index << "," << submat_index << endl;
         double value = mat->val[i].second;
         submats[v]->val.push_back(make_pair(submat_index, value));
+    }
+    // STEP THREE: re-align the submats
+    for (int v = 0; v < nVocs; v ++) {
+        esmat_align (submats[v]);
     }
 }
 

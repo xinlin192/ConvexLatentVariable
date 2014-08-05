@@ -18,7 +18,9 @@
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
-#define FRANK_WOLFE_DEBUG
+//#define FRANK_WOLFE_DEBUG
+//#define COVERAGE_SUBPROBLEM_DUMP
+// #define LOCAL_SUBPROBLEM_DUMP
 // #define GROUP_LASSO_DEBUG
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
@@ -150,6 +152,17 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
     vector<int>* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
+    /*
+cout << "[W" << prob_index << "]"<< endl;
+cout << esmat_toInfo(W);
+            cout << esmat_toString (W);
+cout << "[Y" << prob_index << "]"<< endl;
+cout << esmat_toInfo(Y);
+            cout << esmat_toString (Y);
+cout << "[Z" << prob_index << "]"<< endl;
+            cout << esmat_toInfo(Z);
+            cout << esmat_toString (Z);
+            */
 
     // STEP ONE: compute main term
     double main = -1.0;
@@ -174,7 +187,7 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
         }
         esmat_free (absW);
     }
-    Esmat* w_minus_z = esmat_init (W);
+    Esmat* w_minus_z = esmat_init ();
     // STEP TWO: compute linear term: linear = y^T dot (w - z) 
     esmat_sub (W, Z, w_minus_z); // temp = w - z
     double linear = esmat_fdot (Y, w_minus_z);
@@ -349,12 +362,14 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
 }
 void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
     // STEP ONE: compute the optimal solution for truncated problem
-    Esmat* wbar = esmat_init (w);
-    esmat_scalar_mult (RHO, Z, wbar); // wbar = RHO * z
+    Esmat* wbar = esmat_init (Z);
+    Esmat* temp = esmat_init (Z);
+    esmat_scalar_mult (RHO, Z, temp); // wbar = RHO * z
     // cout << wbar->nRows << "," << wbar->nCols << endl;
     // cout << Y->nRows << "," << Y->nCols << endl;
-    esmat_sub (wbar, Y, wbar); // wbar = RHO * z - y
+    esmat_sub (temp, Y, wbar); // wbar = RHO * z - y
     esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z - y) / RHO
+    esmat_free (temp);
 #ifdef GROUP_LASSO_DEBUG
     cout << "[wbar]" << endl;
     cout << esmat_toString(wbar);
@@ -576,12 +591,26 @@ void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambd
     for (int v = 0; v < nVocs; v++) {
         // STEP TWO: invoke group_lasso_solver to each individual group
         // TODO: debug
+#ifdef COVERAGE_SUBPROBLEM_DUMP
+        cout << "subW[v" << v << "]" << esmat_toInfo(subW[v]);
+        cout << "subY[v" << v << "]" << esmat_toInfo(subY[v]);
+        cout << esmat_toString(subY[v]);
+        cout << "subZ[v" << v << "]" << esmat_toInfo(subZ[v]);
+        cout << esmat_toString(subZ[v]);
+#endif
         group_lasso_solver (subY[v], subZ[v], subW[v], RHO, lambda);
-
+#ifdef COVERAGE_SUBPROBLEM_DUMP
+        cout << "res_subW[d" << v << "]" << esmat_toInfo(subW[v]);
+        cout << esmat_toString(subW[v]);
+#endif
         // STEP TREE: merge solution of each individual group (place back)
         // NOTE: all esmat position has to be recomputed
         esmat_merge_row (subW[v], &((*voc_lookup)[v]), tempW);
     }
+#ifdef COVERAGE_SUBPROBLEM_DUMP
+        cout << "[tempW]"  << esmat_toInfo(tempW);
+        cout << esmat_toString(tempW);
+#endif
     // realign the mat->val with index-increasing order
     esmat_align (tempW);
     // STEP FIVE: free auxiliary resource
@@ -635,11 +664,11 @@ void single (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
         // esmat_resize(w_1, N, 0);
-        cout << "[w_1] " << w_1->nRows << "," << w_1->nCols << endl;
+        cout << "[w_1 before frank_wolfe_solver] " << esmat_toInfo(w_1);
         cout << esmat_toString (w_1);
         frank_wolfe_solver (y_1, z, w_1, RHO); 
         double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables);
-        cout << "[w_1]" << endl;
+        cout << "[w_1 after frank_wolfe_solver]" << esmat_toInfo(w_1);
         cout << esmat_toString (w_1);
         
         // resolve w_2
@@ -661,7 +690,7 @@ void single (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         // resolve w_4
         esmat_resize (w_4, w_1);
         esmat_resize (y_4, w_1);
-        coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[2], tables);
+        coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[1], tables);
         double sub4_obj = subproblem_objective (4, y_4, z, w_4, RHO, LAMBDAs[1], tables);
 
         // STEP TWO: update z by averaging w_1, w_2 and w_4
@@ -707,28 +736,32 @@ void single (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         cout << "[y_2]" << endl;
         cout << esmat_toString (y_2);
         cout << "[y_3]" << endl;
-        cout << esmat_toString (y_2);
+        cout << esmat_toString (y_3);
         cout << "[y_4]" << endl;
-        cout << esmat_toString (y_2);
+        cout << esmat_toString (y_4);
 
         // STEP FOUR: trace the objective function
 
         iter ++;
         cout << endl;
         cout << "###################[iter:"<<iter<<"]#####################" << endl;
+        if (iter == 5) return;
     }
     
     // STEP FIVE: memory recollection
     esmat_free (w_1);
     esmat_free (w_2);
+    esmat_free (w_3);
     esmat_free (w_4);
 
     esmat_free (y_1);
     esmat_free (y_2);
+    esmat_free (y_3);
     esmat_free (y_4);
 
     esmat_free (diff_1);
     esmat_free (diff_2);
+    esmat_free (diff_3);
     esmat_free (diff_4);
     // STEP SIX: put converged solution to destinated W
     esmat_copy (z, W);
