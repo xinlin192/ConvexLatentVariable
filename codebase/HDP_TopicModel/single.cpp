@@ -19,6 +19,7 @@
 
 /* dumping options */
 #define FRANK_WOLFE_DEBUG
+// #define GROUP_LASSO_DEBUG
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define NTOPIC_DUMP
@@ -90,6 +91,9 @@ double get_dummy_loss (Esmat* Z) {
 }
 /* \lambda_g \sumk \maxn |\wnk| */
 double get_global_topic_reg (Esmat* absZ, double lambda) {
+    if (absZ->val.size() == 0) {
+        return 0.0;
+    }
     Esmat* maxn = esmat_init (1, absZ->nCols);
     Esmat* sumk = esmat_init (1, 1);
     esmat_max_over_col (absZ, maxn);
@@ -118,6 +122,7 @@ double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >*
     // STEP THREE: compute global topic regularizer for each localized doc
     double local_topic_reg = 0.0;
     for (int d = 0; d < nDocs; d ++) {
+        // cout << "size[" << d << "]: " << sub_absZ[d]->val.size() << endl;
         local_topic_reg += get_global_topic_reg (sub_absZ[d], lambda); 
     }
 
@@ -161,6 +166,7 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
             main = get_global_topic_reg (absW, lambda);
         } else if (prob_index == 3) {
             title = "Local_Reg";
+
             main = get_local_topic_reg (absW, lambda, doc_lookup);
         } else if (prob_index == 4) {
             title = "Coverage_Reg";
@@ -345,11 +351,15 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
     // STEP ONE: compute the optimal solution for truncated problem
     Esmat* wbar = esmat_init (w);
     esmat_scalar_mult (RHO, Z, wbar); // wbar = RHO * z
-    //  cout << wbar->nRows << "," << wbar->nCols << endl;
-    //  cout << Y->nRows << "," << Y->nCols << endl;
+    // cout << wbar->nRows << "," << wbar->nCols << endl;
+    // cout << Y->nRows << "," << Y->nCols << endl;
     esmat_sub (wbar, Y, wbar); // wbar = RHO * z - y
     esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z - y) / RHO
-
+#ifdef GROUP_LASSO_DEBUG
+    cout << "[wbar]" << endl;
+    cout << esmat_toString(wbar);
+    cout << "lambda: " << lambda << endl;
+#endif
     // STEP TWO: find the closed-form solution for second subproblem
     int SIZE = wbar->val.size();
     int R = wbar->nRows; int C = wbar->nCols;
@@ -361,41 +371,45 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
     
     // i is index of element in esmat->val, j is column index
     int i = 0; int j = 0;
+    int begin_idx, end_idx;
     int col_es_begin = wbar->val[0].first;
     vector< pair<int,double> > alpha_vec;
     while (i < SIZE && j < C) {
-        int begin_idx = j * R;
-        int end_idx = (j+1) * R;
+        begin_idx = j * R;
+        end_idx = (j+1) * R;
         int esWBAR_index = wbar->val[i].first;
-        if (esWBAR_index >= end_idx || i == SIZE - 1) { 
+        if (esWBAR_index >= end_idx) { 
             // a) sort existing temp_vec
             std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
             // b) find mstar
-            int mstar = 0; // number of elements support the sky
+            int mstar = 0; // number of elements supporting the sky
             double separator;
             double max_term = -INF, new_term;
             double sum_alpha = 0.0;
             int nValidAlpha = alpha_vec.size();
             for (int v = 0; v < nValidAlpha; v ++) {
-                sum_alpha += alpha_vec[i].second;
+                sum_alpha += alpha_vec[v].second;
                 new_term = (sum_alpha - lambda) / (v + 1.0);
+               // cout << "new_term: " << new_term << endl;
                 if ( new_term > max_term ) {
                     separator = alpha_vec[v].second;
                     max_term = new_term;
                     ++ mstar;
                 }
             }
+            // cout << "mstar: " << mstar << endl;
             // c) assign closed-form solution of current column to w
-            if (nValidAlpha == 0 || max_term < 0) {
+            if (nValidAlpha == 0 || mstar <= 0) {
                 ; // this column of w is all-zero, hence we do nothing for that 
             } else {
                 for (int esi = col_es_begin; wbar->val[esi].first < end_idx; esi ++) {
                     double pos = wbar->val[esi].first;
                     double value = wbar->val[esi].second;
                     if (fabs(value) >= separator) 
-                        w->val.push_back(make_pair(pos, max_term));
+                        w->val.push_back(make_pair(pos, max(max_term, 0.0)));
                     else 
-                        w->val.push_back(make_pair(pos, max(value, 0.0)));
+                        // w->val.push_back(make_pair(pos, max(value, 0.0)));
+                        w->val.push_back(make_pair(pos, value));
                 }
             }
             // d) clear all elements in alpha_vec 
@@ -416,11 +430,50 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
             assert (false);
         }
     }
-    
-    // report the #iter and objective function
-    /*cout << "[Blockwise] sub2_objective: " << penalty << endl;
-      cout << endl;*/
-
+    if (alpha_vec.size() > 0) {
+        // a) sort existing temp_vec
+        std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
+        // b) find mstar
+        int mstar = 0; // number of elements supporting the sky
+        double separator;
+        double max_term = -INF, new_term;
+        double sum_alpha = 0.0;
+        int nValidAlpha = alpha_vec.size();
+        for (int v = 0; v < nValidAlpha; v ++) {
+            sum_alpha += alpha_vec[v].second;
+            new_term = (sum_alpha - lambda) / (v + 1.0);
+            // cout << "new_term: " << new_term << endl;
+            if ( new_term > max_term ) {
+                separator = alpha_vec[v].second;
+                max_term = new_term;
+                ++ mstar;
+            }
+        }
+            // cout << "mstar: " << mstar << endl;
+        // c) assign closed-form solution of current column to w
+        if (nValidAlpha == 0 || mstar <= 0) {
+            ; // this column of w is all-zero, hence we do nothing for that 
+        } else {
+            for (int esi = col_es_begin; esi < SIZE; esi ++) {
+                double pos = wbar->val[esi].first;
+                double value = wbar->val[esi].second;
+                if (fabs(value) >= separator) 
+                    w->val.push_back(make_pair(pos, max(max_term, 0.0)));
+                else 
+                    // w->val.push_back(make_pair(pos, max(value, 0.0)));
+                    w->val.push_back(make_pair(pos, value));
+            }
+        }
+    }
+#ifdef GROUP_LASSO_DEBUG
+    cout << "[w]"  << esmat_toInfo (w) << endl;
+    cout << esmat_toString (w);
+#endif
+    esmat_trim (w);
+#ifdef GROUP_LASSO_DEBUG
+    cout << "[w after trimming]"  << esmat_toInfo (w) << endl;
+    cout << esmat_toString (w);
+#endif
     // STEP THREE: recollect temporary variable - wbar
     esmat_free (wbar);
 }
@@ -434,6 +487,11 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
     vector<int>* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
+
+#ifdef LOCAL_SUBPROBLEM_DUMP
+    cout << "[local w input]" << w->nRows << "," << w->nCols << "," << w->val.size() << endl;
+    esmat_toString (w);
+#endif
 
     int nDocs = tables->nDocs;
     Esmat* tempW = esmat_init (w);
@@ -453,8 +511,19 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
     esmat_submat_row (Z, subZ, doc_lookup);
 
     for (int d = 0; d < nDocs; d ++) {
+#ifdef LOCAL_SUBPROBLEM_DUMP
+        cout << "subW[d" << d << "]" << esmat_toInfo(subW[d]);
+        cout << "subY[d" << d << "]" << esmat_toInfo(subY[d]);
+        cout << esmat_toString(subY[d]);
+        cout << "subZ[d" << d << "]" << esmat_toInfo(subZ[d]);
+        cout << esmat_toString(subZ[d]);
+#endif
         // STEP TWO: invoke group_lasso_solver to each individual group
         group_lasso_solver (subY[d], subZ[d], subW[d], RHO, lambda);
+
+#ifdef LOCAL_SUBPROBLEM_DUMP
+        cout << "res_subW[d" << d << "]" << esmat_toInfo(subW[d]);
+#endif
 
         // STEP TREE: merge solution of each individual group (place back)
         // NOTE: all esmat position has to be recomputed
@@ -470,9 +539,17 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
         esmat_free (subY[d]);
         esmat_free (subZ[d]);
     }
+#ifdef LOCAL_SUBPROBLEM_DUMP
+    cout << "[local w before output]" << w->nRows << "," << w->nCols << "," << w->val.size() << endl;
+    cout << "[tempW] " << esmat_toInfo(tempW);
+#endif
 
     // FINAL: update merged solution to w
     esmat_copy (tempW, w);
+
+#ifdef LOCAL_SUBPROBLEM_DUMP
+    cout << "[local w output]" << w->nRows << "," << w->nCols << "," << w->val.size() << endl;
+#endif
 }
 void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, Lookups* tables) {
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
@@ -498,6 +575,7 @@ void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambd
 
     for (int v = 0; v < nVocs; v++) {
         // STEP TWO: invoke group_lasso_solver to each individual group
+        // TODO: debug
         group_lasso_solver (subY[v], subZ[v], subW[v], RHO, lambda);
 
         // STEP TREE: merge solution of each individual group (place back)
@@ -573,10 +651,12 @@ void single (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         double sub2_obj = subproblem_objective (2, y_2, z, w_2, RHO, LAMBDAs[0],tables);
         // cout << "sub2_objective: " << sub2_obj << endl;
 
+        // cout << "[w_3]" << w_3->nRows << "," << w_3->nCols << "," << w_3->val.size() << endl;
         esmat_resize (w_3, w_1);
         esmat_resize (y_3, w_1);
-        local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[2], tables);
-        double sub3_obj = subproblem_objective (3, y_3, z, w_3, RHO, 10e3, tables);
+        local_topic_subproblem (y_3, z, w_3, RHO, 10000.0, tables);
+        // cout << "[w_3]" << w_3->nRows << "," << w_3->nCols << "," << w_3->val.size() << endl;
+        double sub3_obj = subproblem_objective (3, y_3, z, w_3, RHO, 10000.0, tables);
 
         // resolve w_4
         esmat_resize (w_4, w_1);

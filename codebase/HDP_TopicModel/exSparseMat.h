@@ -97,6 +97,7 @@ void esmat_scalar_mult (double scalar, Esmat* A, Esmat* dest);
 /* Auxiliary functions */
 bool esmat_isValid (Esmat* A, Esmat* B, int mode);
 string esmat_toString (Esmat* A);
+string esmat_toInfo (Esmat* A);
 
 /* Compute dummy term */
 double esmat_compute_dummy (Esmat* A);
@@ -370,7 +371,12 @@ void esmat_abs (Esmat* A, Esmat* dest) {
 void esmat_scalar_mult (double scalar, Esmat* A) {
     int sizeA = A->val.size();
     int capacity = A->nRows * A->nCols;
+    /* TODO: debugs
+    cout << "capacity: " << capacity << " sizeA: " << sizeA << endl;
+    cout << A->nRows << "," << A->nCols << endl;
+    */
     for (int i = 0; i < sizeA; i ++) {
+        // cout << A->val[i].first << endl;
         assert (A->val[i].first < capacity);
         A->val[i].second *= scalar; 
     }
@@ -438,6 +444,12 @@ string esmat_toString (Esmat* A) {
             str += allStrings[i] + line_separator;
     }
 
+    return str;
+}
+string esmat_toInfo (Esmat* A) {
+    string str = ""; 
+    str += to_string(A->nRows) + "," + to_string(A->nCols);
+    str += "," + to_string(A->val.size()) + "\n";
     return str;
 }
 
