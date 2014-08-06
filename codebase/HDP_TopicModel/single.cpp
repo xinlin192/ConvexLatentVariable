@@ -18,11 +18,11 @@
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
-//#define FRANK_WOLFE_DEBUG
-//#define COVERAGE_SUBPROBLEM_DUMP
+// #define FRANK_WOLFE_DEBUG
+// #define EXACT_LINE_SEARCH_DUMP
+// #define COVERAGE_SUBPROBLEM_DUMP
 // #define LOCAL_SUBPROBLEM_DUMP
 // #define GROUP_LASSO_DEBUG
-// #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define NTOPIC_DUMP
 #define SUBPROBLEM_DUMP
@@ -306,6 +306,12 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
             esmat_fdot (w_minus_s, dist_mat, tempS);
             sum1 = 0.5 * esmat_sum (tempS);
             */
+#ifdef EXACT_LINE_SEARCH_DUMP
+            cout << "[w_minus_s]" << endl;
+            cout << esmat_toString(w_minus_s);
+            cout << "[w_minus_z]" << endl;
+            cout << esmat_toString(w_minus_z);
+#endif
             sum2 = esmat_fdot (Y_1, w_minus_s);
             sum3 = RHO * esmat_fdot (w_minus_z, w_minus_s);
             sum4 = RHO * esmat_fnorm (w_minus_s);
@@ -313,15 +319,9 @@ void frank_wolfe_solver (Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
             // gamma = (sum1 + sum2 + sum3) / sum4;
             gamma = (sum2 + sum3) / sum4;
 
-#ifdef FRANK_WOLFE_DUMP
-            cout << "esmat_norm2 (w_minus_s)" << esmat_fnorm (w_minus_s) << endl;
-            cout << "esmat_norm2 (w_minus_z)" << esmat_fnorm (w_minus_z) << endl;
-#endif
-            // cout << "within frank_wolfe_solver: step two finished" << endl;
-
 #ifdef EXACT_LINE_SEARCH_DUMP
-            cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
-                << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
+            cout << "[exact line search] (sum2, sum3, sum4, gamma) = ("
+                << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
                 << ")"
                 << endl;
 #endif
@@ -590,7 +590,6 @@ void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambd
 
     for (int v = 0; v < nVocs; v++) {
         // STEP TWO: invoke group_lasso_solver to each individual group
-        // TODO: debug
 #ifdef COVERAGE_SUBPROBLEM_DUMP
         cout << "subW[v" << v << "]" << esmat_toInfo(subW[v]);
         cout << "subY[v" << v << "]" << esmat_toInfo(subY[v]);
@@ -745,7 +744,7 @@ void single (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         iter ++;
         cout << endl;
         cout << "###################[iter:"<<iter<<"]#####################" << endl;
-        if (iter == 5) return;
+       // if (iter == 2) return;
     }
     
     // STEP FIVE: memory recollection

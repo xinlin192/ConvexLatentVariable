@@ -338,29 +338,10 @@ void esmat_merge_row (Esmat* submat, vector<int>* sub_voc_lookup, Esmat* mat) {
 }
 /* frobenius product */
 double esmat_fdot (Esmat* A, Esmat* B) {
-
-    assert (esmat_isValid (A, B, 1));
-
-    int i = 0, j = 0;
-    int indexA, indexB;
-    int sizeA = A->val.size();
-    int sizeB = B->val.size();
-    double result = 0.0;
-
-    while (i < sizeA && j < sizeB) {
-        indexA = A->val[i].first;
-        indexB = B->val[i].first;
-
-        if (indexA < indexB) {
-            ++ i; 
-        } else if (indexA > indexB) {
-            ++ j;
-        } else { // equality
-            result += A->val[i].second * B->val[j].second;
-            ++i; ++j;
-        }
-    }
-
+    Esmat* dest = esmat_init();
+    esmat_bin_operate (A, B, dest, times);
+    double result = esmat_sum (dest);
+    esmat_free (dest);
     return result;
 }
 /* abs */
