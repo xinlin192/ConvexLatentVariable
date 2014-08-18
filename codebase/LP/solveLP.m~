@@ -1,0 +1,17 @@
+b = load('b.txt');
+beq = load('beq.txt');
+c = load('c.txt');
+lb = load('lb.txt');
+
+A = spconvert(load('A.txt'));
+Aeq = spconvert(load('Aeq.txt'));
+
+%x0 = load('x0.txt');
+
+%options = optimset('Display','iter','TolFun',1e-5);
+%x = linprog(c,A,b,Aeq,beq,lb,[],x0,options);
+x = bintprog(c,A,b,Aeq,beq);
+
+fp = fopen('sol.txt','w');
+fprintf(fp, '%g\n', x);
+fclose(fp);
