@@ -772,7 +772,8 @@ int main (int argc, char ** argv) {
 
     // EXCEPTION control: illustrate the usage if get input of wrong format
     if (argc < 5) {
-        cerr << "Usage: cvx_hdp_medoids [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_coverage]" << endl;
+        cerr << "Usage: \n"
+        cerr << "\tcvx_hdp_medoids [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local]" << endl;
         exit(-1);
     }
 
@@ -822,33 +823,46 @@ int main (int argc, char ** argv) {
     Esmat* W = esmat_init (lookup_tables.nWords, 1);
     cvx_hdp_medoids (LAMBDAs, W, &lookup_tables);
 
-    // Output results
-    ofstream fout("result");
+    // Output cluster
+    ofstream obj_out ("opt_objective");
+    obj_out << clustering_objective (dist_mat, W, N) << endl;
+    obj_out.close();
 
-    // interpret result by means of voc_list
-    /*{{{*/
-    /*
-    vector<int> centroids = get_all_centroids(W, N, N); // contains index of all centroids
-    
+    /* Output cluster centroids */
+    ofstream model_out ("opt_model");
+    vector<int> centroids;
+    get_all_centroids (W, &centroids, N, N); // contains index of all centroids
     int nCentroids = centroids.size();
+    model_out << "nCentroids: " << nCentroids << endl;
+    for (int i = 0; i < nCentroids; i ++) {
+        model_out << "centroids[" << i <<"]: " << centroids[i] << endl;
+    }
+    model_out.close();
+
+    /* Output assignment */
+    ofstream asgn_out ("opt_assignment");
+    // get all centroids
     for (int i = 0; i < N; i ++) {
         // output identification and its belonging
-        fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
+        asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
         for (int j = 0; j < N; j ++) {
             if( fabs(W[i][j]) > 3e-1 ) {
-                fout << j+1 << "(" << W[i][j] << "),\t";
+                asgn_out << j+1 << "(" << W[i][j] << "),\t";
             }
         }
-	fout << endl;
-
+        asgn_out << endl;
         // output distance of one sample to each centroid 
-        fout << "dist_centroids: (";
+        /*fout << "dist_centroids: (";
         for (int j = 0; j < nCentroids - 1; j ++) {
             fout << dist_mat[i][ centroids[j] ] << ", ";
         }
         fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
-        fout << endl;
+
+        fout << endl;*/
     }
-    */
-/*}}}*/
+    asgn_out.close();
+
+    /* reallocation */
+    mat_free (dist_mat, N, N);
+    mat_free (W, N, N);
 }

@@ -18,8 +18,8 @@
 #include<cmath>    
 #include<cassert>
 
+#include "../exSparseMat.h"
 #include "../util.h"
-#include "exSparseMat.h"
 
 using namespace std;
 

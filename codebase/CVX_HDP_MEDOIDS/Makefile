@@ -1,25 +1,15 @@
-# APPLICATION MAKEFILE
-# Jimmy Lin <JimmyLin@utexas.edu> 
-
-#######################################################################
-# DO NOT EDIT THIS MAKEFILE UNLESS YOU KNOW WHAT YOU ARE DOING. 
-#######################################################################	
+cpp=$(shell ls *.cpp) 
+headers=$(shell ls *.h)
+executable=$(shell ls *.cpp | tr -d ".cpp")
+README=$(shell ls README*)
 
 all: 
-	g++ -O3 single.cpp -o single
+	g++ -O3 $(cpp) -o $(executable)
 
-HDP:
-	g++ -O3 HDP.cpp -o HDP
-
-test: testEsmat testHDP
-
-testEsmat: testEsmat.cpp
-	g++ -O3 testEsmat.cpp -o testEsmat
-	./testEsmat
-
-testHDP:
-	g++ -O3 testHDP.cpp -o testHDP
-	./testHDP 
+push:
+	git add $(cpp) $(headers) $(README) Makefile
+	git commit
+	git push
 
 clean:
-	rm -rf single HDP testEsmat testHDP
+	rm -rf $(executable) opt*
