@@ -98,7 +98,7 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
     return total;
 }
 
-void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
+void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K) {
 
     bool is_global_optimal_reached = false;
 
@@ -109,9 +109,9 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     mat_zeros (gradient, N, N);
 
 #ifndef EXACT_LINE_SEARCH
-    int K = 300;
+    // int K = 300;
 #else
-    int K = 10;
+    // int K = 10;
     double ** w_minus_s = mat_init (N, N);
     double ** w_minus_z = mat_init (N, N);
 #endif
@@ -498,7 +498,7 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
         }
     }*/
 }
-void cvx_clustering ( double ** dist_mat, int D, int N, double* lambda, double ** W) {
+void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, int N, double* lambda, double ** W) {
 
     // parameters 
     double alpha = 0.1;
@@ -522,7 +522,6 @@ void cvx_clustering ( double ** dist_mat, int D, int N, double* lambda, double *
     mat_zeros (difftwo, N, N);
 
     int iter = 0; // Ian: usually we count up (instead of count down)
-    int max_iter = 5000;
 
     while ( iter < max_iter ) { // stopping criteria
 
@@ -533,7 +532,7 @@ void cvx_clustering ( double ** dist_mat, int D, int N, double* lambda, double *
     mat_zeros (wtwo, N, N);
 
         // STEP ONE: resolve w_1 and w_2
-        frank_wolf (dist_mat, yone, z, wone, rho, N); // for w_1
+        frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter); // for w_1
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "frank_wolfe done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
         cout << "it is place 1 iteration #" << iter << ", going to get into blockwise_closed_form"<< endl;
@@ -619,15 +618,17 @@ void cvx_clustering ( double ** dist_mat, int D, int N, double* lambda, double *
 int main (int argc, char ** argv) {
 
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 3) {
-        cerr << "Usage: cvx_clustering [dataFile] [lambda]" << endl;
+    if (argc < 5) {
+        cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [max_iter] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
     }
 
     // parse arguments
     char * dataFile = argv[1];
-    double lambda_base = atof(argv[2]);
+    int fw_max_iter = atoi(argv[2]);
+    int max_iter = atoi(argv[3]);
+    double lambda_base = atof(argv[4]);
 	
     // vector<Instance*> data;
     // readFixDim (dataFile, data, FIX_DIM);
@@ -677,7 +678,7 @@ int main (int argc, char ** argv) {
     // Run sparse convex clustering
     double ** W = mat_init (N, N);
     mat_zeros (W, N, N);
-    cvx_clustering (dist_mat, D, N, lambda, W);
+    cvx_clustering (dist_mat, fw_max_iter, max_iter, D, N, lambda, W);
 
     // Output cluster
     ofstream obj_out ("opt_objective");
