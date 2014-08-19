@@ -1,5 +1,5 @@
 /*###############################################################
-## MODULE: sparseClustering.cpp
+## MODULE: cvx_clustering.cpp
 ## VERSION: 1.0 
 ## SINCE 2014-06-14
 ## AUTHOR Jimmy Lin (xl5224) - JimmyLin@utexas.edu  
