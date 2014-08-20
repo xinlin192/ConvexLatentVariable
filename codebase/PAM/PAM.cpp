@@ -58,7 +58,7 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
     }
 }
 
-void PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
+double PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
     // STEP ZERO: validate input
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j++) {
@@ -163,22 +163,26 @@ void PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
     // STEP EIGHT: memory recollection
     mat_free (temp, N, N);
     mat_free (w, N, N);
+
+    return last_cost;
 }
 
 // entry main function
 int main (int argc, char ** argv) {
 
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 4) {
-        cerr << "Usage: PAM [dataFile] [FIX_DIM] [K]" << endl;
+    if (argc < 5) {
+        cerr << "Usage: PAM [dataFile] [FIX_DIM] [nRuns] [K]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
+        cerr << "Note: nRuns is the number of running to get global optima" << endl;
         exit(-1);
     }
 
     // parse arguments
     char* dataFile = argv[1];
     int FIX_DIM = atoi(argv[2]);
-    int K = atoi(argv[3]);
+    int nRuns = atoi(argv[3]);
+    int K = atoi(argv[4]);
 
     // read in data
     vector<Instance*> data;
@@ -198,6 +202,7 @@ int main (int argc, char ** argv) {
 
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
+    cerr << "nRuns = " << nRuns << endl;
     cerr << "K = " << K << endl;
     int seed = time(NULL);
     srand (seed);
@@ -208,38 +213,61 @@ int main (int argc, char ** argv) {
     double ** dist_mat = mat_init (N, N);
     mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
-    // Run sparse convex clustering
-    double ** W = mat_init (N, N);
-    mat_zeros (W, N, N);
-    int* medoids = new int [K];
-    // INVOKE algorithm function
-    PAM (dist_mat, N, K, W, medoids);
-    // Output results
-    ofstream fout("result");
 
-    for (int i = 0; i < K; i ++) {
-        cout << "medoids[i] = " <<  medoids[i] << endl;
-    }
-    for (int i = 0; i < N; i ++) {
-        // output identification and its belonging
-        fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
-        for (int j = 0; j < N; j ++) {
-            if( fabs(W[i][j]) > 3e-1 ) {
-                fout << j+1 << "(" << W[i][j] << "),\t";
+    // Run sparse convex clustering
+    double *** W = new double** [nRuns];
+    int** medoids = new int* [nRuns];
+    double* objectives = new double [nRuns];
+    double min_obj = INF;
+    double ** min_w = mat_init(N, N);
+    int * min_medoids = new int [K];
+    for (int i = 0; i < nRuns; i++) {
+        W[i] = mat_init (N, N);
+        mat_zeros (W[i], N, N);
+        medoids[i] = new int [K];
+        // INVOKE algorithm function
+        objectives[i] = PAM (dist_mat, N, K, W[i], medoids[i]);
+        if (objectives[i] < min_obj) {
+            min_obj = objectives[i];
+            mat_copy (W[i], min_w, N, N);
+            for (int j = 0; j < K; j++) {
+                min_medoids[j] = medoids[i][j];
             }
         }
-        fout << endl;
+    }
+
+    // Output models
+    ofstream model_out("opt_model");
+    model_out << "min_objective: " << min_obj << endl;
+    for (int i = 0; i < K; i ++) {
+        model_out << "min_medoids[" << i << "] = " <<  min_medoids[i] << endl;
+    }
+    // Output assignments
+    ofstream asgn_out("opt_assignment");
+    for (int i = 0; i < N; i ++) {
+        // output identification and its belonging
+        asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
+        for (int j = 0; j < N; j ++) {
+            if( fabs(min_w[i][j]) > 3e-1 ) {
+                asgn_out << j+1 << "(" << W[i][j] << "),\t";
+            }
+        }
+        asgn_out << endl;
         // output distance of one sample to each centroid 
         /*
            out << "dist_centroids: (";
            for (int j = 0; j < nCentroids - 1; j ++) {
-           fout << dist_mat[i][ centroids[j] ] << ", ";
+           asgn_out << dist_mat[i][ centroids[j] ] << ", ";
            }
-           fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
+           asgn_out << dist_mat[i][ centroids[nCentroids-1] ] << ")";
 
-           fout << endl;
+           asgn_out << endl;
            */
     }
-    delete[] medoids;
-    mat_free (W, N, N);
+    delete[] min_medoids;
+    mat_free (min_w, N, N);
+    for (int i = 0; i < nRuns; i++) {
+        delete[] medoids[i];
+        mat_free (W[i], N, N);
+    }
 }
