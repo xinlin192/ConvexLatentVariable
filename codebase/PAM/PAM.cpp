@@ -113,6 +113,7 @@ void PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
         cout << "new_cost: " << new_cost << endl;
         // STEP FOUR: stopping criteria
         if (new_cost >= last_cost) {
+              cout << "CLUSTERING COST: " << last_cost << endl;
               break;
         } // medoids has been the optimal
         else {
