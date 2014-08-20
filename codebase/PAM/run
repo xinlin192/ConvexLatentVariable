@@ -1,0 +1,18 @@
+#!/bin/bash
+dataset=$1  # path to dataset
+result_name=$2
+
+RESULT_DIR="../../results"
+
+dataset_result_dir="$RESULT_DIR/$result_name"
+
+rm -rf $dataset_result_dir
+mkdir $dataset_result_dir
+
+lambda_set[0]=""
+
+for x in $(seq -4 4)
+do
+    ./sparseClustering $dataset 1e$x > $dataset_result_dir/"lambda_1e$x.log"
+done
+
