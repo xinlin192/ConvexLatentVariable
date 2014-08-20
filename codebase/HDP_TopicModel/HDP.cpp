@@ -91,14 +91,17 @@ double get_dummy_loss (Esmat* Z) {
 double get_global_topic_reg (Esmat* absZ, double lambda) {
     Esmat* maxn = esmat_init (1, absZ->nCols);
     Esmat* sumk = esmat_init (1, 1);
-    esmat_max_col (absZ, maxn);
+    esmat_max_over_col (absZ, maxn);
     esmat_sum_row (maxn, sumk);
-    double global_topic_reg = lambda * sumk->val[0].second; 
+    double global_topic_reg = -INF;
+    if (sumk->val.size() > 0)
+        global_topic_reg = lambda * sumk->val[0].second; 
+    else 
+        global_topic_reg = 0.0;
     esmat_free (sumk);
     esmat_free (maxn);
     return global_topic_reg;
 }
-
 /* \lambdal \sum_d \sum_k \underset{n \in d}{\text{max}} |\wnk| */
 double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >* doc_lookup) {
     // STEP ONE: initialize sub matrix for each document
@@ -343,7 +346,7 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
             double sum_alpha = 0.0;
             int nValidAlpha = alpha_vec.size();
             for (int v = 0; v < nValidAlpha; v ++) {
-                sum_alpha += alpha_vec[i].second;
+                sum_alpha += alpha_vec[v].second;
                 new_term = (sum_alpha - lambda) / (v + 1.0);
                 if ( new_term > max_term ) {
                     separator = alpha_vec[v].second;
@@ -492,22 +495,22 @@ void HDP (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     int N = tables->nWords;
 
     /* DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
-    Esmat* w_1 = esmat_init (N, 1);
-    Esmat* w_2 = esmat_init (N, 1);
-    Esmat* w_3 = esmat_init (N, 1);
-    Esmat* w_4 = esmat_init (N, 1);
+    Esmat* w_1 = esmat_init (N, 0);
+    Esmat* w_2 = esmat_init (N, 0);
+    Esmat* w_3 = esmat_init (N, 0);
+    Esmat* w_4 = esmat_init (N, 0);
 
-    Esmat* y_1 = esmat_init (N, 1);
-    Esmat* y_2 = esmat_init (N, 1);
-    Esmat* y_3 = esmat_init (N, 1);
-    Esmat* y_4 = esmat_init (N, 1);
+    Esmat* y_1 = esmat_init (N, 0);
+    Esmat* y_2 = esmat_init (N, 0);
+    Esmat* y_3 = esmat_init (N, 0);
+    Esmat* y_4 = esmat_init (N, 0);
 
-    Esmat* z = esmat_init (N, 1);
+    Esmat* z = esmat_init (N, 0);
 
-    Esmat* diff_1 = esmat_init (N, 1);
-    Esmat* diff_2 = esmat_init (N, 1);
-    Esmat* diff_3 = esmat_init (N, 1);
-    Esmat* diff_4 = esmat_init (N, 1);
+    Esmat* diff_1 = esmat_init (N, 0);
+    Esmat* diff_2 = esmat_init (N, 0);
+    Esmat* diff_3 = esmat_init (N, 0);
+    Esmat* diff_4 = esmat_init (N, 0);
 
     /* SET ITERATION-RELEVANT VARIABLES */
     double error = INF;
@@ -718,5 +721,4 @@ int main (int argc, char ** argv) {
     }
     */
 /*}}}*/
-
 }

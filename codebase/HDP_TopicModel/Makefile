@@ -6,6 +6,9 @@
 #######################################################################	
 
 all: 
+	g++ -O3 single.cpp -o single
+
+HDP:
 	g++ -O3 HDP.cpp -o HDP
 
 test: testEsmat testHDP
@@ -19,4 +22,4 @@ testHDP:
 	./testHDP 
 
 clean:
-	rm -rf HDP testEsmat testHDP
+	rm -rf single HDP testEsmat testHDP
