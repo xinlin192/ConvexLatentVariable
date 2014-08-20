@@ -32,3 +32,5 @@ DEVELOPMENT LOGS
 
 1. [Tue Aug 19 21:54:54 2014 by Jimmy] take four hours to develop PAM
    algorithm for clustering.
+
+1. [Tue Aug 19 22:59:45 2014 by Jimmy] take one hour to debug.
