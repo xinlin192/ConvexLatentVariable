@@ -1,7 +1,6 @@
 /*###############################################################
 ## MODULE: PAM.cpp
-## VERSION: 1.0 
-## SINCE 2014-06-14
+## VERSION: 1.0 ## SINCE 2014-06-14
 ## AUTHOR:
 ##     Jimmy Lin (xl5224) - JimmyLin@utexas.edu  
 ## DESCRIPTION: 
@@ -14,6 +13,7 @@
 #include "PAM.h"
 #include <cassert>
 #include <cmath>
+#define INTEGER_MAX 30000
 
 typedef double (* dist_func) (Instance*, Instance*, int); 
 double L2norm (Instance * ins1, Instance * ins2, int D) {
@@ -42,17 +42,9 @@ double L2norm (Instance * ins1, Instance * ins2, int D) {
 void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
-            /*if (j >= i || !isSym) { // invoke dist_func
-              if (j == i) {
-              dist_mat[i][j] = 0;
-              continue;
-              }*/
             Instance * xi = data[i];
             Instance * muj = data[j];
             dist_mat[i][j] = df (xi, muj, D);
-            /*} else { // by symmetry 
-              dist_mat[i][j] = dist_mat[j][i];
-              }*/
         }
     }
     for (int i = 0; i < N; i ++) {
@@ -78,19 +70,24 @@ void PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
     // STEP ONE: a. randomly pick up initial K medoid
     // NOTE THAT this sampling method assumes that K << N
     int* pool = new int[N];
-    for (int i = 0; i < N; i++)
-        new_medoids[i] = i;
+    for (int i = 0; i < N; i++) pool[i] = i;
     for (int j = 0; j < K; j++) {
-        int rand = random()/(N-j); // generate random number from [0,n-1]
-        int index = pool[N-1-j]; // get index of last available slot
+        int rand = random() % (N-j); // generate random number from [0,n-1]
+        // cout << "rand: " << rand << endl;
+        int index = N-1-j; // get index of last available slot
         int temp = pool[index]; // get value of last available slot
         // swap position
-        pool[index] = pool[j]; 
-        pool[j] = temp;
+        pool[index] = pool[rand]; 
+        pool[rand] = temp;
         // assign generated random value to new_medoids[]
         new_medoids[j] = pool[index];
     }
     delete[] pool; // remove pool (temporary)
+    cout << "randomized medoids: ";
+    for (int i = 0; i < K; i++) {
+        cout << new_medoids[i] << ",";
+    }
+    cout << endl;
 
     // OPTIONAL: write randomized medoids to stdout or external files
     
@@ -99,15 +96,12 @@ void PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
     double ** w = mat_init (N,N);
     while (true) {
         // STEP TWO: E-step, assign to closest medoid, get new w
-        mat_zeros (temp, N, N);
-        mat_zeros (w, N, N);
-        mat_set_all (w, INF, N, N);
+        mat_set_all (temp, INF, N, N);
         for (int i = 0; i < K; i ++) {
             for (int j = 0; j < N; j ++) {
-                w[j][last_medoids[i]] = 1.0;
+                temp[j][new_medoids[i]] = dist_mat[j][new_medoids[i]];
             }
         }
-        mat_times (w, dist_mat, temp, N, N); // temp = dist to medoids
         mat_zeros (w, N, N);
         mat_min_row (temp, w, N, N);
 
@@ -116,8 +110,11 @@ void PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
         mat_times (w, dist_mat, temp, N, N); // temp = dist to closest medoid
         new_cost = mat_norm2 (temp, N, N);
 
+        cout << "new_cost: " << new_cost << endl;
         // STEP FOUR: stopping criteria
-        if (new_cost >= last_cost) break; // medoids has been the optimal
+        if (new_cost >= last_cost) {
+              break;
+        } // medoids has been the optimal
         else {
             for (int i = 0; i < K; i ++) {
                 last_medoids[i] = new_medoids[i];
@@ -137,13 +134,12 @@ void PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
             for (int p = 0; p < nPoints; p ++) {
                 for (int q = 0; q < nPoints; q ++) {
                     cluster_dist_mat[p][q] = 
-                        dist_mat[cluster_points[p]][cluster_points[q]] * 
-                         dist_mat[cluster_points[p]][cluster_points[q]];
+                        dist_mat[cluster_points[p]][cluster_points[q]];
                 }
             }
             double* squared_dist = new double [nPoints];
             mat_sum_col(cluster_dist_mat, squared_dist, nPoints, nPoints);
-            int min_index = INT8_MAX;
+            int min_index = INTEGER_MAX;
             double min_value = INF;
             for (int j = 0; j < nPoints; j++) {
                 if (squared_dist[j] < min_value) {
@@ -154,7 +150,7 @@ void PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
             assert (min_index < nPoints);
             new_medoids[i] = cluster_points[min_index];
             delete [] squared_dist;
-            mat_free(cluster_dist_mat, nPoints, nPoints);
+            mat_free (cluster_dist_mat, nPoints, nPoints);
         }
     }
 
@@ -220,6 +216,9 @@ int main (int argc, char ** argv) {
     // Output results
     ofstream fout("result");
 
+    for (int i = 0; i < K; i ++) {
+        cout << "medoids[i] = " <<  medoids[i] << endl;
+    }
     for (int i = 0; i < N; i ++) {
         // output identification and its belonging
         fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
@@ -240,4 +239,6 @@ int main (int argc, char ** argv) {
            fout << endl;
            */
     }
+    delete[] medoids;
+    mat_free (W, N, N);
 }
