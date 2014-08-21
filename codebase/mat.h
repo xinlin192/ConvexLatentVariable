@@ -76,14 +76,21 @@ void mat_sub (double ** src1, double ** src2, double ** dest, int nRows, int nCo
 }
 
 void mat_times (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
-
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
             dest[i][j] = src1[i][j]* src2[i][j];
         }
     }
 }
-
+double mat_frob_dot (double ** src1, double ** src2, int nRows, int nCols) {
+    double frob_prod = 0.0;
+    for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) {
+            frob_prod += src1[i][j]* src2[i][j];
+        }
+    }
+    return frob_prod;
+}
 void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols) {
 
     for (int i = 0; i < nRows; i ++) {
@@ -193,9 +200,7 @@ void mat_max_col (double ** src, double * dest, int nRows, int nCols) {
         dest[j] = max_value;
     }
 }
-
 void mat_min_row (double ** src, double ** dest, int nRows, int nCols) {
-
     for (int i = 0; i < nRows; i ++) {
         int min_index = -1;
         double min_value = 10e300;
@@ -210,7 +215,32 @@ void mat_min_row (double ** src, double ** dest, int nRows, int nCols) {
         dest[i][min_index] = 1;
     }
 }
-
+void mat_min_row (double ** src, double * dest, int nRows, int nCols) {
+    for (int i = 0; i < nRows; i ++) {
+        int min_index = -1;
+        double min_value = 10e300;
+        for (int j = 0; j < nCols; j ++) {
+            if (src[i][j] < min_value) {
+                min_index = j;
+                min_value = src[i][j];
+            }
+        }
+        dest[i] = min_value;
+    }
+}
+void mat_min_index_row (double ** src, double * dest, int nRows, int nCols) {
+    for (int i = 0; i < nRows; i ++) {
+        int min_index = -1;
+        double min_value = 10e300;
+        for (int j = 0; j < nCols; j ++) {
+            if (src[i][j] < min_value) {
+                min_index = j;
+                min_value = src[i][j];
+            }
+        }
+        dest[i] = min_index;
+    }
+}
 double mat_norm2 (double ** src, int nRows, int nCols) {
     double sum = 0.0;
     for (int i = 0; i < nRows; i ++) {
