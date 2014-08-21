@@ -25,7 +25,7 @@ double ** mat_init (int nRows, int nCols) {
     }
     return res;
 }
-
+/*
 double ** mat_read (string fname, int* R, int* C) {
    	ifstream fin(fname);
     int nRows, nCols;
@@ -42,6 +42,7 @@ double ** mat_read (string fname, int* R, int* C) {
     fin.close();
     return result;
 }
+*/
 void mat_zeros (double ** src, int nRows, int nCols) {
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
@@ -102,8 +103,16 @@ void mat_tdot (double ** src1, double ** src2, double ** dest, int nRows, int nC
     }
 }
 
+double mat_sum (double ** src, int nRows, int nCols) {
+    double sum = 0.0;
+    for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) {
+            sum += src[i][j];
+        }
+    }
+    return sum;
+}
 void mat_sum_row (double ** src, double * dest, int nRows, int nCols) {
-    
     for (int i = 0; i < nRows; i ++) {
         double sum = 0.0;
         for (int j = 0; j < nCols; j ++) {
@@ -111,7 +120,6 @@ void mat_sum_row (double ** src, double * dest, int nRows, int nCols) {
         }
         dest[i] = sum;
     }
-
 }
 
 void mat_sum_col(double ** src, double * dest, int nRows, int nCols) {
@@ -156,24 +164,12 @@ void mat_copy (double ** src, double ** dest, int nRows, int nCols) {
     }
 }
 
-double mat_sum (double ** src, int nRows, int nCols) {
-
-    double sum = 0.0;
-    for (int i = 0; i < nRows; i ++) {
-        for (int j = 0; j < nCols; j ++) {
-            sum += src[i][j];
-        }
-    }
-
-    return sum;
-}
-
 void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
 
     // we assume that the given dest is all-zero mat
     for (int j = 0; j < nCols; j ++) {
         int max_index = -1;
-        double max_value = -10e300;
+        double max_value = -1e300;
         for (int i = 0; i < nRows; i ++) {
             if (src[i][j] > max_value) {
                 max_index = i;
@@ -182,6 +178,19 @@ void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
 	    dest[i][j] = 0;
         }
         dest[max_index][j] = 1;
+    }
+}
+void mat_max_col (double ** src, double * dest, int nRows, int nCols) {
+    for (int j = 0; j < nCols; j ++) {
+        int max_index = -1;
+        double max_value = -1e300;
+        for (int i = 0; i < nRows; i ++) {
+            if (src[i][j] > max_value) {
+                max_index = i;
+                max_value = src[i][j];
+            }
+        }
+        dest[j] = max_value;
     }
 }
 
