@@ -4,4 +4,4 @@ all:
 	g++ -O3 $(cpps) -o sparseClustering
 
 clean:
-	rm sparseClustering
+	rm sparseClustering opt*

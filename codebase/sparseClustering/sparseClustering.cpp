@@ -21,48 +21,37 @@
 // #define FRANK_WOLFE_DUMP
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
-#define NCENTROID_DUMP
+// #define NCENTROID_DUMP
 
 
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 1000.0;
 
-int get_nCentroids (double ** W, int nRows, int nCols) {
-
-    int nCentroids = 0;
-    double * sum_belonging = new double [nCols];
-
-    mat_max_col (W, sum_belonging, nRows, nCols);
-
-    for (int i = 0; i < nCols; i ++ ) {
-        if (sum_belonging[i] > 3e-1) { 
-            nCentroids ++;
+double clustering_objective (double ** dist_mat, double ** z, int N) {
+    // N is number of entities in "data", and z is N by N.
+    // z is current valid solution (average of w_1 and w_2)
+    // STEP ONE: compute 
+    //     loss = sum_i sum_j z[i][j] * dist_mat[i][j]
+    double clustering_loss = 0.0;
+    for (int i = 0; i < N; i ++) {
+        for (int j = 0; j < N; j ++) {
+            clustering_loss += 0.5 * z[i][j] * dist_mat[i][j];
         }
     }
-    
-    delete[] sum_belonging;
-    return nCentroids;
+    return clustering_loss;
 }
-
-vector<int> get_all_centroids(double ** W, int nRows, int nCols) {
-
-    std::vector<int> centroids;
-
-    double * sum_belonging = new double [nCols];
+void get_all_centroids(double ** W, vector<int>* centroids, int nRows, int nCols) {
+    double * max_belonging = new double [nCols];
     for (int i = 0; i < nCols; i ++) {
-        sum_belonging[i] = 0.0;
+        max_belonging[i] = 0.0;
     }
-
-    mat_max_col (W, sum_belonging, nRows, nCols);
-
+    mat_max_col (W, max_belonging, nRows, nCols);
     for (int i = 0; i < nCols; i ++ ) {
-        if (sum_belonging[i] > 3e-1) {
-            centroids.push_back(i);
+        if (fabs(max_belonging[i]) > 0.3) {
+            centroids->push_back(i+1);
         }
     }
-    
-    delete[] sum_belonging;
-    return centroids;
+    delete[] max_belonging;
 }
 
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
@@ -410,42 +399,43 @@ double L2norm (Instance * ins1, Instance * ins2, int D) {
     return norm;
 }
 
-double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
+
+double overall_objective (double ** dist_mat, double lambda, int N, double ** z) {
     // N is number of entities in "data", and z is N by N.
     // z is current valid solution (average of w_1 and w_2)
-    
     double sum = 0.0;
     for(int i=0;i<N;i++)
 	    for(int j=0;j<N;j++)
 		    sum += z[i][j];
-    cerr << "sum=" << sum/N << endl;
-    // STEP ONE: compute loss function
+    // cerr << "sum=" << sum/N << endl;
+    // STEP ONE: compute 
+    //     loss = sum_i sum_j z[i][j] * dist_mat[i][j]
     double normSum = 0.0;
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
             normSum += z[i][j] * dist_mat[i][j];
         }
     }
-    
+    double loss = 0.5 * (normSum);
+    cout << "loss=" << loss;
+
+    // STEP TWO: compute dummy loss
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
     double * temp_vec = new double [N];
     mat_sum_row (z, temp_vec, N, N);
-    //double dummy_penalty=0.0;
+    double dummy_penalty=0.0;
     double avg=0.0;
     for (int i = 0; i < N; i ++) {
         avg += temp_vec[i];
-        //dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
+        dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
     }
-    
-    double loss = 0.5 * (normSum/*+dummy_penalty*/);
-    cout << "loss=" << loss << endl;
+    cout << ", dummy= " << dummy_penalty;
 
-    // STEP TWO: compute group-lasso regularization
+    // STEP THREE: compute group-lasso regularization
     double * maxn = new double [N]; 
     for (int i = 0;i < N; i ++) { // Ian: need initial 
         maxn[i] = -INF;
     }
-
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
             if ( fabs(z[i][j]) > maxn[j])
@@ -457,10 +447,11 @@ double opt_objective (double ** dist_mat, double lambda, int N, double ** z) {
         sumk += maxn[i];
     }
     double reg = lambda * sumk; 
-    cout << "reg=" << reg << endl;
+    cout << ", reg=" << reg << endl;
 
-    //delete[] temp_vec;
-    return loss + reg;
+    delete[] maxn;
+    delete[] temp_vec;
+    return loss + reg + dummy_penalty;
 }
 
 /* Compute the mutual distance of input instances contained within "data" */
@@ -482,7 +473,6 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
               }*/
         }
     }
-
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
         
@@ -491,15 +481,9 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
             } else {
                 assert (dist_mat[i][j] == dist_mat[j][i]);
             }
-
         }
     }
-
 }
-
-
-
-
 void sparseClustering ( double ** dist_mat, int D, int N, double lambda, double ** W) {
 
     // parameters 
@@ -522,7 +506,6 @@ void sparseClustering ( double ** dist_mat, int D, int N, double lambda, double 
     mat_zeros (diffzero, N, N);
     mat_zeros (diffone, N, N);
     mat_zeros (difftwo, N, N);
-
 
     int iter = 0; // Ian: usually we count up (instead of count down)
     int max_iter = 2000;
@@ -570,7 +553,7 @@ void sparseClustering ( double ** dist_mat, int D, int N, double lambda, double 
 
         // STEP FOUR: trace the objective function
         if (iter % 10 == 0) {
-            error = opt_objective (dist_mat, lambda, N, z);
+            error = overall_objective (dist_mat, lambda, N, z);
             // get current number of employed centroid
 #ifdef NCENTROID_DUMP
             int nCentroids = get_nCentroids (z, N, N);
@@ -583,9 +566,9 @@ void sparseClustering ( double ** dist_mat, int D, int N, double lambda, double 
                  << endl;
         }
         /*cout << "w1" << endl;
-          error = opt_objective (dist_mat, lambda, N, wone);
+          error = overall_objective (dist_mat, lambda, N, wone);
           cout << "w2" << endl;
-          error = opt_objective (dist_mat, lambda, N, wtwo);*/
+          error = overall_objective (dist_mat, lambda, N, wtwo);*/
         /*
         mat_sub (wone, wtwo, diffzero, N, N);
         double trace_wone_minus_wtwo = mat_norm2 (diffzero, N, N);
@@ -622,27 +605,28 @@ void sparseClustering ( double ** dist_mat, int D, int N, double lambda, double 
 int main (int argc, char ** argv) {
 
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 3) {
-        cerr << "Usage: sparseClustering [dataFile] [lambda]" << endl;
+    if (argc != 4) {
+        cerr << "Usage: sparseClustering [dataFile] [FIX_DIM] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
     }
 
     // parse arguments
     char * dataFile = argv[1];
-    double lambda = atof(argv[2]);
+    int FIX_DIM = atoi(argv[2]);
+    double lambda = atof(argv[3]);
 
     // read in data
     vector<Instance*> data;
     //read2D (dataFile, data);
-    readFixDim (dataFile, data, 13);
+    readFixDim (dataFile, data, FIX_DIM);
 
     // explore the data 
     int dimensions = -1;
     int N = data.size(); // data size
     for (int i = 0; i < N; i++) {
         vector< pair<int,double> > * f = &(data[i]->fea);
-        int last_index = f->size() - 1;
+        int last_index = f->size()-1;
         if (f->at(last_index).first > dimensions) {
             dimensions = f->at(last_index).first;
         }
@@ -664,26 +648,38 @@ int main (int argc, char ** argv) {
     compute_dist_mat (data, dist_mat, N, D, df, true); 
 
     // Run sparse convex clustering
-    map<int, Cluster*> clusters; 
     double ** W = mat_init (N, N);
     mat_zeros (W, N, N);
     sparseClustering (dist_mat, D, N, lambda, W);
-    // Output results
-    ofstream fout("result");
 
-    // get all centroids
-    vector<int> centroids = get_all_centroids(W, N, N); // contains index of all centroids
-    
+    // Output cluster
+    ofstream obj_out ("opt_objective");
+    obj_out << clustering_objective (dist_mat, W, N) << endl;
+    obj_out.close();
+
+    /* Output cluster centroids */
+    ofstream model_out ("opt_model");
+    vector<int> centroids;
+    get_all_centroids (W, &centroids, N, N); // contains index of all centroids
     int nCentroids = centroids.size();
+    model_out << "nCentroids: " << nCentroids << endl;
+    for (int i = 0; i < nCentroids; i ++) {
+        model_out << "centroids[" << i <<"]: " << centroids[i] << endl;
+    }
+    model_out.close();
+
+    /* Output assignment */
+    ofstream asgn_out ("opt_assignment");
+    // get all centroids
     for (int i = 0; i < N; i ++) {
         // output identification and its belonging
-        fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
+        asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
         for (int j = 0; j < N; j ++) {
             if( fabs(W[i][j]) > 3e-1 ) {
-                fout << j+1 << "(" << W[i][j] << "),\t";
+                asgn_out << j+1 << "(" << W[i][j] << "),\t";
             }
         }
-	fout << endl;
+        asgn_out << endl;
         // output distance of one sample to each centroid 
         /*fout << "dist_centroids: (";
         for (int j = 0; j < nCentroids - 1; j ++) {
@@ -693,4 +689,9 @@ int main (int argc, char ** argv) {
 
         fout << endl;*/
     }
+    asgn_out.close();
+
+    /* reallocation */
+    mat_free (dist_mat, N, N);
+    mat_free (W, N, N);
 }

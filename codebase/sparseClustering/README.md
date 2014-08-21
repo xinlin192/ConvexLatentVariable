@@ -22,6 +22,11 @@ Inventory
     sparseClustering.h      header file for algorithmic script
     sparseClustering.cpp    codebase as our algorithmic script
 
+Executive Commands
+-----------------
+
+    ./sparseClustering ../../dataset/wine.scale 13 10-25
+
 TODOs
 ---------------
 1. Fix bugs about result inconsistency according to the input data shuffling.

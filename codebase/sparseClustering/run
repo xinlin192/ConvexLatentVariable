@@ -2,17 +2,19 @@
 dataset=$1  # path to dataset
 result_name=$2
 
-RESULT_DIR="../../results"
+RESULT_DIR="results"
 
-dataset_result_dir="$RESULT_DIR/$result_name"
+rm -rf "results/*"
 
-rm -rf $dataset_result_dir
-mkdir $dataset_result_dir
+dataset="../../dataset/wine.scale"
+dim="13"
+lambda="13"
 
-lambda_set[0]=""
-
-for x in $(seq -4 4)
+for x in $(seq 100)
 do
-    ./sparseClustering $dataset 1e$x > $dataset_result_dir/"lambda_1e$x.log"
+    mkdir results/$x
+    ./sparseClustering $dataset $dim $lambda > sparseClustering.log
+    cp opt* results/$x
+    cp sparseClustering.log results/$x
 done
 
