@@ -1,7 +1,6 @@
 /*###############################################################
 ## MODULE: DP_MEDOIDS.cpp
-## VERSION: 1.0 
-## SINCE 2014-06-14
+## VERSION: 1.0 ## SINCE 2014-06-14
 ## AUTHOR:
 ##     Jimmy Lin (xl5224) - JimmyLin@utexas.edu  
 ## DESCRIPTION: 
@@ -14,6 +13,7 @@
 #include "DP_MEDOIDS.h"
 #include <cassert>
 #include <cmath>
+#define INTEGER_MAX 30000
 
 typedef double (* dist_func) (Instance*, Instance*, int); 
 double L2norm (Instance * ins1, Instance * ins2, int D) {
@@ -21,7 +21,6 @@ double L2norm (Instance * ins1, Instance * ins2, int D) {
     //   1. refine by using hash table to restore each instance
     assert (ins1->fea.size() == D);
     assert (ins2->fea.size() == D);
-
     double * diff = new double [D];
     for (int i = 0; i < D; i ++) {
         diff[ ins1->fea[i].first-1 ] = ins1->fea[i].second;
@@ -29,12 +28,10 @@ double L2norm (Instance * ins1, Instance * ins2, int D) {
     for (int i = 0; i < D; i ++) {
         diff[ ins2->fea[i].first-1 ] -= ins2->fea[i].second;
     }
-
     double norm = 0.0;
     for (int i = 0; i < D; i ++) {
         norm += diff[i] * diff[i];
     }
-	
     delete[] diff;
     return norm;
 }
@@ -42,17 +39,9 @@ double L2norm (Instance * ins1, Instance * ins2, int D) {
 void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
-            /*if (j >= i || !isSym) { // invoke dist_func
-              if (j == i) {
-              dist_mat[i][j] = 0;
-              continue;
-              }*/
             Instance * xi = data[i];
             Instance * muj = data[j];
             dist_mat[i][j] = df (xi, muj, D);
-            /*} else { // by symmetry 
-              dist_mat[i][j] = dist_mat[j][i];
-              }*/
         }
     }
     for (int i = 0; i < N; i ++) {
@@ -66,66 +55,91 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
     }
 }
 
-void DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, int* medoids) {
+double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<int>* medoids) {
     // STEP ZERO: validate input
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j++) {
             assert (dist_mat[i][j]>=0.0);
         }
     }
-    vector<int> last_medoids (K, 0);
-    vector<int> new_medoids (K, 0);
-    // STEP ONE: a. randomly pick up initial K medoid
-    // NOTE THAT this sampling method assumes that K << N
-    int* pool = new int[N];
-    for (int i = 0; i < N; i++)
-        new_medoids[i] = i;
-    for (int j = 0; j < K; j++) {
-        int rand = random()/(N-j); // generate random number from [0,n-1]
-        int index = pool[N-1-j]; // get index of last available slot
-        int temp = pool[index]; // get value of last available slot
-        // swap position
-        pool[index] = pool[j]; 
-        pool[j] = temp;
-        // assign generated random value to new_medoids[]
-        new_medoids[j] = pool[index];
-    }
-    delete[] pool; // remove pool (temporary)
+    // STEP ONE: a. randomly pick up the initial *global* medoid
+    vector<int> last_medoids (1, 0);
+    vector<int> new_medoids (1, 0);
+    double lambda_square = lambda * lambda;
+    new_medoids[0] = random() % N;
+    last_medoids[0] = new_medoids[0];
+    cout << "randomized medoids: " << last_medoids[0]  << endl;
 
     // OPTIONAL: write randomized medoids to stdout or external files
-    
-    double last_cost = INF, new_cost = INF;
-    double ** temp = mat_init (N,N);
+    double last_cost = INF, new_cost = INF; // compute last cost
     double ** w = mat_init (N,N);
+    mat_zeros(w, N,N);
+    for (int i = 0; i < N; i ++) {
+        w[i][last_medoids[0]] = 1.0;
+    }
     while (true) {
-        // STEP TWO: E-step, assign to closest medoid, get new w
-        mat_zeros (temp, N, N);
-        mat_zeros (w, N, N);
-        mat_set_all (w, INF, N, N);
+        // STEP TWO: compute dist square to new medoids d_ic
+        int last_K = last_medoids.size();
+        int K = new_medoids.size(); 
+        double ** temp = mat_init (N,K); // temp[i][c] <- d_ic
         for (int i = 0; i < K; i ++) {
             for (int j = 0; j < N; j ++) {
-                w[j][last_medoids[i]] = 1.0;
+                temp[j][i] = dist_mat[j][new_medoids[i]];
             }
         }
-        mat_times (w, dist_mat, temp, N, N); // temp = dist to medoids
-        mat_zeros (w, N, N);
-        mat_min_row (temp, w, N, N);
+        // STEP THREE: create new cluster medoid if min_c d_ic > lambda
+        // for here, we make the condition squared:
+        //           min_c d_ic^2 > lambda^2
+        double* min_d_ic = new double [N];
+        double* min_index = new double [N];
+        mat_min_row (temp, min_d_ic, N,K);
+        mat_min_index_row (temp, min_index, N,K);
+        for (int i = 0; i < N; i ++) {
+            if (min_d_ic[i] > lambda_square) {
+                // clean previous belonging
+                for (int j = 0; j < last_K; j ++) {
+                    w[i][last_medoids[j]] = 0.0;
+                }
+                // create new cluster
+                w[i][i] = 1.0;
+                new_medoids.push_back(i);
+            } else {
+                // clean previous belonging
+                for (int j = 0; j < last_K; j ++) {
+                    w[i][last_medoids[j]] = 0.0;
+                }
+                // reassign to one of new medoids
+                w[i][new_medoids[min_index[i]]] = 1.0;
+            }
+        }
+        K = new_medoids.size();
+        delete[] min_index;
+        delete[] min_d_ic;
+        mat_free(temp, N,K);
 
         // STEP THREE: compute cost
-        mat_zeros (temp, N, N);
-        mat_times (w, dist_mat, temp, N, N); // temp = dist to closest medoid
-        new_cost = mat_norm2 (temp, N, N);
+        new_cost = 0.5 * mat_frob_dot (w, dist_mat, N, N);
 
+        cout << "new_cost: " << new_cost << endl;
         // STEP FOUR: stopping criteria
-        if (new_cost >= last_cost) break; // medoids has been the optimal
-        else {
-            for (int i = 0; i < K; i ++) {
-                last_medoids[i] = new_medoids[i];
+        if (new_cost >= last_cost && last_K == K) {
+            cout << "CLUSTERING COST: " << last_cost << endl;
+            cout << "Resulted medoids: ";
+            for (int i = 0; i < last_K; i++) {
+                cout << last_medoids[i] << ",";
             }
+            cout << endl;
+            break;
+        } // medoids has been the optimal
+        else {
+            last_medoids.clear();
+            for (int i = 0; i < K; i ++) {
+                last_medoids.push_back(new_medoids[i]);
+            }
+            last_K = K;
             last_cost = new_cost;
         }
-
-        // STEP FIVE: M-step elect new medoid
+        // STEP FIVE: M-step elect new K medoids as PAM algorithm
         for (int i = 0; i < K; i ++) {
             vector<int> cluster_points;
             for (int j = 0; j < N; j ++) {
@@ -137,13 +151,12 @@ void DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, int* medoi
             for (int p = 0; p < nPoints; p ++) {
                 for (int q = 0; q < nPoints; q ++) {
                     cluster_dist_mat[p][q] = 
-                        dist_mat[cluster_points[p]][cluster_points[q]] * 
-                         dist_mat[cluster_points[p]][cluster_points[q]];
+                        dist_mat[cluster_points[p]][cluster_points[q]];
                 }
             }
             double* squared_dist = new double [nPoints];
             mat_sum_col(cluster_dist_mat, squared_dist, nPoints, nPoints);
-            int min_index = INT8_MAX;
+            int min_index = INTEGER_MAX;
             double min_value = INF;
             for (int j = 0; j < nPoints; j++) {
                 if (squared_dist[j] < min_value) {
@@ -154,34 +167,37 @@ void DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, int* medoi
             assert (min_index < nPoints);
             new_medoids[i] = cluster_points[min_index];
             delete [] squared_dist;
-            mat_free(cluster_dist_mat, nPoints, nPoints);
+            mat_free (cluster_dist_mat, nPoints, nPoints);
         }
     }
 
     // STEP SEVEN: put converged solution to destination W
     mat_copy (w, W, N, N);
-    for (int i = 0; i < K; i ++) {
-        medoids[i] = last_medoids[i];
+    for (int i = 0; i < last_medoids.size(); i ++) {
+        medoids->push_back(last_medoids[i]);
     }
     // STEP EIGHT: memory recollection
-    mat_free (temp, N, N);
     mat_free (w, N, N);
+
+    return last_cost;
 }
 
 // entry main function
 int main (int argc, char ** argv) {
 
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 4) {
-        cerr << "Usage: DP_MEDOIDS [dataFile] [FIX_DIM] [lambda]" << endl;
+    if (argc < 5) {
+        cerr << "Usage: DP_MEDOIDS [dataFile] [FIX_DIM] [nRuns] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
+        cerr << "Note: nRuns is the number of running to get global optima" << endl;
         exit(-1);
     }
 
     // parse arguments
     char* dataFile = argv[1];
     int FIX_DIM = atoi(argv[2]);
-    double lambda = atof(argv[3]);
+    int nRuns = atoi(argv[3]);
+    double lambda = atof(argv[4]);
 
     // read in data
     vector<Instance*> data;
@@ -201,6 +217,7 @@ int main (int argc, char ** argv) {
 
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
+    cerr << "nRuns = " << nRuns << endl;
     cerr << "lambda = " << lambda << endl;
     int seed = time(NULL);
     srand (seed);
@@ -211,22 +228,61 @@ int main (int argc, char ** argv) {
     double ** dist_mat = mat_init (N, N);
     mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
-    // Run sparse convex clustering
-    double ** W = mat_init (N, N);
-    mat_zeros (W, N, N);
-    // INVOKE algorithm function
-    vector<int> medoids = DP_MEDOIDS (dist_mat, N, lambda, W, medoids);
-    // Output results
-    ofstream fout("result");
 
-    for (int i = 0; i < N; i ++) {
-        // output identification and its belonging
-        fout << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
-        for (int j = 0; j < N; j ++) {
-            if( fabs(W[i][j]) > 3e-1 ) {
-                fout << j+1 << "(" << W[i][j] << "),\t";
+    // Run sparse convex clustering
+    double *** W = new double** [nRuns];
+    vector< vector<int> > medoids (nRuns, vector<int>());
+    double* objectives = new double [nRuns];
+    double min_obj = INF;
+    double ** min_w = mat_init (N, N);
+    vector<int> min_medoids;
+    int min_nMedoids;
+    for (int i = 0; i < nRuns; i++) {
+        W[i] = mat_init (N, N);
+        mat_zeros (W[i], N, N);
+        // INVOKE algorithm function
+        objectives[i] = DP_MEDOIDS (dist_mat, N, lambda, W[i], &(medoids[i]));
+        if (objectives[i] < min_obj) {
+            min_obj = objectives[i];
+            mat_copy (W[i], min_w, N, N);
+            min_nMedoids = medoids[i].size();
+            min_medoids.clear();
+            for (int j = 0; j < min_nMedoids; j++) {
+                min_medoids.push_back(medoids[i][j]);
             }
         }
-        fout << endl;
+    }
+
+    // Output models
+    ofstream model_out("opt_model");
+    model_out << "min_objective: " << min_obj << endl;
+    for (int i = 0; i < min_nMedoids; i ++) {
+        model_out << "min_medoids[" << i << "] = " <<  min_medoids[i]+1 << endl;
+    }
+    // Output assignments
+    ofstream asgn_out("opt_assignment");
+    for (int i = 0; i < N; i ++) {
+        // output identification and its belonging
+        asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
+        for (int j = 0; j < N; j ++) {
+            if( fabs(min_w[i][j]) > 3e-1 ) {
+                asgn_out << j+1 << "(" << min_w[i][j] << "),\t";
+            }
+        }
+        asgn_out << endl;
+        // output distance of one sample to each centroid 
+        /*
+           out << "dist_centroids: (";
+           for (int j = 0; j < nCentroids - 1; j ++) {
+           asgn_out << dist_mat[i][ centroids[j] ] << ", ";
+           }
+           asgn_out << dist_mat[i][ centroids[nCentroids-1] ] << ")";
+
+           asgn_out << endl;
+           */
+    }
+    mat_free (min_w, N, N);
+    for (int i = 0; i < nRuns; i++) {
+        mat_free (W[i], N, N);
     }
 }
