@@ -1,7 +1,7 @@
 /*###############################################################
-## MODULE: PAMcpp
+## MODULE: DP_MEDOIDS.h
 ## VERSION: 1.0 
-## SINCE 2014-08-14
+## SINCE 2014-08-20
 ## AUTHOR Jimmy Lin (xl5224) - JimmyLin@utexas.edu  
 ## DESCRIPTION: 
 ##     This file includes problem-specific data structure and
@@ -93,65 +93,6 @@ class Cluster{
 		return  ins->x_sq() + mu_sq - 2*dot(mu,ins->fea);
 	}
 };
-
-/*
-class Cluster{
-
-	public:
-	int d;
-	set<Instance*>  members;
-	double*  sum;  //sum = mu * |cluster|, if |cluster|!=0 
-		       //      mu,             if |cluster|=0.
-	double mu_sq;
-	
-	Cluster(int _d){
-		
-		d = _d;
-		sum = new double[d];
-		for(int i=0;i<d;i++)
-			sum[i] = (double)rand()/RAND_MAX;
-		sum[0] = 0.0;
-		
-		mu_sq = -1;
-	}
-	
-	~Cluster(){
-		delete[] sum;
-	}
-	
-	double dist(Instance* ins){
-		
-		if( mu_sq == -1 ){
-
-			mu_sq = dot(sum,sum,d);
-			if( members.size() != 0 )
-				mu_sq /= (members.size()*members.size());
-		}
-		
-		if( members.size() != 0 )
-			return  ins->x_sq() + mu_sq - 2*dot(sum,ins->fea)/members.size();
-		else
-			return  ins->x_sq() + mu_sq - 2*dot(sum,ins->fea);
-	}
-
-	void add(Instance* ins){
-		
-		if( !members.insert(ins).second )
-			cerr << "instance " << ins->id << " already in cluster when added." << endl;
-
-		vadd(sum,ins->fea);
-		mu_sq = -1;
-	}
-
-	void remove(Instance* ins){
-		
-		if(members.erase(ins)==0)
-			cerr << "instance " << ins->id << "not in cluster when removed." << endl;
-
-		vsub(sum,ins->fea);
-		mu_sq = -1;
-	}
-};*/
 
 class ScoreComparator{
 	
