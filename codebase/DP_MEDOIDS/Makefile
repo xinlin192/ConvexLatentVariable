@@ -1,6 +1,6 @@
 cpp=$(shell ls *.cpp) 
 headers=$(shell ls *.h)
-executable=$(shell ls *.cpp) | tr -d '.cpp'
+executable=$(shell ls *.cpp | tr -d ".cpp")
 README=$(shell ls README*)
 
 all: 
@@ -12,4 +12,4 @@ push:
 	git push
 
 clean:
-	rm $(executable) 
+	rm -rf $(executable) opt*
