@@ -4,4 +4,4 @@ all:
 	g++ -O3 $(cpps) -o PAM
 
 clean:
-	rm PAM
+	rm PAM opt*

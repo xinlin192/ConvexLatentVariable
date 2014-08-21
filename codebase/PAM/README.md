@@ -35,6 +35,8 @@ DEVELOPMENT LOGS
 
 2. [Tue Aug 19 22:59:45 2014 by Jimmy] take one hour to debug.
 
+3. [Wed Aug 20 21:55:00 2014 by Jimmy] refine the codes and output format.
+
 REFERENCE
 -------------
 

@@ -107,8 +107,8 @@ double PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
 
         // STEP THREE: compute cost
         mat_zeros (temp, N, N);
-        mat_times (w, dist_mat, temp, N, N); // temp = dist to closest medoid
-        new_cost = mat_norm2 (temp, N, N);
+        mat_times (w, dist_mat, temp, N, N); // temp = squared dist to closest medoid
+        new_cost = 0.5 * mat_sum (temp, N, N);
 
         cout << "new_cost: " << new_cost << endl;
         // STEP FOUR: stopping criteria
