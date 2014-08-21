@@ -1,4 +1,4 @@
-MAD\_BAYES clustering algorithm
+DP\_MEDOIDS clustering algorithm
 =======================
 
 MAD\_BAYES 
@@ -24,7 +24,7 @@ Inventory
 Executive Commands
 ---------------
     
-    ./MAD_BAYES ../../dataset/wine.scale 13 [lambda]
+    ./DP_MEDOIDS ../../dataset/wine.scale 13 [lambda]
 
 DEVELOPMENT LOGS
 ---------------
