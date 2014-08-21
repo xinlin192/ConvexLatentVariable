@@ -249,7 +249,7 @@ int main (int argc, char ** argv) {
         asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
         for (int j = 0; j < N; j ++) {
             if( fabs(min_w[i][j]) > 3e-1 ) {
-                asgn_out << j+1 << "(" << W[i][j] << "),\t";
+                asgn_out << j+1 << "(" << min_w[i][j] << "),\t";
             }
         }
         asgn_out << endl;
