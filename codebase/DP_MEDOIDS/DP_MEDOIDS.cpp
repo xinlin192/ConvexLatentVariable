@@ -65,7 +65,6 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
     // STEP ONE: a. randomly pick up the initial *global* medoid
     vector<int> last_medoids (1, 0);
     vector<int> new_medoids (1, 0);
-    double lambda_square = lambda * lambda;
     new_medoids[0] = random() % N;
     last_medoids[0] = new_medoids[0];
     cout << "randomized medoids: " << last_medoids[0]  << endl;
@@ -91,34 +90,40 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         // for here, we make the condition squared:
         //           min_c d_ic^2 > lambda^2
         double* min_d_ic = new double [N];
-        double* min_index = new double [N];
         mat_min_row (temp, min_d_ic, N,K);
-        mat_min_index_row (temp, min_index, N,K);
+        bool cont = false;
+        vector<int> candiates;
         for (int i = 0; i < N; i ++) {
-            if (min_d_ic[i] > lambda_square) {
-                // clean previous belonging
-                for (int j = 0; j < last_K; j ++) {
-                    w[i][last_medoids[j]] = 0.0;
-                }
-                // create new cluster
-                w[i][i] = 1.0;
-                new_medoids.push_back(i);
-            } else {
-                // clean previous belonging
-                for (int j = 0; j < last_K; j ++) {
-                    w[i][last_medoids[j]] = 0.0;
-                }
-                // reassign to one of new medoids
-                w[i][new_medoids[min_index[i]]] = 1.0;
+            if (min_d_ic[i] > lambda) {
+                candiates.push_back(i); // add to candidate list
             }
         }
-        K = new_medoids.size();
+        int nCandidates = candiates.size();
+        if (nCandidates > 0) {
+            mat_free(temp, N,K);
+            int new_med = rand() % nCandidates;
+            new_medoids.push_back(candiates[new_med]);
+            K = new_medoids.size();
+            temp = mat_init (N,K);
+            for (int i = 0; i < K; i ++) {
+                for (int j = 0; j < N; j ++) {
+                    temp[j][i] = dist_mat[j][new_medoids[i]];
+                }
+            }
+        }
+        double* min_index = new double [N];
+        mat_min_index_row (temp, min_index, N,K);
+        mat_zeros(w, N,N);
+        for (int i = 0; i < N; i ++) {
+            // reassign to one of new medoids
+            w[i][new_medoids[min_index[i]]] = 1.0;
+        }
         delete[] min_index;
         delete[] min_d_ic;
         mat_free(temp, N,K);
 
         // STEP THREE: compute cost
-        new_cost = 0.5 * mat_frob_dot (w, dist_mat, N, N);
+        new_cost = 0.5 * mat_frob_dot (w, dist_mat, N,N);
 
         cout << "new_cost: " << new_cost << endl;
         // STEP FOUR: stopping criteria
@@ -186,7 +191,7 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
 int main (int argc, char ** argv) {
 
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 5) {
+    if (argc != 5) {
         cerr << "Usage: DP_MEDOIDS [dataFile] [FIX_DIM] [nRuns] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         cerr << "Note: nRuns is the number of running to get global optima" << endl;
