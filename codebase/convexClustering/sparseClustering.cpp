@@ -25,7 +25,7 @@
 
 
 typedef double (* dist_func) (Instance*, Instance*, int); 
-const double r = 1000.0;
+const double r = 1000000.0;
 
 double clustering_objective (double ** dist_mat, double ** z, int N) {
     // N is number of entities in "data", and z is N by N.
@@ -379,14 +379,20 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
 double L2norm (Instance * ins1, Instance * ins2, int D) {
     // TODO: 
     //   1. refine by using hash table to restore each instance
-    assert (ins1->fea.size() == D);
-    assert (ins2->fea.size() == D);
+    // assert (ins1->fea.size() == D);
+    // assert (ins2->fea.size() == D);
 
     double * diff = new double [D];
-    for (int i = 0; i < D; i ++) {
+    for (int i = 0; i < D; i ++) 
+        diff[i] = 0.0;
+    int n1 = ins1->fea.size();
+    for (int i = 0; i < n1; i ++) {
+        if (ins1->fea[i].first-1 < 0) continue;
         diff[ ins1->fea[i].first-1 ] = ins1->fea[i].second;
     }
-    for (int i = 0; i < D; i ++) {
+    int n2 = ins2->fea.size();
+    for (int i = 0; i < n2; i ++) {
+        if (ins2->fea[i].first-1 < 0) continue;
         diff[ ins2->fea[i].first-1 ] -= ins2->fea[i].second;
     }
 
@@ -396,7 +402,8 @@ double L2norm (Instance * ins1, Instance * ins2, int D) {
     }
 	
     delete[] diff;
-    return norm;
+    cout << norm << endl;
+    return norm; 
 }
 
 
@@ -616,10 +623,17 @@ int main (int argc, char ** argv) {
     int FIX_DIM = atoi(argv[2]);
     double lambda = atof(argv[3]);
 
+    // vector<Instance*> data;
+    // readFixDim (dataFile, data, FIX_DIM);
+   
     // read in data
+    Parser parser;
+    vector<Instance*>* pdata;
     vector<Instance*> data;
-    //read2D (dataFile, data);
-    readFixDim (dataFile, data, FIX_DIM);
+    pdata = parser.parseSVM(dataFile, FIX_DIM);
+    data = *pdata;
+    // vector<Instance*> data;
+    // readFixDim (dataFile, data, FIX_DIM);
 
     // explore the data 
     int dimensions = -1;
