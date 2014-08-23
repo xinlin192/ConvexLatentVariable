@@ -26,7 +26,7 @@
 
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
-const double EPS = 1.0;
+const double EPS = 5.0;
 
 double clustering_objective (double ** dist_mat, double ** z, int N) {
     // N is number of entities in "data", and z is N by N.
