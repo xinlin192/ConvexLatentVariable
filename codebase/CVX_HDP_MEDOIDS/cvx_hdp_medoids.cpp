@@ -32,57 +32,23 @@ double sign (int input) {
     else if ( input < 0 ) return -1.0;
     else return 0.0;
 }
-
 bool pair_Second_Elem_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
     // sort pairs by second element with *decreasing order*
     return firstElem.second > secondElem.second;
 }
-
-/*{{{*/
-/*
-int get_nCentroids (double ** W, int nRows, int nCols) {
-
-    int nTopics = 0;
-
-    double * sum_belonging = new double [nCols];
-
-    mat_max_col (W, sum_belonging, nRows, nCols);
-
-    for (int i = 0; i < nCols; i ++ ) {
-        if (sum_belonging[i] > 3e-1) { 
-            nCentroids ++;
+/* Compute the mutual distance of input instances contained within "data" */
+void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D) {
+    // STEP ONE: compute distribution for each document
+    for (int i = 0; i < D; i ++) {
+        
+    }
+    // STEP TWO: compute weight of word within one document
+    for (int i = 0; i < N; i ++) {
+        for (int j = 0; j < D; j ++) {
+            dist_mat[i][j] = -log();
         }
     }
-    
-    delete[] sum_belonging;
-
-    return nTopics;
 }
-
-vector<int> get_all_centroids(double ** W, int nRows, int nCols) {
-
-    std::vector<int> topics;
-
-    double * sum_belonging = new double [nCols];
-    for (int i = 0; i < nCols; i ++) {
-        sum_belonging[i] = 0.0;
-    }
-
-    mat_max_col (W, sum_belonging, nRows, nCols);
-
-    for (int i = 0; i < nCols; i ++ ) {
-        if (sum_belonging[i] > 3e-1) {
-            centroids.push_back(i);
-        }
-    }
-    
-    delete[] sum_belonging;
-
-    return topics;
-}
-*/
-/*}}}*/
-
 /* dummy_penalty = r dot (1 - sum_k w_nk) */
 double get_dummy_loss (Esmat* Z) {
     Esmat* temp_vec = esmat_init (Z->nRows, 1);
@@ -132,37 +98,22 @@ double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >*
     esmat_free_all (sub_absZ);
     return local_topic_reg;
 }
-/* \lambdab \sum_k \sum_{w \in voc(k)} \underset{word(n) = w}{\text{max}} |\wnk|  */
-double get_coverage_reg (Esmat* absZ, double lambda, vector<int>* word_lookup, vector< vector<int> >* voc_lookup) {
-    // STEP ONE: initialize sub matrix for each vocabulary
-    int nVocs = voc_lookup->size();
-    vector<Esmat*> sub_absZ (nVocs);
-    esmat_init_all (&sub_absZ);
-    esmat_submat_row (absZ, sub_absZ, word_lookup, voc_lookup);
-    double coverage_reg = 0.0;
-    for (int v = 0; v < nVocs; v ++) {
-        coverage_reg += get_global_topic_reg (sub_absZ[v], lambda); 
-    }
-    esmat_free_all (sub_absZ);
-    return coverage_reg;
-}
-
 double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda, Lookups* tables) {
     string title = "";
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
     vector<int>* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
     /*
-cout << "[W" << prob_index << "]"<< endl;
-cout << esmat_toInfo(W);
-            cout << esmat_toString (W);
-cout << "[Y" << prob_index << "]"<< endl;
-cout << esmat_toInfo(Y);
-            cout << esmat_toString (Y);
-cout << "[Z" << prob_index << "]"<< endl;
-            cout << esmat_toInfo(Z);
-            cout << esmat_toString (Z);
-            */
+       cout << "[W" << prob_index << "]"<< endl;
+       cout << esmat_toInfo(W);
+       cout << esmat_toString (W);
+       cout << "[Y" << prob_index << "]"<< endl;
+       cout << esmat_toInfo(Y);
+       cout << esmat_toString (Y);
+       cout << "[Z" << prob_index << "]"<< endl;
+       cout << esmat_toInfo(Z);
+       cout << esmat_toString (Z);
+       */
 
     // STEP ONE: compute main term
     double main = -1.0;
@@ -181,10 +132,10 @@ cout << "[Z" << prob_index << "]"<< endl;
             title = "Local_Reg";
 
             main = get_local_topic_reg (absW, lambda, doc_lookup);
-        } else if (prob_index == 4) {
+        }/* else if (prob_index == 4) {
             title = "Coverage_Reg";
             main = get_coverage_reg (absW, lambda, word_lookup, voc_lookup);
-        }
+        }*/
         esmat_free (absW);
     }
     Esmat* w_minus_z = esmat_init ();
@@ -566,62 +517,6 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
     cout << "[local w output]" << w->nRows << "," << w->nCols << "," << w->val.size() << endl;
 #endif
 }
-void coverage_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, Lookups* tables) {
-    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
-    vector<int>* word_lookup = tables->word_lookup; 
-    vector< vector<int> >* voc_lookup = tables->voc_lookup;
-
-    int nVocs = tables->nVocs;
-    Esmat* tempW = esmat_init (w);
-    vector<Esmat*> subW (nVocs); 
-    vector<Esmat*> subY (nVocs);
-    vector<Esmat*> subZ (nVocs);
-    // STEP ZERO: initialize all submats
-    for (int v = 0; v < nVocs; v++) {
-        subW[v] = esmat_init (0,0);
-        subY[v] = esmat_init (0,0);
-        subZ[v] = esmat_init (0,0);
-    }
-    // STEP ONE: separate esmat Y, Z, w to multiple small-sized esmat
-    // NOTE: all esmat position has to be recomputed
-    esmat_submat_row (w, subW, word_lookup, voc_lookup);
-    esmat_submat_row (Y, subY, word_lookup, voc_lookup);
-    esmat_submat_row (Z, subZ, word_lookup, voc_lookup);
-
-    for (int v = 0; v < nVocs; v++) {
-        // STEP TWO: invoke group_lasso_solver to each individual group
-#ifdef COVERAGE_SUBPROBLEM_DUMP
-        cout << "subW[v" << v << "]" << esmat_toInfo(subW[v]);
-        cout << "subY[v" << v << "]" << esmat_toInfo(subY[v]);
-        cout << esmat_toString(subY[v]);
-        cout << "subZ[v" << v << "]" << esmat_toInfo(subZ[v]);
-        cout << esmat_toString(subZ[v]);
-#endif
-        group_lasso_solver (subY[v], subZ[v], subW[v], RHO, lambda);
-#ifdef COVERAGE_SUBPROBLEM_DUMP
-        cout << "res_subW[d" << v << "]" << esmat_toInfo(subW[v]);
-        cout << esmat_toString(subW[v]);
-#endif
-        // STEP TREE: merge solution of each individual group (place back)
-        // NOTE: all esmat position has to be recomputed
-        esmat_merge_row (subW[v], &((*voc_lookup)[v]), tempW);
-    }
-#ifdef COVERAGE_SUBPROBLEM_DUMP
-        cout << "[tempW]"  << esmat_toInfo(tempW);
-        cout << esmat_toString(tempW);
-#endif
-    // realign the mat->val with index-increasing order
-    esmat_align (tempW);
-    // STEP FIVE: free auxiliary resource
-    for (int v = 0; v < nVocs; v ++) {
-        esmat_free (subW[v]);
-        esmat_free (subY[v]);
-        esmat_free (subZ[v]);
-    }
-    // FINAL: update merged solution to w
-    esmat_copy (tempW, w);
-}
-
 void cvx_hdp_medoids (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 2);
@@ -633,19 +528,16 @@ void cvx_hdp_medoids (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     Esmat* w_1 = esmat_init (N, 0);
     Esmat* w_2 = esmat_init (N, 0);
     Esmat* w_3 = esmat_init (N, 0);
-    Esmat* w_4 = esmat_init (N, 0);
 
     Esmat* y_1 = esmat_init (N, 0);
     Esmat* y_2 = esmat_init (N, 0);
     Esmat* y_3 = esmat_init (N, 0);
-    Esmat* y_4 = esmat_init (N, 0);
 
     Esmat* z = esmat_init (N, 0);
 
     Esmat* diff_1 = esmat_init (N, 0);
     Esmat* diff_2 = esmat_init (N, 0);
     Esmat* diff_3 = esmat_init (N, 0);
-    Esmat* diff_4 = esmat_init (N, 0);
 
     /* SET ITERATION-RELEVANT VARIABLES */
     double error = INF;
@@ -658,7 +550,6 @@ void cvx_hdp_medoids (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         esmat_zeros (w_1);
         esmat_zeros (w_2);
         esmat_zeros (w_3);
-        esmat_zeros (w_4);
        
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
@@ -686,20 +577,15 @@ void cvx_hdp_medoids (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         // cout << "[w_3]" << w_3->nRows << "," << w_3->nCols << "," << w_3->val.size() << endl;
         double sub3_obj = subproblem_objective (3, y_3, z, w_3, RHO, 10000.0, tables);
 
-        // resolve w_4
-        esmat_resize (w_4, w_1);
-        esmat_resize (y_4, w_1);
-        coverage_subproblem (y_4, z, w_4, RHO, LAMBDAs[1], tables);
-        double sub4_obj = subproblem_objective (4, y_4, z, w_4, RHO, LAMBDAs[1], tables);
-
         // STEP TWO: update z by averaging w_1, w_2 and w_4
         Esmat* temp = esmat_init ();
         esmat_add (w_1, w_2, z);
         esmat_copy (z, temp);
         esmat_add (temp, w_3, z);
-        esmat_copy (z, temp);
-        esmat_add (temp, w_4, z);
-        esmat_scalar_mult (0.25, z);
+        // esmat_copy (z, temp);
+        // esmat_add (temp, w_4, z);
+        // esmat_scalar_mult (0.25, z);
+        esmat_scalar_mult (0.333, z);
 
         cout << "[z]" << endl;
         cout << esmat_toString (z);
@@ -720,11 +606,6 @@ void cvx_hdp_medoids (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         esmat_copy (y_3, temp);
         esmat_add (temp, diff_3, y_3);
 
-        esmat_sub (w_4, z, diff_4);
-        esmat_scalar_mult (ALPHA, diff_4);
-        esmat_copy (y_4, temp);
-        esmat_add (temp, diff_4, y_4);
-
         // double trace_wone_minus_z = esmat_fnorm (diff_1); 
         // double trace_wtwo_minus_z = esmat_fnorm (diff_2); 
         // double trace_wtwo_minus_z = esmat_fnorm (diff_3); 
@@ -736,8 +617,6 @@ void cvx_hdp_medoids (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
         cout << esmat_toString (y_2);
         cout << "[y_3]" << endl;
         cout << esmat_toString (y_3);
-        cout << "[y_4]" << endl;
-        cout << esmat_toString (y_4);
 
         // STEP FOUR: trace the objective function
 
@@ -751,17 +630,15 @@ void cvx_hdp_medoids (vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     esmat_free (w_1);
     esmat_free (w_2);
     esmat_free (w_3);
-    esmat_free (w_4);
 
     esmat_free (y_1);
     esmat_free (y_2);
     esmat_free (y_3);
-    esmat_free (y_4);
 
     esmat_free (diff_1);
     esmat_free (diff_2);
     esmat_free (diff_3);
-    esmat_free (diff_4);
+
     // STEP SIX: put converged solution to destinated W
     esmat_copy (z, W);
     esmat_free (z);
@@ -820,49 +697,19 @@ int main (int argc, char ** argv) {
     */
 
     // Run sparse convex clustering
-    Esmat* W = esmat_init (lookup_tables.nWords, 1);
+    Esmat* W = esmat_init (lookup_tables.nWords, lookup_tables.nDocs);
     cvx_hdp_medoids (LAMBDAs, W, &lookup_tables);
 
-    // Output cluster
-    ofstream obj_out ("opt_objective");
-    obj_out << clustering_objective (dist_mat, W, N) << endl;
-    obj_out.close();
+    /* Output objective */
+    // output_objective(clustering_objective (dist_mat, W, N));
 
     /* Output cluster centroids */
-    ofstream model_out ("opt_model");
-    vector<int> centroids;
-    get_all_centroids (W, &centroids, N, N); // contains index of all centroids
-    int nCentroids = centroids.size();
-    model_out << "nCentroids: " << nCentroids << endl;
-    for (int i = 0; i < nCentroids; i ++) {
-        model_out << "centroids[" << i <<"]: " << centroids[i] << endl;
-    }
-    model_out.close();
+    output_model (W, N);
 
     /* Output assignment */
-    ofstream asgn_out ("opt_assignment");
-    // get all centroids
-    for (int i = 0; i < N; i ++) {
-        // output identification and its belonging
-        asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
-        for (int j = 0; j < N; j ++) {
-            if( fabs(W[i][j]) > 3e-1 ) {
-                asgn_out << j+1 << "(" << W[i][j] << "),\t";
-            }
-        }
-        asgn_out << endl;
-        // output distance of one sample to each centroid 
-        /*fout << "dist_centroids: (";
-        for (int j = 0; j < nCentroids - 1; j ++) {
-            fout << dist_mat[i][ centroids[j] ] << ", ";
-        }
-        fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
-
-        fout << endl;*/
-    }
-    asgn_out.close();
+    output_assignment (W, data, N);
 
     /* reallocation */
+    esmat_free (W, N, N);
     mat_free (dist_mat, N, N);
-    mat_free (W, N, N);
 }
