@@ -11,30 +11,13 @@
 ################################################################*/
 
 #include "DP_MEDOIDS.h"
+#include "../util.h"
 #include <cassert>
 #include <cmath>
 #define INTEGER_MAX 30000
 
 typedef double (* dist_func) (Instance*, Instance*, int); 
-double L2norm (Instance * ins1, Instance * ins2, int D) {
-    // TODO: 
-    //   1. refine by using hash table to restore each instance
-    assert (ins1->fea.size() == D);
-    assert (ins2->fea.size() == D);
-    double * diff = new double [D];
-    for (int i = 0; i < D; i ++) {
-        diff[ ins1->fea[i].first-1 ] = ins1->fea[i].second;
-    }
-    for (int i = 0; i < D; i ++) {
-        diff[ ins2->fea[i].first-1 ] -= ins2->fea[i].second;
-    }
-    double norm = 0.0;
-    for (int i = 0; i < D; i ++) {
-        norm += diff[i] * diff[i];
-    }
-    delete[] diff;
-    return norm;
-}
+
 /* Compute the mutual distance of input instances contained within "data" */
 void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
     for (int i = 0; i < N; i ++) {
@@ -42,15 +25,6 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
             Instance * xi = data[i];
             Instance * muj = data[j];
             dist_mat[i][j] = df (xi, muj, D);
-        }
-    }
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            if (j == i) {
-                assert (dist_mat[i][j] == 0);
-            } else {
-                assert (dist_mat[i][j] == dist_mat[j][i]);
-            }
         }
     }
 }
@@ -200,14 +174,20 @@ int main (int argc, char ** argv) {
 
     // parse arguments
     char* dataFile = argv[1];
-    int FIX_DIM = atoi(argv[2]);
+    // int FIX_DIM = atoi(argv[2]);
     int nRuns = atoi(argv[3]);
     double lambda = atof(argv[4]);
 
     // read in data
+    //vector<Instance*> data;
+    //readFixDim (dataFile, data, FIX_DIM);
+    //
+    int FIX_DIM;
+    Parser parser;
+    vector<Instance*>* pdata;
     vector<Instance*> data;
-    //read2D (dataFile, data);
-    readFixDim (dataFile, data, FIX_DIM);
+    pdata = parser.parseSVM(dataFile, FIX_DIM);
+    data = *pdata;
 
     // explore the data 
     int D = -1;
@@ -219,7 +199,6 @@ int main (int argc, char ** argv) {
             D = f->at(last_index).first;
         }
     }
-
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
     cerr << "nRuns = " << nRuns << endl;
@@ -258,36 +237,19 @@ int main (int argc, char ** argv) {
         }
     }
 
-    // Output models
-    ofstream model_out("opt_model");
-    model_out << "min_objective: " << min_obj << endl;
-    for (int i = 0; i < min_nMedoids; i ++) {
-        model_out << "min_medoids[" << i << "] = " <<  min_medoids[i]+1 << endl;
-    }
-    // Output assignments
-    ofstream asgn_out("opt_assignment");
-    for (int i = 0; i < N; i ++) {
-        // output identification and its belonging
-        asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
-        for (int j = 0; j < N; j ++) {
-            if( fabs(min_w[i][j]) > 3e-1 ) {
-                asgn_out << j+1 << "(" << min_w[i][j] << "),\t";
-            }
-        }
-        asgn_out << endl;
-        // output distance of one sample to each centroid 
-        /*
-           out << "dist_centroids: (";
-           for (int j = 0; j < nCentroids - 1; j ++) {
-           asgn_out << dist_mat[i][ centroids[j] ] << ", ";
-           }
-           asgn_out << dist_mat[i][ centroids[nCentroids-1] ] << ")";
+    /* Output objective */
+    output_objective(clustering_objective (dist_mat, min_w, N));
+    
+    /* Output model */
+    output_model (min_w, N);
 
-           asgn_out << endl;
-           */
-    }
+    /* Output assignments */
+    output_assignment (min_w, data, N);
+
+    /* Deallocation */
     mat_free (min_w, N, N);
     for (int i = 0; i < nRuns; i++) {
         mat_free (W[i], N, N);
     }
+    mat_free (dist_mat, N, N);
 }
