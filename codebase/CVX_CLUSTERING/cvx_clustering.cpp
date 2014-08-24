@@ -14,6 +14,8 @@
 #include "cvx_clustering.h"
 #include <cassert>
 
+#include "../util.h"
+
 /* algorithmic options */ 
 //#define EXACT_LINE_SEARCH  // comment this to use inexact search
 
@@ -377,38 +379,6 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
     mat_free (wbar, N, N);
 }
 
-double L2norm (Instance * ins1, Instance * ins2, int D) {
-    // TODO: 
-    //   1. refine by using hash table to restore each instance
-    // assert (ins1->fea.size() == D);
-    // assert (ins2->fea.size() == D);
-
-    double * diff = new double [D];
-    for (int i = 0; i < D; i ++) 
-        diff[i] = 0.0;
-    int n1 = ins1->fea.size();
-    for (int i = 0; i < n1; i ++) {
-        if (ins1->fea[i].first-1 < 0) continue;
-        diff[ ins1->fea[i].first-1 ] = ins1->fea[i].second;
-    }
-    int n2 = ins2->fea.size();
-    for (int i = 0; i < n2; i ++) {
-        if (ins2->fea[i].first-1 < 0) continue;
-        diff[ ins2->fea[i].first-1 ] -= ins2->fea[i].second;
-    }
-
-    double norm = 0.0;
-    for (int i = 0; i < D; i ++) {
-        norm += diff[i] * diff[i];
-    }
-    norm = sqrt(norm);
-    
-    delete[] diff;
-    //cout << norm << endl;
-    return norm; 
-}
-
-
 double overall_objective (double ** dist_mat, double* lambda, int N, double ** z) {
     // N is number of entities in "data", and z is N by N.
     // z is current valid solution (average of w_1 and w_2)
@@ -464,40 +434,19 @@ double overall_objective (double ** dist_mat, double* lambda, int N, double ** z
 }
 
 double noise(){
-	
 	return EPS * (((double)rand()/RAND_MAX)*2.0 -1.0) ;
 }
-
 /* Compute the mutual distance of input instances contained within "data" */
 void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
-
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
-
-            /*if (j >= i || !isSym) { // invoke dist_func
-              if (j == i) {
-              dist_mat[i][j] = 0;
-              continue;
-              }*/
             Instance * xi = data[i];
             Instance * muj = data[j];
             dist_mat[i][j] = df (xi, muj, D) + noise();
-            /*} else { // by symmetry 
-              dist_mat[i][j] = dist_mat[j][i];
-              }*/
         }
     }
-    /*for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-        
-            if (j == i) {
-                assert (dist_mat[i][j] == 0);
-            } else {
-                assert (dist_mat[i][j] == dist_mat[j][i]);
-            }
-        }
-    }*/
 }
+
 void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, int N, double* lambda, double ** W) {
 
     // parameters 
