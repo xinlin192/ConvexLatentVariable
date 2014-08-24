@@ -217,30 +217,21 @@ int main (int argc, char ** argv) {
             }
         }
     }
+    /* Output objective */
+    output_objective(clustering_objective (dist_mat, min_w, N));
+    
+    /* Output model */
+    output_model (min_w, N);
 
-    // Output models
-    ofstream model_out("opt_model");
-    model_out << "min_objective: " << min_obj << endl;
-    for (int i = 0; i < K; i ++) {
-        model_out << "min_medoids[" << i << "] = " <<  min_medoids[i] << endl;
-    }
-    // Output assignments
-    ofstream asgn_out("opt_assignment");
-    for (int i = 0; i < N; i ++) {
-        // output identification and its belonging
-        asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
-        for (int j = 0; j < N; j ++) {
-            if( fabs(min_w[i][j]) > 3e-1 ) {
-                asgn_out << j+1 << "(" << min_w[i][j] << "),\t";
-            }
-        }
-        asgn_out << endl;
-        // output distance of one sample to each centroid 
-    }
+    /* Output assignment */
+    output_assignment (min_w, data, N);
+
+    /* Deallocation */
     delete[] min_medoids;
     mat_free (min_w, N, N);
     for (int i = 0; i < nRuns; i++) {
         delete[] medoids[i];
         mat_free (W[i], N, N);
     }
+    mat_free (dist_mat, N, N);
 }
