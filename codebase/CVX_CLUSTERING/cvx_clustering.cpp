@@ -25,40 +25,11 @@
 // #define BLOCKWISE_DUMP
 // #define NCENTROID_DUMP
 
-
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
 const double EPS = 1.0;
 
-double clustering_objective (double ** dist_mat, double ** z, int N) {
-    // N is number of entities in "data", and z is N by N.
-    // z is current valid solution (average of w_1 and w_2)
-    // STEP ONE: compute 
-    //     loss = sum_i sum_j z[i][j] * dist_mat[i][j]
-    double clustering_loss = 0.0;
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            clustering_loss += 0.5 * z[i][j] * dist_mat[i][j];
-        }
-    }
-    return clustering_loss;
-}
-void get_all_centroids(double ** W, vector<int>* centroids, int nRows, int nCols) {
-    double * max_belonging = new double [nCols];
-    for (int i = 0; i < nCols; i ++) {
-        max_belonging[i] = 0.0;
-    }
-    mat_max_col (W, max_belonging, nRows, nCols);
-    for (int i = 0; i < nCols; i ++ ) {
-        if (fabs(max_belonging[i]) > 0.3) {
-            centroids->push_back(i+1);
-        }
-    }
-    delete[] max_belonging;
-}
-
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
-
     double ** temp = mat_init (N, N);
     double ** diffone =mat_init (N, N);
     mat_zeros (diffone, N, N);
@@ -135,19 +106,6 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         }
         mat_zeros (s, N, N);
         mat_min_row (gradient, s, N, N);
-
-        /*
-        for (int temp = 55; temp <= 58; temp ++) {
-            cout << "gradient[" << temp << "][52,128,177] = (" 
-                << gradient[temp][52]<<"," <<gradient[temp][128] << "," << gradient[temp][177]
-                << ")" << endl;
-        }
-        for (int temp = 55; temp <= 58; temp ++) {
-            cout << "s[" << temp << "][52,128,177] = (" 
-                << s[temp][52]<<"," <<s[temp][128] << "," << s[temp][177]
-                << ")" << endl;
-        }
-        */
 
 #ifdef FRANK_WOLFE_DUMP
         cout << "mat_norm2 (wone, N, N): " <<  mat_norm2 (wone, N, N) << endl;
@@ -527,28 +485,6 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 #endif
                  << endl;
         }
-        /*cout << "w1" << endl;
-          error = overall_objective (dist_mat, lambda, N, wone);
-          cout << "w2" << endl;
-          error = overall_objective (dist_mat, lambda, N, wtwo);*/
-        /*
-        mat_sub (wone, wtwo, diffzero, N, N);
-        double trace_wone_minus_wtwo = mat_norm2 (diffzero, N, N);
-        cout << "[Overall] || w_1 - w_2 || ^2 = " << trace_wone_minus_wtwo << endl;
-          cout << "[Overall] || w_1 - z || ^2 = " << trace_wone_minus_z << endl;
-          // cout << "[Overall] || w_2 - z || ^2 = " << trace_wtwo_minus_z << endl;
-          //cout << endl;
-        */
-
-        /*
-        for (int temp = 50; temp <= 58; temp ++) {
-            cout << "w_1[55][52,128,177] = (" 
-                << wone[temp][52]<<"," <<wone[temp][128] << "," << wone[temp][177] << endl;
-
-            cout << "w_2[55][52,128,177] = (" 
-                << wtwo[temp][52]<<"," <<wtwo[temp][128] << "," << wtwo[temp][177] << endl;
-        }
-        */
         iter ++;
     }
     
@@ -630,43 +566,13 @@ int main (int argc, char ** argv) {
     cvx_clustering (dist_mat, fw_max_iter, max_iter, D, N, lambda, W);
 
     // Output cluster
-    ofstream obj_out ("opt_objective");
-    obj_out << clustering_objective (dist_mat, W, N) << endl;
-    obj_out.close();
+    output_objective(clustering_objective (dist_mat, W, N));
 
     /* Output cluster centroids */
-    ofstream model_out ("opt_model");
-    vector<int> centroids;
-    get_all_centroids (W, &centroids, N, N); // contains index of all centroids
-    int nCentroids = centroids.size();
-    model_out << "nCentroids: " << nCentroids << endl;
-    for (int i = 0; i < nCentroids; i ++) {
-        model_out << "centroids[" << i <<"]: " << centroids[i] << endl;
-    }
-    model_out.close();
+    output_model (W, N);
 
     /* Output assignment */
-    ofstream asgn_out ("opt_assignment");
-    // get all centroids
-    for (int i = 0; i < N; i ++) {
-        // output identification and its belonging
-        asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
-        for (int j = 0; j < N; j ++) {
-            if( fabs(W[i][j]) > 3e-1 ) {
-                asgn_out << j+1 << "(" << W[i][j] << "),\t";
-            }
-        }
-        asgn_out << endl;
-        // output distance of one sample to each centroid 
-        /*fout << "dist_centroids: (";
-        for (int j = 0; j < nCentroids - 1; j ++) {
-            fout << dist_mat[i][ centroids[j] ] << ", ";
-        }
-        fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
-
-        fout << endl;*/
-    }
-    asgn_out.close();
+    output_assignment (W, data, N);
 
     /* reallocation */
     mat_free (dist_mat, N, N);
