@@ -15,6 +15,7 @@
 #include<cassert>
 
 #include "../exSparseMat.h"
+#include "../mat.h"
 #include "../util.h"
 
 using namespace std;
