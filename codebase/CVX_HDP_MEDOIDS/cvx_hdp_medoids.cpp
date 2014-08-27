@@ -194,10 +194,8 @@ double original_objective (Esmat* Z, vector<double> LAMBDAs, Lookups* tables) {
 
     // STEP TWO: compute "GLOBAL TOPIC" group-lasso regularization
     double global_topic_reg = get_global_topic_reg (absZ, LAMBDAs[0]);
-    // STEP FOUR: compute "TOPIC COVERAGE" group-lasso regularization
-    double coverage_reg = get_coverage_reg (absZ, LAMBDAs[2], word_lookup, voc_lookup);
     esmat_free (absZ); 
-    return dummy + global_topic_reg + coverage_reg;
+    return dummy + global_topic_reg;
 }
 void frank_wolfe_solver (double** dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
 
@@ -545,6 +543,7 @@ void cvx_hdp_medoids (double** dist_mat, vector<double> LAMBDAs, Esmat* W, Looku
     double ALPHA = 1.0;
     double RHO = 1.0;
     int N = tables->nWords;
+    int D = tables->nDocs;
 
     /* DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
     Esmat* w_1 = esmat_init (N, D);
@@ -661,7 +660,7 @@ int main (int argc, char ** argv) {
 
     // EXCEPTION control: illustrate the usage if get input of wrong format
     if (argc < 5) {
-        cerr << "Usage: \n"
+        cerr << "Usage: " << endl;
         cerr << "\tcvx_hdp_medoids [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local]" << endl;
         exit(-1);
     }
@@ -703,6 +702,8 @@ int main (int argc, char ** argv) {
     cerr << "###########################################" << endl;
 
     // Run sparse convex clustering
+    int N = lookup_tables.nWords;
+    int D = lookup_tables.nDocs;
     Esmat* W = esmat_init (lookup_tables.nWords, lookup_tables.nDocs);
     double** dist_mat = mat_init (N, D);
     compute_dist_mat (data, dist_mat, N, D, &lookup_tables);
@@ -712,12 +713,12 @@ int main (int argc, char ** argv) {
     // output_objective(clustering_objective (dist_mat, W, N));
 
     /* Output cluster centroids */
-    output_model (W, N);
+    // output_model (W, N);
 
     /* Output assignment */
-    output_assignment (W, data, N);
+    // output_assignment (W, data, N);
 
     /* reallocation */
-    esmat_free (W, N, N);
+    esmat_free (W);
     mat_free (dist_mat, N, D);
 }

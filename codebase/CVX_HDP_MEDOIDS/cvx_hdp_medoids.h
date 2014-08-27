@@ -14,9 +14,13 @@
 #include<stdlib.h>
 #include<cassert>
 
+#ifndef EXSPARSEMAT_H
 #include "../exSparseMat.h"
-#include "../mat.h"
+#endif
+
+#ifndef UTIL_H
 #include "../util.h"
+#endif
 
 using namespace std;
 
