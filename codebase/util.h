@@ -25,6 +25,9 @@
 #ifndef MAT_H
 #include "mat.h"
 #endif
+#ifndef EXSPARSE_MAT_H
+#include "exSparseMat.h"
+#endif
 
 using namespace std;
 const double UTIL_INF = 1e300;
@@ -400,11 +403,25 @@ void output_assignment (double ** W, vector<Instance*>& data, int N) {
     }
     asgn_out.close();
 }
+void get_all_centroids(Esmat* W, vector<int>* centroids) {
+    /*
+    double * max_belonging = new double [nCols];
+    for (int i = 0; i < nCols; i ++) {
+        max_belonging[i] = 0.0;
+    }
+    mat_max_col (W, max_belonging, nRows, nCols);
+    for (int i = 0; i < nCols; i ++ ) {
+        if (fabs(max_belonging[i]) > 0.3) {
+            centroids->push_back(i+1);
+        }
+    }
+    delete[] max_belonging;
+    */
+}
 void output_model (Esmat* W) {
     vector<int> centroids;
     get_all_centroids (W, &centroids); // contains index of all centroids
     int nCentroids = centroids.size();
-
     ofstream model_out ("opt_model");
     model_out << "nCentroids: " << nCentroids << endl;
     for (int i = 0; i < nCentroids; i ++) {

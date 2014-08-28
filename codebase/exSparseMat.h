@@ -11,12 +11,13 @@
 ################################################################*/
 
 #include<iostream>
+#include<fstream>
 #include<string>
 #include<vector>
-#include<fstream>
 #include<cassert>
 #include<algorithm>
 #include"math.h"
+
 using namespace std;
 
 /* Global variables */
@@ -154,8 +155,9 @@ void esmat_resize (Esmat* A, int nRows, int nCols) {
     A->nRows = nRows;
     A->nCols = nCols;
 }
+/*
 Esmat* esmat_read (string fname) {
-   	ifstream fin(fname);
+   	ifstream fin (fname);
     int nRows, nCols;
     fin >> nRows >> nCols;
     Esmat* result = esmat_init (nRows, nCols);
@@ -173,6 +175,7 @@ Esmat* esmat_read (string fname) {
     fin.close();
     return result;
 }
+*/
 bool esmat_equal (Esmat* A, Esmat* B) {
     if (A->nRows != B->nRows || A->nCols != B->nCols) {
         return false;
@@ -422,14 +425,11 @@ bool esmat_isValid (Esmat* A, Esmat* B, int mode) {
 string esmat_toString (Esmat* A) {
     assert (A->nRows >= 0);
     assert (A->nCols >= 0);
-
     string idx_val_separator = ":";
     string field_seperator = ",";
     string line_separator = "\n";
-
     vector<string> allStrings (A->nRows, "") ;
     string str = "";
-
     int sizeA = A->val.size();
     for (int i = 0; i < sizeA; i ++) {
         int overall_idx = A->val[i].first;
@@ -439,7 +439,7 @@ string esmat_toString (Esmat* A) {
         assert (col_idx < A->nCols);
         assert (row_idx < A->nRows);
         // generate newly added string
-        string temp = to_string(col_idx) + idx_val_separator + to_string(A->val[i].second);
+        string temp = string(itoa(col_idx)) + idx_val_separator + string(itoa(A->val[i].second));
         // row major string representation
         if (allStrings[row_idx].size() == 0) {
             allStrings[row_idx] = "" + temp;
@@ -447,12 +447,10 @@ string esmat_toString (Esmat* A) {
             allStrings[row_idx] += field_seperator + temp;
         }
     }
-
     for (int i = 0; i < A->nRows; i ++) {
         if (allStrings[i].size() > 0)
             str += allStrings[i] + line_separator;
     }
-
     return str;
 }
 string esmat_toInfo (Esmat* A) {
