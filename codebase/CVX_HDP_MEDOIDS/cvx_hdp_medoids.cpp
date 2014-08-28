@@ -14,10 +14,12 @@
 
 /*
 TODO list:
-  1. compute_dist_mat generates matrix with N by D
+  [DONE] 1. compute_dist_mat generates matrix with N by D
   2. fixup bugs in frank_wolfe_solver 
   3. fixup problem in group_lasso_solver
   4. fixup local problem separation
+
+  5. develop early stopping detection for frank_wolfe_solver
 */
 
 #include "cvx_hdp_medoids.h"
@@ -26,13 +28,13 @@ TODO list:
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
-// #define FRANK_WOLFE_DEBUG
+#define FRANK_WOLFE_DEBUG
 // #define EXACT_LINE_SEARCH_DUMP
 // #define COVERAGE_SUBPROBLEM_DUMP
 // #define LOCAL_SUBPROBLEM_DUMP
 // #define GROUP_LASSO_DEBUG
 // #define BLOCKWISE_DUMP
-// #define NTOPIC_DUMP
+// #define DIST_MAT_DUMP
 #define SUBPROBLEM_DUMP
 
 double sign (int input) {
@@ -45,34 +47,50 @@ bool pair_Second_Elem_Comparator (const std::pair<int, double>& firstElem, const
     return firstElem.second > secondElem.second;
 }
 /* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, Lookups* lookup_tables) {
+void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
+    // STEP ZERO: parse input
+    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
+    vector< pair<int,int> > word_lookup = *(tables->word_lookup); 
+
     // STEP ONE: compute distribution for each document
     vector< map<int, double> > distributions (D, map<int, double>());
-    for (int i = 0; i < D; i ++) {
+    for (int d = 0; d < D; d ++) {
         // a. compute sum of word frequency
         int sumFreq = 0;
-        Instance* xi = data[i];
-        int n = xi->fea.size();
-        for (int j = 0; j < n; j ++) {
-            if (ins1->fea[i].first-1 < 0) continue;
-            sumFreq += xi->fea[j].second;
+        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
+            sumFreq += word_lookup[w].second;
         }
         // b. compute distribution
-        for (int j = 0; j < n; j ++) {
-            if (ins1->fea[i].first-1 < 0) continue;
-            int index = ins1->fea[i].first;
-            double value = 1.0 * xi->fea[j].second / sumFreq;
-            distributions[i].insert(pair<int, double> (index, value));
+        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
+            int voc_index = word_lookup[w].first;
+            double prob = 1.0 * word_lookup[w].second / sumFreq;
+            distributions[d].insert(pair<int, double> (voc_index, prob));
         }
     }
     // STEP TWO: compute weight of word within one document
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < D; j ++) {
-            int voc_index = lookup_tables->word_lookup[i];
-            // KL-divergence distance:
-            //   =  P(i) ln( P(i)/Q(i) )
-            // TODO:
-            dist_mat[i][j] = -log(distributions[j][voc_index]/ );
+    esmat_zeros(dist_mat);
+    for (int j = 0; j < D; j ++) {
+        for (int d = 0; d < D; d ++) {
+            for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
+                int voc_index = word_lookup[w].first;
+                int count_w_d1 = word_lookup[w].second;    
+                double prob_w_d2;
+                map<int, double>::const_iterator iter;
+                iter = distributions[j].find(voc_index);
+                if (iter == distributions[j].end()) {
+                    prob_w_d2 = 0.0;
+                } else {
+                    prob_w_d2 = iter->second;
+                }
+                //   dist(w, d2) =  - count_w_d1 * log( prob_d2(w) )
+                int esmat_index = w + N * j;
+                double dist = - count_w_d1 * log(prob_w_d2);
+#ifdef DIST_MAT_DUMP
+                cout << "index: " << esmat_index << ", dist: " << dist << ", ";
+                cout << "count_w_d1: " << count_w_d1 << ", prob_w_d2: " << prob_w_d2 << endl;
+#endif
+                dist_mat->val.push_back(make_pair(esmat_index, dist));
+            }
         }
     }
 }
@@ -128,7 +146,7 @@ double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >*
 double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda, Lookups* tables) {
     string title = "";
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
-    vector<int>* word_lookup = tables->word_lookup; 
+    vector< pair<int,int> >* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
     /*
        cout << "[W" << prob_index << "]"<< endl;
@@ -162,7 +180,7 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
         }/* else if (prob_index == 4) {
             title = "Coverage_Reg";
             main = get_coverage_reg (absW, lambda, word_lookup, voc_lookup);
-        }*/
+            }*/
         esmat_free (absW);
     }
     Esmat* w_minus_z = esmat_init ();
@@ -183,7 +201,7 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
 }
 double original_objective (Esmat* Z, vector<double> LAMBDAs, Lookups* tables) {
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
-    vector<int>* word_lookup = tables->word_lookup; 
+    vector< pair<int,int> >* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
 
     Esmat* absZ = esmat_init (Z);
@@ -197,7 +215,7 @@ double original_objective (Esmat* Z, vector<double> LAMBDAs, Lookups* tables) {
     esmat_free (absZ); 
     return dummy + global_topic_reg;
 }
-void frank_wolfe_solver (double** dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
+void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1, double RHO) {
 
     bool is_global_optimal_reached = false;
 
@@ -268,6 +286,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_
         // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
         // since incremental term = w + gamma (s - w), and whatever gamma is,
         // w^(k+1) = w^(k), this would be equivalent to gamma = 0
+        // TODO: further speedup by early stopping
         if (esmat_fnorm(w_minus_s) == 0) {
             gamma = 0;
             is_global_optimal_reached = true;
@@ -469,9 +488,8 @@ void global_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double l
     group_lasso_solver (Y, Z, w, RHO, lambda);
 }
 void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda, Lookups* tables) {
-
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
-    vector<int>* word_lookup = tables->word_lookup; 
+    vector< pair<int,int> >* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
 
 #ifdef LOCAL_SUBPROBLEM_DUMP
@@ -537,7 +555,7 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
     cout << "[local w output]" << w->nRows << "," << w->nCols << "," << w->val.size() << endl;
 #endif
 }
-void cvx_hdp_medoids (double** dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
+void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 2);
     double ALPHA = 1.0;
@@ -578,6 +596,7 @@ void cvx_hdp_medoids (double** dist_mat, vector<double> LAMBDAs, Esmat* W, Looku
         // cout << esmat_toString (w_1);
         frank_wolfe_solver (dist_mat, y_1, z, w_1, RHO); 
         double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables);
+        return;
         // cout << "[w_1 after frank_wolfe_solver]" << esmat_toInfo(w_1);
         // out << esmat_toString (w_1);
         
@@ -677,8 +696,9 @@ int main (int argc, char ** argv) {
     voc_list_read (voc_file, &voc_list);
     int nVocs = voc_list.size();
 
+    // init lookup_tables
     vector< pair<int,int> > doc_lookup;
-    vector<int> word_lookup;
+    vector< pair<int,int> > word_lookup;
     vector< vector<int> > voc_lookup (nVocs, vector<int>());
     Lookups lookup_tables;
     lookup_tables.doc_lookup = &doc_lookup;
@@ -705,8 +725,12 @@ int main (int argc, char ** argv) {
     int N = lookup_tables.nWords;
     int D = lookup_tables.nDocs;
     Esmat* W = esmat_init (lookup_tables.nWords, lookup_tables.nDocs);
-    double** dist_mat = mat_init (N, D);
-    compute_dist_mat (data, dist_mat, N, D, &lookup_tables);
+    Esmat* dist_mat = esmat_init (N, D);
+    compute_dist_mat (dist_mat, &lookup_tables, N, D);
+    
+    ofstream dmat_out ("dist_mat");
+    dmat_out << esmat_toInfo(dist_mat);
+    dmat_out << esmat_toString(dist_mat);
     cvx_hdp_medoids (dist_mat, LAMBDAs, W, &lookup_tables);
 
     /* Output objective */
@@ -720,5 +744,5 @@ int main (int argc, char ** argv) {
 
     /* reallocation */
     esmat_free (W);
-    mat_free (dist_mat, N, D);
+    esmat_free (dist_mat);
 }

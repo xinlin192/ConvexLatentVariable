@@ -29,7 +29,7 @@ typedef struct {
     int nVocs;
     int nDocs;
     vector< pair<int,int> >* doc_lookup;
-    vector<int>* word_lookup;
+    vector< pair<int,int> >* word_lookup;
     vector< vector<int> >* voc_lookup;
 } Lookups ;
 
@@ -71,7 +71,7 @@ void voc_list_print (vector<string>* vocList) {
 /* word_lookup table restore the index in voc_list of vocabulary to which a word coresponds */
 void document_list_read (string fname, Lookups* tables) {
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
-    vector<int>* word_lookup = tables->word_lookup; 
+    vector< pair<int,int> >* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
 
    	ifstream fin(fname);
@@ -92,8 +92,9 @@ void document_list_read (string fname, Lookups* tables) {
             split (fields[f], &voc_freq_pair, ":");
             // for each word, split voc_index and frequency by ":"
             int voc_index = stoi(voc_freq_pair[0]);
+            int freq = stoi(voc_freq_pair[1]);
             // push to word_lookup table
-            word_lookup->push_back(voc_index);
+            word_lookup->push_back(make_pair(voc_index, freq));
             ++ w;
         }
         doc_index_end = w;
@@ -103,6 +104,6 @@ void document_list_read (string fname, Lookups* tables) {
 	fin.close(); 
     int nWords = w;
     for (int i = 0; i < nWords; i ++) {
-        (*voc_lookup)[ (*word_lookup)[i]-1 ].push_back(i);
+        (*voc_lookup)[ (*word_lookup)[i].first-1].push_back(i);
     }
 } 

@@ -1,6 +1,6 @@
 cpp=$(shell ls *.cpp) 
 headers=$(shell ls *.h)
-executable=$(shell ls *.cpp | tr -d ".cpp")
+executable=$(shell echo $(cpp) | cut -d '.' -f 1)
 README=$(shell ls README*)
 
 all: 
@@ -8,7 +8,7 @@ all:
 
 push:
 	git add $(cpp) $(headers) $(README) Makefile
-	git commit -f
+	git commit 
 	git push
 
 clean:
