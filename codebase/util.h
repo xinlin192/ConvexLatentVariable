@@ -22,10 +22,12 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+#ifndef MAT_H
 #include "mat.h"
+#endif
 
 using namespace std;
-const double INF = 1e300;
+const double UTIL_INF = 1e300;
 
 double dot(vector<double>& v, vector<pair<int,double> >& f);
 double dot(double* v, vector<pair<int,double> >& f); 
@@ -299,7 +301,7 @@ void vsub(double* v, vector<pair<int,double> >& f) {
 }
 
 int max_index (vector<double>& vec) {
-    double vmax = -INF; 
+    double vmax = -UTIL_INF; 
     int imax;
     for (int i = 0; i < vec.size(); i ++) {
         if (vec[i] > vmax) {
@@ -313,7 +315,7 @@ int max_index (vector<double>& vec) {
 
 int max_index (double* arr, int size) {
 	
-	double vmax= -INF;
+	double vmax= -UTIL_INF;
 	int imax;
 	for(int i=0;i<size;i++) {
 		if( arr[i] > vmax ) {
@@ -374,6 +376,7 @@ void output_model (double** W, int N) {
     }
     model_out.close();
 }
+
 void output_assignment (double ** W, vector<Instance*>& data, int N) {
     ofstream asgn_out ("opt_assignment");
     // get all centroids
@@ -394,6 +397,45 @@ void output_assignment (double ** W, vector<Instance*>& data, int N) {
         fout << dist_mat[i][ centroids[nCentroids-1] ] << ")";
 
         fout << endl;*/
+    }
+    asgn_out.close();
+}
+void output_model (Esmat* W) {
+    vector<int> centroids;
+    get_all_centroids (W, &centroids); // contains index of all centroids
+    int nCentroids = centroids.size();
+
+    ofstream model_out ("opt_model");
+    model_out << "nCentroids: " << nCentroids << endl;
+    for (int i = 0; i < nCentroids; i ++) {
+        model_out << "centroids[" << i <<"]: " << centroids[i] << endl;
+    }
+    model_out.close();
+}
+void output_assignment (Esmat* W, vector< pair<int,int> >* word_lookup) {
+    int N = word_lookup->size();
+    vector< vector< pair<int, double> > > words_asgn (N, vector< pair<int, double> > ());
+    int W_size = W->val.size();
+    for (int i = 0; i < W_size; i ++) {
+        int esmat_index = W->val[i].first;
+        int row_index = esmat_index % W->nRows;
+        int col_index = esmat_index / W->nRows;
+        double value = W->val[i].second;
+        words_asgn[row_index].push_back(make_pair(col_index, value));
+    }
+    ofstream asgn_out ("opt_assignment");
+    // get all centroids
+    for (int i = 0; i < N; i ++) {
+        // output identification and its belonging
+        asgn_out << "id=" << i+1 << ", voc_index=" << (*word_lookup)[i].first << ", "; 
+        for (int j = 0; j < words_asgn[i].size(); j ++) {
+            int index = words_asgn[i][j].first;
+            double value = words_asgn[i][j].second;
+            if( fabs(value) > 3e-1 ) {
+                asgn_out << index << "(" << value << "),\t";
+            }
+        }
+        asgn_out << endl;
     }
     asgn_out.close();
 }
