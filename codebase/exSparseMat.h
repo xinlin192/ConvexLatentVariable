@@ -439,7 +439,7 @@ string esmat_toString (Esmat* A) {
         assert (col_idx < A->nCols);
         assert (row_idx < A->nRows);
         // generate newly added string
-        string temp = string(itoa(col_idx)) + idx_val_separator + string(itoa(A->val[i].second));
+        string temp = to_string(col_idx) + idx_val_separator + to_string(A->val[i].second);
         // row major string representation
         if (allStrings[row_idx].size() == 0) {
             allStrings[row_idx] = "" + temp;
