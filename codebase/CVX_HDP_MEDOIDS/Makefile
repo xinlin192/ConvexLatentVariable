@@ -12,4 +12,4 @@ push:
 	git push
 
 clean:
-	rm -rf $(executable) opt*
+	rm -rf $(executable) opt* dist_mat

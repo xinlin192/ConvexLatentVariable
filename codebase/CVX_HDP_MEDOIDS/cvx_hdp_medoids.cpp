@@ -35,7 +35,7 @@ TODO list:
 // #define GROUP_LASSO_DEBUG
 // #define BLOCKWISE_DUMP
 // #define DIST_MAT_DUMP
-#define SUBPROBLEM_DUMP
+// #define SUBPROBLEM_DUMP
 
 double sign (int input) {
     if (input > 0) return 1.0;
@@ -720,10 +720,10 @@ int main (int argc, char ** argv) {
     // output_objective(clustering_objective (dist_mat, W, N));
 
     /* Output cluster centroids */
-    // output_model (W, N);
+    output_model (W);
 
     /* Output assignment */
-    // output_assignment (W, data, N);
+    output_assignment (W, &word_lookup);
 
     /* reallocation */
     esmat_free (W);
