@@ -15,7 +15,7 @@
 /*
 TODO list:
   [DONE] 1. compute_dist_mat generates matrix with N by D
-  2. fixup bugs in frank_wolfe_solver 
+  [DONE] 2. fixup bugs in frank_wolfe_solver 
   3. fixup problem in group_lasso_solver
   4. fixup local problem separation
 
@@ -223,6 +223,7 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
     // This can be computed by using corner point. 
     Esmat * gradient = esmat_init (w_1);
     Esmat * s = esmat_init (w_1);
+    Esmat * old_s = esmat_init (w_1);
 
 #ifndef EXACT_LINE_SEARCH
     int K = 300;
@@ -249,6 +250,7 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
         esmat_copy (gradient, tempS);
         esmat_add (tempS, dist_mat, gradient);
         esmat_min_row (gradient, s);
+
 #ifdef FRANK_WOLFE_DEBUG
         cout << "=============================" << endl;
         cout << "[w_1]" << endl;
@@ -262,8 +264,20 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
         cout << "[s]" << endl;
         cout << s->nRows << "," << s->nCols << "," << s->val.size() << endl;
         cout << esmat_toString(s);
+        cout << "[old_s]" << endl;
+        cout << esmat_toInfo(old_s);
+        cout << esmat_toString(s);
+        cout << "esmat_equal(s, old_s): " << esmat_equal(s, old_s) << endl;
 #endif 
-        // cout << "within frank_wolfe_solver: step one finished" << endl;
+
+#ifdef EXACT_LINE_SEARCH
+        if (esmat_equal(s, old_s)) {
+            is_global_optimal_reached = true;
+            break;
+        } else {
+            esmat_copy (s, old_s);
+        }
+#endif
 
         // STEP TWO: apply exact or inexact line search to find solution
 #ifndef EXACT_LINE_SEARCH
