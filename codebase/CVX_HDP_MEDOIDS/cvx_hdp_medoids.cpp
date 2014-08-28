@@ -18,8 +18,8 @@ TODO list:
   [DONE] 2. fixup bugs in frank_wolfe_solver 
   3. fixup problem in group_lasso_solver
   4. fixup local problem separation
-
-  5. develop early stopping detection for frank_wolfe_solver
+  [DONE] 5. develop early stopping detection for frank_wolfe_solver
+  [DONE] 6. refactor codes and refine the exSparseMat API
 */
 
 #include "cvx_hdp_medoids.h"
@@ -75,16 +75,18 @@ void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
                 int voc_index = word_lookup[w].first;
                 int count_w_d1 = word_lookup[w].second;    
                 double prob_w_d2;
+                double dist;
                 map<int, double>::const_iterator iter;
                 iter = distributions[j].find(voc_index);
                 if (iter == distributions[j].end()) {
                     prob_w_d2 = 0.0;
+                    dist = INF;
                 } else {
                     prob_w_d2 = iter->second;
-                }
                 //   dist(w, d2) =  - count_w_d1 * log( prob_d2(w) )
+                    dist = - count_w_d1 * log(prob_w_d2);
+                }
                 int esmat_index = w + N * j;
-                double dist = - count_w_d1 * log(prob_w_d2);
 #ifdef DIST_MAT_DUMP
                 cout << "index: " << esmat_index << ", dist: " << dist << ", ";
                 cout << "count_w_d1: " << count_w_d1 << ", prob_w_d2: " << prob_w_d2 << endl;
@@ -143,27 +145,23 @@ double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >*
     esmat_free_all (sub_absZ);
     return local_topic_reg;
 }
-double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda, Lookups* tables) {
+double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda, Lookups* tables, Esmat* dist_mat) {
     string title = "";
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
     vector< pair<int,int> >* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
     /*
-       cout << "[W" << prob_index << "]"<< endl;
-       cout << esmat_toInfo(W);
-       cout << esmat_toString (W);
-       cout << "[Y" << prob_index << "]"<< endl;
-       cout << esmat_toInfo(Y);
-       cout << esmat_toString (Y);
-       cout << "[Z" << prob_index << "]"<< endl;
-       cout << esmat_toInfo(Z);
-       cout << esmat_toString (Z);
+       esmat_print (W, "W["+ to_string(prob_index) + "]")
+       esmat_print (Y, "Y["+ to_string(prob_index) + "]")
+       esmat_print (Z, "Z["+ to_string(prob_index) + "]")
        */
 
     // STEP ONE: compute main term
     double main = -1.0;
     if (prob_index == 1) {
-        title = "Dummy_Loss";
+        double loss = esmat_frob_prod (dist_mat, Z);
+        cout << "loss: " << loss << ", ";
+        title = "dummy";
         // cout << "begin to compute dummy loss" << endl;
         // dummy_penalty = r dot (1 - sum_k w_nk)
         main = get_dummy_loss (W);
@@ -175,18 +173,14 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
             main = get_global_topic_reg (absW, lambda);
         } else if (prob_index == 3) {
             title = "Local_Reg";
-
             main = get_local_topic_reg (absW, lambda, doc_lookup);
-        }/* else if (prob_index == 4) {
-            title = "Coverage_Reg";
-            main = get_coverage_reg (absW, lambda, word_lookup, voc_lookup);
-            }*/
+        }
         esmat_free (absW);
     }
     Esmat* w_minus_z = esmat_init ();
     // STEP TWO: compute linear term: linear = y^T dot (w - z) 
     esmat_sub (W, Z, w_minus_z); // temp = w - z
-    double linear = esmat_fdot (Y, w_minus_z);
+    double linear = esmat_frob_prod (Y, w_minus_z);
     // STEP THREE: compute quadratic term: quadratic = 0.5 * RHO * || w - z ||^2 
     double quadratic = 0.5 * RHO * esmat_fnorm (w_minus_z);
     double total = main + linear + quadratic;
@@ -253,20 +247,10 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
 
 #ifdef FRANK_WOLFE_DEBUG
         cout << "=============================" << endl;
-        cout << "[w_1]" << endl;
-        cout << w_1->nRows << "," << w_1->nCols << "," << w_1->val.size() << endl;
-        cout << esmat_toString(w_1);
-
-        cout << "[gradient]" << endl;
-        cout << gradient->nRows << "," << gradient->nCols << "," << gradient->val.size() << endl;
-        cout << esmat_toString(gradient);
-        cout << endl;
-        cout << "[s]" << endl;
-        cout << s->nRows << "," << s->nCols << "," << s->val.size() << endl;
-        cout << esmat_toString(s);
-        cout << "[old_s]" << endl;
-        cout << esmat_toInfo(old_s);
-        cout << esmat_toString(s);
+        esmat_print(w_1, "[w_1]");
+        esmat_print(gradient, "[gradient]");
+        esmat_print(s, "[s]");
+        esmat_print(old_s, "[old_s]");
         cout << "esmat_equal(s, old_s): " << esmat_equal(s, old_s) << endl;
 #endif 
 
@@ -307,7 +291,7 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
             // reach the exit condition, do not make more iteration
         } else {
             /*
-            esmat_fdot (w_minus_s, dist_mat, tempS);
+            esmat_frob_prod (w_minus_s, dist_mat, tempS);
             sum1 = 0.5 * esmat_sum (tempS);
             */
 #ifdef EXACT_LINE_SEARCH_DUMP
@@ -316,8 +300,8 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
             cout << "[w_minus_z]" << endl;
             cout << esmat_toString(w_minus_z);
 #endif
-            sum2 = esmat_fdot (Y_1, w_minus_s);
-            sum3 = RHO * esmat_fdot (w_minus_z, w_minus_s);
+            sum2 = esmat_frob_prod (Y_1, w_minus_s);
+            sum3 = RHO * esmat_frob_prod (w_minus_z, w_minus_s);
             sum4 = RHO * esmat_fnorm (w_minus_s);
             // gamma should be within interval [0,1]
             // gamma = (sum1 + sum2 + sum3) / sum4;
@@ -335,17 +319,11 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
 #endif
         // update the w^(k+1)
         esmat_scalar_mult (gamma, s); 
-        /*
-        cout << "[gamma*s]" << endl;
-        cout << esmat_toString(s);
-        */
+        // esmat_print (s, "[gamma*s]");
         esmat_scalar_mult (1.0-gamma, w_1);
         esmat_copy (w_1, tempS);
         esmat_add (tempS, s, w_1);
-        /*
-        cout << "[post w_1]" << endl;
-        cout << esmat_toString(w_1);
-        */
+        // esmat_print (w_1, "[post w_1]");
 
         // cout << "within frank_wolfe_solver: step three finished" << endl;
         // report the #iter and objective function
@@ -576,18 +554,14 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
     double RHO = 1.0;
     int N = tables->nWords;
     int D = tables->nDocs;
-
     /* DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
     Esmat* w_1 = esmat_init (N, D);
     Esmat* w_2 = esmat_init (N, D);
     Esmat* w_3 = esmat_init (N, D);
-
     Esmat* y_1 = esmat_init (N, D);
     Esmat* y_2 = esmat_init (N, D);
     Esmat* y_3 = esmat_init (N, D);
-
     Esmat* z = esmat_init (N, D);
-
     Esmat* diff_1 = esmat_init (N, D);
     Esmat* diff_2 = esmat_init (N, D);
     Esmat* diff_3 = esmat_init (N, D);
@@ -596,7 +570,6 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
     double error = INF;
     int iter = 0; 
     int max_iter = 2000;
-
     /* ITERATIVE OPTIMIZATION */
     while ( iter < max_iter ) { // STOPPING CRITERIA
         // STEP ZERO: RESET ALL SUBPROBLEM SOLUTIONS (OPTIONAL) 
@@ -609,7 +582,7 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // cout << "[w_1 before frank_wolfe_solver] " << esmat_toInfo(w_1);
         // cout << esmat_toString (w_1);
         frank_wolfe_solver (dist_mat, y_1, z, w_1, RHO); 
-        double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables);
+        double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables, dist_mat);
         return;
         // cout << "[w_1 after frank_wolfe_solver]" << esmat_toInfo(w_1);
         // out << esmat_toString (w_1);
@@ -617,13 +590,13 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // resolve w_2
         global_topic_subproblem (y_2, z, w_2, RHO, LAMBDAs[0]);
         // compute value of objective function
-        double sub2_obj = subproblem_objective (2, y_2, z, w_2, RHO, LAMBDAs[0],tables);
+        double sub2_obj = subproblem_objective (2, y_2, z, w_2, RHO, LAMBDAs[0],tables, dist_mat);
         // cout << "sub2_objective: " << sub2_obj << endl;
 
         // cout << "[w_3]" << w_3->nRows << "," << w_3->nCols << "," << w_3->val.size() << endl;
         local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[1], tables);
         // cout << "[w_3]" << w_3->nRows << "," << w_3->nCols << "," << w_3->val.size() << endl;
-        double sub3_obj = subproblem_objective (3, y_3, z, w_3, RHO, LAMBDAs[1], tables);
+        double sub3_obj = subproblem_objective (3, y_3, z, w_3, RHO, LAMBDAs[1], tables, dist_mat);
 
         // STEP TWO: update z by averaging w_1, w_2 and w_4
         Esmat* temp = esmat_init (N, D);
@@ -632,8 +605,7 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         esmat_add (temp, w_3, z);
         esmat_scalar_mult (1.0/3.0, z);
 
-        cout << "[z]" << endl;
-        cout << esmat_toString (z);
+        esmat_print(z, "[z]");
 
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         esmat_sub (w_1, z, diff_1);
@@ -656,12 +628,9 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // double trace_wtwo_minus_z = esmat_fnorm (diff_3); 
         // double trace_wfour_minus_z = esmat_fnorm (diff_4); 
         
-        cout << "[y_1]" << endl;
-        cout << esmat_toString (y_1);
-        cout << "[y_2]" << endl;
-        cout << esmat_toString (y_2);
-        cout << "[y_3]" << endl;
-        cout << esmat_toString (y_3);
+        esmat_print(y_1, "[y_1]");
+        esmat_print(y_2, "[y_2]");
+        esmat_print(y_3, "[y_3]");
 
         // STEP FOUR: trace the objective function
         iter ++;

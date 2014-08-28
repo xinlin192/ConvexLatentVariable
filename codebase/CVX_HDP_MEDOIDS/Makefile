@@ -8,7 +8,7 @@ all:
 
 push:
 	git add $(cpp) $(headers) $(README) Makefile
-	git commit 
+	git commit -m "more pushed"
 	git push
 
 clean:
