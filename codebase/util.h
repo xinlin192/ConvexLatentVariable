@@ -46,7 +46,9 @@ double clustering_objective (double ** dist_mat, double ** z, int N);
 void get_all_centroids(double ** W, vector<int>* centroids, int nRows, int nCols);
 void output_objective (double obj);
 void output_model (double** W, int N); 
-
+void output_model (Esmat* W);
+void output_assignment (Esmat* W, vector< pair<int,int> >* word_lookup);
+ 
 class Instance {
 	public:
 	int id;
@@ -350,6 +352,10 @@ double clustering_objective (double ** dist_mat, double ** z, int N) {
     }
     return clustering_loss;
 }
+double clustering_objective (Esmat* dist_mat, Esmat* z) {
+    // z is current valid solution (average of w_1 and w_2)
+    return 0.5*esmat_frob_prod(dist_mat, z);
+}
 void get_all_centroids(double ** W, vector<int>* centroids, int nRows, int nCols) {
     double * max_belonging = new double [nCols];
     for (int i = 0; i < nCols; i ++) {
@@ -404,19 +410,15 @@ void output_assignment (double ** W, vector<Instance*>& data, int N) {
     asgn_out.close();
 }
 void get_all_centroids(Esmat* W, vector<int>* centroids) {
-    /*
-    double * max_belonging = new double [nCols];
-    for (int i = 0; i < nCols; i ++) {
-        max_belonging[i] = 0.0;
-    }
-    mat_max_col (W, max_belonging, nRows, nCols);
-    for (int i = 0; i < nCols; i ++ ) {
-        if (fabs(max_belonging[i]) > 0.3) {
-            centroids->push_back(i+1);
+    Esmat* max_belonging = esmat_init();
+    esmat_max_over_col (W, max_belonging);
+    int size = max_belonging->val.size();
+    for (int i = 0; i < size; i ++ ) {
+        if (fabs(max_belonging->val[i].second) > 0.3) {
+            centroids->push_back(max_belonging->val[i].first +1);
         }
     }
-    delete[] max_belonging;
-    */
+    esmat_free(max_belonging);
 }
 void output_model (Esmat* W) {
     vector<int> centroids;
@@ -448,8 +450,8 @@ void output_assignment (Esmat* W, vector< pair<int,int> >* word_lookup) {
         for (int j = 0; j < words_asgn[i].size(); j ++) {
             int index = words_asgn[i][j].first;
             double value = words_asgn[i][j].second;
-            if( fabs(value) > 3e-1 ) {
-                asgn_out << index << "(" << value << "),\t";
+            if( fabs(value) > 0.3 ) {
+                asgn_out << index+1 << "(" << value << "),\t";
             }
         }
         asgn_out << endl;
