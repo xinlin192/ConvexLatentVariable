@@ -14,13 +14,21 @@
 
 /*
 TODO list:
-  [DONE] 1. compute_dist_mat generates matrix with N by D
-  [DONE] 2. fixup bugs in frank_wolfe_solver 
-  3. fixup problem in group_lasso_solver
-  4. fixup local problem separation
-  [DONE] 5. develop early stopping detection for frank_wolfe_solver
-  [DONE] 6. refactor codes and refine the exSparseMat API
+  [DONE] 1. compute_dist_mat generates matrix with N by D -- checked
+  [DONE] 2. fixup bugs in frank_wolfe_solver -- checked
+  [DONE] 3. fixup bugs in exact line search  -- checked
+  4. fixup problem in group_lasso_solver
+  5. fixup local problem separation
+  [DONE] 6. develop early stopping detection for frank_wolfe_solver
+  [DONE] 7. refactor codes and refine the exSparseMat API
 */
+
+/*
+Shrinking methods for frank_wolfe_solver:
+  1. inherently inactive for n,k that dist_mat[n][k] == inf
+  2. inactive 
+  3. gamma < TRIM_THRESHOLD  
+ */
 
 #include "cvx_hdp_medoids.h"
 using namespace std;
@@ -30,13 +38,13 @@ using namespace std;
 
 /* dumping options */
 #define FRANK_WOLFE_DEBUG
-// #define EXACT_LINE_SEARCH_DUMP
+#define EXACT_LINE_SEARCH_DUMP
 // #define COVERAGE_SUBPROBLEM_DUMP
 // #define LOCAL_SUBPROBLEM_DUMP
 // #define GROUP_LASSO_DEBUG
 // #define BLOCKWISE_DUMP
 // #define DIST_MAT_DUMP
-// #define SUBPROBLEM_DUMP
+#define SUBPROBLEM_DUMP
 
 double sign (int input) {
     if (input > 0) return 1.0;
@@ -161,7 +169,9 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
     double main = -1.0;
     if (prob_index == 1) {
         double loss = esmat_frob_prod (dist_mat, Z);
+#ifdef SUBPROBLEM_DUMP
         cout << "loss: " << loss << ", ";
+#endif
         title = "dummy";
         // cout << "begin to compute dummy loss" << endl;
         // dummy_penalty = r dot (1 - sum_k w_nk)
@@ -183,7 +193,7 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
     esmat_sub (W, Z, w_minus_z); // temp = w - z
     double linear = esmat_frob_prod (Y, w_minus_z);
     // STEP THREE: compute quadratic term: quadratic = 0.5 * RHO * || w - z ||^2 
-    double quadratic = 0.5 * RHO * esmat_fnorm (w_minus_z);
+    double quadratic = 0.5 * RHO * esmat_frob_norm (w_minus_z);
     double total = main + linear + quadratic;
     esmat_free (w_minus_z);
 #ifdef SUBPROBLEM_DUMP
@@ -223,7 +233,7 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
 #ifndef EXACT_LINE_SEARCH
     int K = 300;
 #else
-    int K = 10;
+    int K = 50;
     Esmat * w_minus_s = esmat_init ();
     Esmat * w_minus_z = esmat_init ();
 #endif
@@ -256,6 +266,7 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
 #endif 
 
 #ifdef EXACT_LINE_SEARCH
+        // early stopping strategy
         if (esmat_equal(s, old_s)) {
             is_global_optimal_reached = true;
             break;
@@ -282,40 +293,39 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
         // cout << esmat_toString(w_minus_s);
         esmat_sub (w_1, Z_1, w_minus_z);
 
-        // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
-        // since incremental term = w + gamma (s - w), and whatever gamma is,
-        // w^(k+1) = w^(k), this would be equivalent to gamma = 0
-        // TODO: further speedup by early stopping
-        if (esmat_fnorm(w_minus_s) == 0) {
-            gamma = 0;
-            is_global_optimal_reached = true;
-            // reach the exit condition, do not make more iteration
-        } else {
-            /*
-            esmat_frob_prod (w_minus_s, dist_mat, tempS);
-            sum1 = 0.5 * esmat_sum (tempS);
-            */
 #ifdef EXACT_LINE_SEARCH_DUMP
             cout << "[w_minus_s]" << endl;
             cout << esmat_toString(w_minus_s);
             cout << "[w_minus_z]" << endl;
             cout << esmat_toString(w_minus_z);
 #endif
+        // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
+        // since incremental term = w + gamma (s - w), and whatever gamma is,
+        // w^(k+1) = w^(k), this would be equivalent to gamma = 0
+        if (esmat_frob_norm (w_minus_s) == 0) {
+            gamma = 0;
+            is_global_optimal_reached = true;
+            // reach the exit condition, do not make more iteration
+        } else {
+            sum1 = 0.5 * esmat_frob_prod (w_minus_s, dist_mat);
             sum2 = esmat_frob_prod (Y_1, w_minus_s);
             sum3 = RHO * esmat_frob_prod (w_minus_z, w_minus_s);
-            sum4 = RHO * esmat_fnorm (w_minus_s);
+            sum4 = RHO * esmat_frob_norm (w_minus_s);
             // gamma should be within interval [0,1]
             // gamma = (sum1 + sum2 + sum3) / sum4;
-            gamma = (sum2 + sum3) / sum4;
+            gamma = (sum1 + sum2 + sum3) / sum4;
 
 #ifdef EXACT_LINE_SEARCH_DUMP
-            cout << "[exact line search] (sum2, sum3, sum4, gamma) = ("
-                << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
+            cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
+                << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
                 << ")"
                 << endl;
 #endif
         }
-
+        /* postcondition for early stopping */
+        if (gamma < TRIM_THRESHOLD) {
+            is_global_optimal_reached = true;
+        }
         }
 #endif
         // update the w^(k+1)
@@ -624,10 +634,10 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         esmat_copy (y_3, temp);
         esmat_add (temp, diff_3, y_3);
 
-        // double trace_wone_minus_z = esmat_fnorm (diff_1); 
-        // double trace_wtwo_minus_z = esmat_fnorm (diff_2); 
-        // double trace_wtwo_minus_z = esmat_fnorm (diff_3); 
-        // double trace_wfour_minus_z = esmat_fnorm (diff_4); 
+        // double trace_wone_minus_z = esmat_frob_norm (diff_1); 
+        // double trace_wtwo_minus_z = esmat_frob_norm (diff_2); 
+        // double trace_wtwo_minus_z = esmat_frob_norm (diff_3); 
+        // double trace_wfour_minus_z = esmat_frob_norm (diff_4); 
         
         esmat_print(y_1, "[y_1]");
         esmat_print(y_2, "[y_2]");
