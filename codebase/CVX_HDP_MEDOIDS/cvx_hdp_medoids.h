@@ -36,8 +36,6 @@ typedef struct {
     vector< vector<int> >* voc_lookup;
 } Lookups ;
 
-void cvx_hdp_medoids (vector<double> LAMBDAs, Esmat* W, Lookups* tables);
-
 /* Note that operations within this function do not destroy original input */
 void split (string input, vector<string>* elements, string delimiter) {
     string str (input);
