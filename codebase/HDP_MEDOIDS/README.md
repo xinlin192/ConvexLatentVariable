@@ -17,8 +17,8 @@ Inventory
     Makefile                for compilation
     README.md               records basic information
     
-    cvx_hdp_medoids.cpp     HDP codes
-    cvx_hdp_medoids.h       HDP header file
+    hdp_medoids.cpp     HDP codes
+    hdp_medoids.h       HDP header file
 
     exSparseMat.h           extensible sparse matrix API
 
