@@ -14,9 +14,6 @@
 using namespace std;
 #include<cassert>
 #include<string>
-/*
-#include<iostream>
-*/
 #include<fstream>
 
 #ifndef UTIL_H

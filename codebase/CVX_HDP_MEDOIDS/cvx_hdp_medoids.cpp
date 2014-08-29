@@ -37,8 +37,8 @@ using namespace std;
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
-#define FRANK_WOLFE_DEBUG
-#define EXACT_LINE_SEARCH_DUMP
+// #define FRANK_WOLFE_DEBUG
+// #define EXACT_LINE_SEARCH_DUMP
 // #define COVERAGE_SUBPROBLEM_DUMP
 // #define LOCAL_SUBPROBLEM_DUMP
 // #define GROUP_LASSO_DEBUG
@@ -323,7 +323,7 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
 #endif
         }
         /* postcondition for early stopping */
-        if (gamma < TRIM_THRESHOLD) {
+        if (gamma < TRIM_THRESHOLD * 1e-3) {
             is_global_optimal_reached = true;
         }
         }
@@ -594,7 +594,6 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // cout << esmat_toString (w_1);
         frank_wolfe_solver (dist_mat, y_1, z, w_1, RHO); 
         double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables, dist_mat);
-        return;
         // cout << "[w_1 after frank_wolfe_solver]" << esmat_toInfo(w_1);
         // out << esmat_toString (w_1);
         
@@ -615,8 +614,6 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         esmat_copy (z, temp);
         esmat_add (temp, w_3, z);
         esmat_scalar_mult (1.0/3.0, z);
-
-        esmat_print(z, "[z]");
 
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         esmat_sub (w_1, z, diff_1);
@@ -639,9 +636,12 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // double trace_wtwo_minus_z = esmat_frob_norm (diff_3); 
         // double trace_wfour_minus_z = esmat_frob_norm (diff_4); 
         
-        esmat_print(y_1, "[y_1]");
-        esmat_print(y_2, "[y_2]");
-        esmat_print(y_3, "[y_3]");
+        if (iter % 10 == 0) {
+            esmat_print(z, "[z]");
+            esmat_print(y_1, "[y_1]");
+            esmat_print(y_2, "[y_2]");
+            esmat_print(y_3, "[y_3]");
+        }
 
         // STEP FOUR: trace the objective function
         iter ++;
@@ -728,7 +728,7 @@ int main (int argc, char ** argv) {
     cvx_hdp_medoids (dist_mat, LAMBDAs, W, &lookup_tables);
 
     /* Output objective */
-    // output_objective(clustering_objective (dist_mat, W, N));
+    output_objective(clustering_objective (dist_mat, W));
 
     /* Output cluster centroids */
     output_model (W);
