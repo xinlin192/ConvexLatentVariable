@@ -4,7 +4,7 @@ executable=$(shell echo $(cpp) | cut -d '.' -f 1)
 README=$(shell ls README*)
 
 all: 
-	g++ CXXFLAGS=-std=c++11 -O3 $(cpp) -o $(executable)
+	g++ -O3 $(cpp) -o $(executable)
 
 push:
 	git add $(cpp) $(headers) $(README) Makefile

@@ -23,6 +23,7 @@ TODO list:
 */
 
 #include "cvx_hdp_medoids.h"
+using namespace std;
 
 /* algorithmic options */ 
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
