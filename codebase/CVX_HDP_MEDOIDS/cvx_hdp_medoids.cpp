@@ -18,7 +18,7 @@ TODO list:
   [DONE] 2. fixup bugs in frank_wolfe_solver -- checked
   [DONE] 3. fixup bugs in exact line search  -- checked
   4. fixup problem in group_lasso_solver
-  5. fixup local problem separation
+  5. fixup local problem separation and -1 problem
   [DONE] 6. develop early stopping detection for frank_wolfe_solver
   [DONE] 7. refactor codes and refine the exSparseMat API
 */
