@@ -183,21 +183,40 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
     double RHO = 1.0;
     int N = tables->nWords;
     int D = tables->nDocs;
+    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
+    vector< pair<int,int> > word_lookup = *(tables->word_lookup); 
+
     /* A. DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
+    vector<int> global_medoids(1,0);
+    vector< vector<int> > local_medoids(D,vector<int>(1,0));
+    Esmat* z = esmat_init(N,D);
+    vector< vector<int> > v (D,vector<int>(1,0));
     // 1) randomize initial global cluster medoid 
-    
+    global_medoids[0] = random() % D;  
     // 2) randomize initial local cluster medoids for each document j
-
+    for (int t = 0; t < D; t ++) {
+        local_medoids[t][0] = random() % D;
+    }
     // 3) initialize local cluster indicator z_ij = 1 for all j = 1
-
+    for (int d = 0; d < D; d ++) {
+        for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
+            int esmat_index = i + local_medoids[d][0] * N;
+            z->val.push_back(make_pair(esmat_index, 1.0))
+        }
+    }
+    esmat_align (z);
     // 4) initialize global cluster association v_j1 = 1
-
-    Esmat* w = esmat_init (N, D);
-
+    for (int d = 0; d < D; d ++) {
+        v[d][0] = global_medoids[0];
+    }
     /* B. Repetition until Convergence */
-    while () {
+    int iter = 0;
+    int MAX_ITER = 1000;
+    while (iter < MAX_ITER) {
         // 1) preprocess distance
+        if () {
 
+        }
         // 2) if ..,  global and local augmentation
         //  if min_p d_ijp > \lambda_l + \lambda_g
 
