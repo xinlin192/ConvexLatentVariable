@@ -283,21 +283,25 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
             int nLocalMedoids = local_medoids[d].size();
             for (int l = 0; l < nLocalMedoids; l++) {
                 vector<int> words;
-                vector<int> examplars;
+                // set<int> examplars;
+                // examplars.insert(d);
                 for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i++) {
                     if (z[i] == local_medoids[l]) {
                         words.push_back(i);
-                        examplars.push_back(d);
+                        // examplars.insert(z[i]);
                     }
                 }
-                // 5) if .., global augmentation
-                //  if min_p d_jcp > \lambda_g + ... 
-                if () {
-
-                }
-                // 6) otherwise, update global association
-
+                
             }
+        }
+        // 5) if .., global augmentation
+        //  if min_p d_jcp > \lambda_g + ... 
+        if () {
+
+        }
+        // 6) otherwise, update global association
+        if () {
+
         }
         // 7) re-elect medoids for global cluster
         int nGlobalMedoids = global_medoids.size();
@@ -341,10 +345,8 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
             mat_free (candidate_dist_mat, R,C);
         }
     }
-
     /* De-allocation */
     esmat_free (w);
-
     /* Put converged solution to destinated W*/
     esmat_copy (z, W);
     esmat_free (z);
