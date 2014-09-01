@@ -21,11 +21,10 @@ using namespace std;
     1. use mat for dist_mat 
     2. implement multiple run and pick up the best
     3. double check the implementation for hdp_medoids
-    4. 
  */
 
 /* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
+void compute_dist_mat (double** dist_mat, Lookups* tables, int N, int D) {
     // STEP ZERO: parse input
     vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
     vector< pair<int,int> > word_lookup = *(tables->word_lookup); 
@@ -45,7 +44,6 @@ void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
         }
     }
     // STEP TWO: compute weight of word within one document
-    esmat_zeros(dist_mat);
     for (int j = 0; j < D; j ++) {
         for (int d = 0; d < D; d ++) {
             for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
@@ -63,12 +61,11 @@ void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
                 //   dist(w, d2) =  - count_w_d1 * log( prob_d2(w) )
                     dist = - count_w_d1 * log(prob_w_d2);
                 }
-                int esmat_index = w + N * j;
 #ifdef DIST_MAT_DUMP
-                cout << "index: " << esmat_index << ", dist: " << dist << ", ";
+                cout << "i= " << w << ", j=" << esmat_index << ", dist: " << dist << ", ";
                 cout << "count_w_d1: " << count_w_d1 << ", prob_w_d2: " << prob_w_d2 << endl;
 #endif
-                dist_mat->val.push_back(make_pair(esmat_index, dist));
+                dist_mat[w][j] = dist;
             }
         }
     }
@@ -110,7 +107,7 @@ void output_assignment (vector<int> z, vector<vector<int> > v, Lookups* tables) 
     }
     asgn_out.close();
 }
-void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Lookups* tables) {
+void hdp_medoids (double** dist_mat, vector<double> LAMBDAs, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 2);
     double lambda_global = LAMBDAs[0];
@@ -343,8 +340,8 @@ int main (int argc, char ** argv) {
     // Run sparse convex clustering
     int N = lookup_tables.nWords;
     int D = lookup_tables.nDocs;
-    Esmat* W = esmat_init (lookup_tables.nWords, lookup_tables.nDocs);
-    Esmat* dist_mat = esmat_init (N, D);
+    double* dist_mat = mat_init (N, D);
+    mat_zeros (dist_mat, N,D);
     compute_dist_mat (dist_mat, &lookup_tables, N, D);
 
     ofstream dmat_out ("dist_mat");
@@ -360,5 +357,5 @@ int main (int argc, char ** argv) {
     output_assignment (z, v, &lookup_tables) {
 
     /* reallocation */
-    esmat_free (dist_mat);
+    mat_free (dist_mat, N,D);
 }
