@@ -67,7 +67,6 @@ void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
 }
 void output_objective (vector<int> z, vector< vector<int> > v, double** dist_mat, Lookups* tables) {
     int N = tables->nWords;
-    int D = tables->nDocs;
     double obj = 0.0; 
     fstream obj_out("opt_objective");
     for (int d = 0; d < D; d ++) {
@@ -77,21 +76,31 @@ void output_objective (vector<int> z, vector< vector<int> > v, double** dist_mat
             obj += dist;
         }
     }
-    obj_out << obj;
+    obj_out << "Main: " << obj << endl;
+    obj_out << "Global: " << global << endl;
+    obj_out << "Local: " << local << endl;
+    obj_out.close();
 }
 void output_medoids (vector<int> global_medoids, Lookups* tables) {
     int N = tables->nWords;
-    int D = tables->nDocs;
     int local_medoids = 0;
     fstream medoids_out("opt_medoids");
     int nGlobalMedoids = global_medoids.size();
     for (int i = 0; i < nGlobalMedoids; i ++) {
-        cout << "Medoids" << global_medoids[i] << endl;
+        cout << "Medoids[" << i << "]" << global_medoids[i] << endl;
     }
     medoids_out.close();
 }
-void output_medoids () {
-    int N = tables->nWords; 
+void output_assignment (vector<int> z, vector<vector<int> > v, Lookups* tables) {
+    int D = tables->nDocs;
+    fstream asgn_out("opt_assignments");
+    for (int d = 0; d < D; d ++) {
+        asgn_out << "d = " << d << endl;
+        for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i++) {
+            asgn_out << "id=" << i+1 << ", " << v[d][z[i]] << "(1)" << endl;
+        }
+    }
+    asgn_out.close();
 }
 void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
@@ -336,13 +345,11 @@ int main (int argc, char ** argv) {
     hdp_medoids (dist_mat, LAMBDAs, W, &lookup_tables);
 
     /* Output objective */
-    output_objective(clustering_objective (dist_mat, W));
-
+    output_objective (z, v, dist_mat, &lookup_tables) {
     /* Output cluster centroids */
-    output_model (W);
-
+    output_medoids (global_medoids, &lookup_tables) {
     /* Output assignment */
-    output_assignment (W, &word_lookup);
+    output_assignment (z, v, &lookup_tables) {
 
     /* reallocation */
     esmat_free (W);
