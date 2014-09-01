@@ -18,7 +18,7 @@ using namespace std;
 
 /* 
   TODO list: 
-    1. use mat for dist_mat 
+    1. [DONE] use mat for dist_mat 
     2. implement multiple run and pick up the best
     3. double check the implementation for hdp_medoids
  */
@@ -345,8 +345,8 @@ int main (int argc, char ** argv) {
     compute_dist_mat (dist_mat, &lookup_tables, N, D);
 
     ofstream dmat_out ("dist_mat");
-    dmat_out << esmat_toInfo(dist_mat);
-    dmat_out << esmat_toString(dist_mat);
+    // dmat_out << esmat_toInfo(dist_mat);
+    // dmat_out << esmat_toString(dist_mat);
     hdp_medoids (dist_mat, LAMBDAs, W, &lookup_tables);
 
     /* Output objective */
