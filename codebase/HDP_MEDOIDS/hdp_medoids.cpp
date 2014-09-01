@@ -65,125 +65,35 @@ void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
         }
     }
 }
-/* dummy_penalty = r dot (1 - sum_k w_nk) */
-double get_dummy_loss (Esmat* Z) {
-    Esmat* temp_vec = esmat_init (Z->nRows, 1);
-    esmat_sum_row (Z, temp_vec);
-    double dummy_loss = esmat_compute_dummy (temp_vec);
-    esmat_free (temp_vec);
-    return dummy_loss;
-}
-/* \lambda_g \sumk \maxn |\wnk| */
-double get_global_topic_reg (Esmat* absZ, double lambda) {
-    if (absZ->val.size() == 0) {
-        return 0.0;
-    }
-    Esmat* maxn = esmat_init (1, absZ->nCols);
-    Esmat* sumk = esmat_init (1, 1);
-    esmat_max_over_col (absZ, maxn);
-    esmat_sum_row (maxn, sumk);
-    double global_topic_reg = -INF;
-    if (sumk->val.size() > 0)
-        global_topic_reg = lambda * sumk->val[0].second; 
-    else 
-        global_topic_reg = 0.0;
-    esmat_free (sumk);
-    esmat_free (maxn);
-    return global_topic_reg;
-}
-/* \lambdal \sum_d \sum_k \underset{n \in d}{\text{max}} |\wnk| */
-double get_local_topic_reg (Esmat* absZ, double lambda, vector< pair<int,int> >* doc_lookup) {
-    // STEP ONE: initialize sub matrix for each document
-    int nDocs = doc_lookup->size();
-    vector<Esmat*> sub_absZ (nDocs);
-    for (int d = 0; d < nDocs; d ++) {
-        sub_absZ[d] = esmat_init (0,0);
-    }
-    // STEP TWO: separate entire Z to submat Z
-    esmat_submat_row (absZ, sub_absZ, doc_lookup);
-    // STEP THREE: compute global topic regularizer for each localized doc
-    double local_topic_reg = 0.0;
-    for (int d = 0; d < nDocs; d ++) {
-        // cout << "size[" << d << "]: " << sub_absZ[d]->val.size() << endl;
-        local_topic_reg += get_global_topic_reg (sub_absZ[d], lambda); 
-    }
-    // Final: free resource
-    esmat_free_all (sub_absZ);
-    return local_topic_reg;
-}
-double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, double RHO, double lambda, Lookups* tables, Esmat* dist_mat) {
-    string title = "";
-    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
-    vector< pair<int,int> >* word_lookup = tables->word_lookup; 
-    vector< vector<int> >* voc_lookup = tables->voc_lookup;
-    /*
-       esmat_print (W, "W["+ to_string(prob_index) + "]")
-       esmat_print (Y, "Y["+ to_string(prob_index) + "]")
-       esmat_print (Z, "Z["+ to_string(prob_index) + "]")
-       */
-
-    // STEP ONE: compute main term
-    double main = -1.0;
-    if (prob_index == 1) {
-        double loss = esmat_frob_prod (dist_mat, Z);
-#ifdef SUBPROBLEM_DUMP
-        cout << "loss: " << loss << ", ";
-#endif
-        title = "dummy";
-        // cout << "begin to compute dummy loss" << endl;
-        // dummy_penalty = r dot (1 - sum_k w_nk)
-        main = get_dummy_loss (W) + loss;
-    } else {
-        Esmat* absW = esmat_init (W);
-        esmat_abs (W, absW);
-        if (prob_index == 2) {
-            title = "Global_Reg";
-            main = get_global_topic_reg (absW, lambda);
-        } else if (prob_index == 3) {
-            title = "Local_Reg";
-            main = get_local_topic_reg (absW, lambda, doc_lookup);
-        }
-        esmat_free (absW);
-    }
-    Esmat* w_minus_z = esmat_init ();
-    // STEP TWO: compute linear term: linear = y^T dot (w - z) 
-    esmat_sub (W, Z, w_minus_z); // temp = w - z
-    double linear = esmat_frob_prod (Y, w_minus_z);
-    // STEP THREE: compute quadratic term: quadratic = 0.5 * RHO * || w - z ||^2 
-    double quadratic = 0.5 * RHO * esmat_frob_norm (w_minus_z);
-    total = main + linear + quadratic;
-    esmat_free (w_minus_z);
-#ifdef SUBPROBLEM_DUMP
-    cout << title << ": " << main << ", ";
-    cout << "linear: " << linear << ", ";
-    cout << "quadratic: " << quadratic << ", ";
-    cout << "total: " << total << endl;
-#endif
-    return total;
-}
-double original_objective (Esmat* Z, vector<double> LAMBDAs, Lookups* tables) {
-    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
-    vector< pair<int,int> >* word_lookup = tables->word_lookup; 
-    vector< vector<int> >* voc_lookup = tables->voc_lookup;
-
-    Esmat* absZ = esmat_init (Z);
-    esmat_abs (Z, absZ);
-    // STEP ONE: compute dummy loss
-    double dummy = get_dummy_loss (Z);
-    // cout << "dummy =" << dummy << endl;
-
-    // STEP TWO: compute "GLOBAL TOPIC" group-lasso regularization
-    double global_topic_reg = get_global_topic_reg (absZ, LAMBDAs[0]);
-    esmat_free (absZ); 
-    return dummy + global_topic_reg;
-}
-
-double objective (vector< vector<int> > z, Esmat* dist_mat, Lookups* tables) {
+void output_objective (vector<int> z, vector< vector<int> > v, double** dist_mat, Lookups* tables) {
+    int N = tables->nWords;
+    int D = tables->nDocs;
     double obj = 0.0; 
-
-    return obj;
+    fstream obj_out("opt_objective");
+    for (int d = 0; d < D; d ++) {
+        for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i++) {
+            int g = v[d][z[i]];
+            double dist = dist_mat[i][g];
+            obj += dist;
+        }
+    }
+    obj_out << obj;
 }
-void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
+void output_medoids (vector<int> global_medoids, Lookups* tables) {
+    int N = tables->nWords;
+    int D = tables->nDocs;
+    int local_medoids = 0;
+    fstream medoids_out("opt_medoids");
+    int nGlobalMedoids = global_medoids.size();
+    for (int i = 0; i < nGlobalMedoids; i ++) {
+        cout << "Medoids" << global_medoids[i] << endl;
+    }
+    medoids_out.close();
+}
+void output_medoids () {
+    int N = tables->nWords; 
+}
+void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 2);
     double lambda_global = LAMBDAs[0];
@@ -203,16 +113,11 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
     // 1) randomize initial global cluster medoid 
     global_medoids[0] = random() % D;
     // 2) randomize initial local cluster medoids for each document j
-    /*
-    for (int t = 0; t < D; t ++) {
-        local_medoids[t][0] = random() % D;
-    }
-    */
+    ;
     // 3) initialize local cluster indicator z_ij = 1 for all j = 1
     for (int d = 0; d < D; d ++) {
-        for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
-            // z[i] = local_medoids[d][0];
-            z[i] = global_medoids[0];
+        for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i++) {
+            z[i] = 0;
         }
     }
     // 4) initialize global cluster association v_j1 = 1
@@ -254,25 +159,26 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
                     }
                 }
                 if (min_value > lambda_local+lambda_global) {
-                    global_medoids.push_back(d);
-                    // local_medoids[d].push_back(d);
-                    v[d].push_back(d);
-                    z[i] = d;
+                    global_medoids.push_back(min_index);
+                    v[d].push_back(min_index);
+                    z[i] = nLocalMedoids;
+                    nLocalMedoids ++;
                 }
                 // 3) otherwise, local assignment or local augmentation
                 else {
                     bool is_c_exist = false;
-                    int nLocalMedoids = v[d].size();
+                    nLocalMedoids = v[d].size();
                     for (int l = 0; l < nLocalMedoids; l ++) {
                         if (v[d][l] == min_index) {
-                            z[i] = min_index;
+                            z[i] = l;
                             is_c_exist = true;
                             break;
                         }
                     }
                     if (!is_c_exist) { // local augmentation
                         v[d].push_back(min_index);
-                        z[i] = min_index;
+                        z[i] = nLocalMedoids;
+                        nLocalMedoids ++;
                     }
                 }
                 delete[] processed_dist_mat;
@@ -280,29 +186,50 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
         }
         // 4) re-elect medoids for all local clusters
         for (int d = 0; d < D; d++) {
-            int nLocalMedoids = local_medoids[d].size();
+            int nLocalMedoids = v[d].size();
             for (int l = 0; l < nLocalMedoids; l++) {
                 vector<int> words;
                 // set<int> examplars;
                 // examplars.insert(d);
                 for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i++) {
-                    if (z[i] == local_medoids[l]) {
+                    if (z[i] == l) {
                         words.push_back(i);
                         // examplars.insert(z[i]);
                     }
                 }
-                
+                int nDocWords = words.size();
+                double ** temp_dist_mat = mat_init(nDocWords, D);
+                for (int w = 0; w < nDocWords; w++) 
+                    for (int td = 0; td < D; td++) 
+                        temp_dist_mat[w][td] = dist_mat[words[w]][td];
+                double * sum_temp_dist_col = new double [D];
+                mat_sum_col (temp_dist_mat, sum_temp_dist_col, nDocWords, D);
+                int min_index = -1; 
+                double min_value = INF; // min sum mu_jc
+                for (int td = 0; td < D; td++) {
+                    if (sum_temp_dist_col[td] < min_value) {
+                        min_index = td;
+                        min_value = sum_temp_dist_col[td];
+                    }
+                }
+                v[d][l] = min_index; // update the better medoid
+                delete[] sum_temp_dist_col;
+                mat_free (temp_dist_mat, nDocWords, D);
+                /*
+                // 5) if .., global augmentation
+                //  if min_p d_jcp > \lambda_g + ... 
+                if (min_d_jcp > lambda_global+) {
+                    global_medoids.push_back(new_g);
+                    local_medoids[][] = new_g;
+                }
+                // 6) otherwise, update global association
+                else {
+                    local_medoids[][] = new_g;
+                }
+                */
             }
         }
-        // 5) if .., global augmentation
-        //  if min_p d_jcp > \lambda_g + ... 
-        if () {
 
-        }
-        // 6) otherwise, update global association
-        if () {
-
-        }
         // 7) re-elect medoids for global cluster
         int nGlobalMedoids = global_medoids.size();
         for (int g = 0; g < nGlobalMedoids; g++) {
@@ -311,7 +238,7 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
             set<int> examplar_set;
             for (int d = 0; d < D; d++) {
                 for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
-                    if (z[i] == p) {
+                    if (v[z[i]] == p) {
                         words.push_back(i);
                         examplar_set.insert(d);
                     }
@@ -345,11 +272,7 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
             mat_free (candidate_dist_mat, R,C);
         }
     }
-    /* De-allocation */
-    esmat_free (w);
     /* Put converged solution to destinated W*/
-    esmat_copy (z, W);
-    esmat_free (z);
 }
 
 // entry main function
