@@ -16,6 +16,14 @@
 #include <set>
 using namespace std;
 
+/* 
+  TODO list: 
+    1. use mat for dist_mat 
+    2. implement multiple run and pick up the best
+    3. double check the implementation for hdp_medoids
+    4. 
+ */
+
 /* Compute the mutual distance of input instances contained within "data" */
 void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
     // STEP ZERO: parse input
@@ -352,6 +360,5 @@ int main (int argc, char ** argv) {
     output_assignment (z, v, &lookup_tables) {
 
     /* reallocation */
-    esmat_free (W);
     esmat_free (dist_mat);
 }
