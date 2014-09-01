@@ -13,6 +13,7 @@
 ################################################################*/
 
 #include "hdp_medoids.h"
+#include <set>
 using namespace std;
 
 /* Compute the mutual distance of input instances contained within "data" */
@@ -176,9 +177,17 @@ double original_objective (Esmat* Z, vector<double> LAMBDAs, Lookups* tables) {
     esmat_free (absZ); 
     return dummy + global_topic_reg;
 }
+
+double objective (vector< vector<int> > z, Esmat* dist_mat, Lookups* tables) {
+    double obj = 0.0; 
+
+    return obj;
+}
 void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 2);
+    double lambda_global = LAMBDAs[0];
+    double lambda_local = LAMBDAs[1];
     double ALPHA = 1.0;
     double RHO = 1.0;
     int N = tables->nWords;
@@ -187,24 +196,25 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
     vector< pair<int,int> > word_lookup = *(tables->word_lookup); 
 
     /* A. DECLARE AND INITIALIZE INVOLVED VARIABLES AND MATRICES */
-    vector<int> global_medoids(1,0);
-    vector< vector<int> > local_medoids(D,vector<int>(1,0));
-    Esmat* z = esmat_init(N,D);
+    vector<int> global_medoids (1,0);
+    // vector< vector<int> > local_medoids (D,vector<int>(1,0));
+    vector<int> z (N, 0);
     vector< vector<int> > v (D,vector<int>(1,0));
     // 1) randomize initial global cluster medoid 
-    global_medoids[0] = random() % D;  
+    global_medoids[0] = random() % D;
     // 2) randomize initial local cluster medoids for each document j
+    /*
     for (int t = 0; t < D; t ++) {
         local_medoids[t][0] = random() % D;
     }
+    */
     // 3) initialize local cluster indicator z_ij = 1 for all j = 1
     for (int d = 0; d < D; d ++) {
         for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
-            int esmat_index = i + local_medoids[d][0] * N;
-            z->val.push_back(make_pair(esmat_index, 1.0))
+            // z[i] = local_medoids[d][0];
+            z[i] = global_medoids[0];
         }
     }
-    esmat_align (z);
     // 4) initialize global cluster association v_j1 = 1
     for (int d = 0; d < D; d ++) {
         v[d][0] = global_medoids[0];
@@ -213,32 +223,129 @@ void hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* ta
     int iter = 0;
     int MAX_ITER = 1000;
     while (iter < MAX_ITER) {
-        // 1) preprocess distance
-        if () {
-
+        for (int d = 0; d < D; d++) {
+            for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
+                // 1) preprocess distance
+                double[] processed_dist_mat = new double [D];
+                for (int examplar = 0; examplar < D; examplar ++) {
+                    int esmat_index = i + examplar * N;
+                    int value = dist_mat[i][examplar];
+                    processed_dist_mat[examplar] = value;
+                }
+                set<int> temp;
+                int nGlobalMedoids= global_medoids.size();
+                for (int g = 0; g < nGlobalMedoids; g++) 
+                    temp.insert(global_medoids[g]);
+                // int nLocalMedoids = local_medoids[d].size();
+                int nLocalMedoids = v[d].size();
+                for (int l = 0; l < nLocalMedoids; l++) 
+                    // temp.erase(local_medoids[d][l]);
+                    temp.erase(v[d][l]);
+                for (set<int>::iterator it=myset.begin();it!=myset.end();++it) 
+                    processed_dist_mat[*it] += lambda_local;
+                // 2) if ..,  global and local augmentation
+                //  if min_p d_ijp > \lambda_l + \lambda_g
+                int min_index = -1;
+                double min_value = INF; 
+                for (int index = 0; index < D; index ++) {
+                    if (processed_dist_mat[index] < min_value) {
+                        min_index = index;
+                        min_value = processed_dist_mat[index];
+                    }
+                }
+                if (min_value > lambda_local+lambda_global) {
+                    global_medoids.push_back(d);
+                    // local_medoids[d].push_back(d);
+                    v[d].push_back(d);
+                    z[i] = d;
+                }
+                // 3) otherwise, local assignment or local augmentation
+                else {
+                    bool is_c_exist = false;
+                    int nLocalMedoids = v[d].size();
+                    for (int l = 0; l < nLocalMedoids; l ++) {
+                        if (v[d][l] == min_index) {
+                            z[i] = min_index;
+                            is_c_exist = true;
+                            break;
+                        }
+                    }
+                    if (!is_c_exist) { // local augmentation
+                        v[d].push_back(min_index);
+                        z[i] = min_index;
+                    }
+                }
+                delete[] processed_dist_mat;
+            }
         }
-        // 2) if ..,  global and local augmentation
-        //  if min_p d_ijp > \lambda_l + \lambda_g
-
-        // 3) otherwise, local assignment or local augmentation
-        
-
         // 4) re-elect medoids for all local clusters
+        for (int d = 0; d < D; d++) {
+            int nLocalMedoids = local_medoids[d].size();
+            for (int l = 0; l < nLocalMedoids; l++) {
+                vector<int> words;
+                vector<int> examplars;
+                for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i++) {
+                    if (z[i] == local_medoids[l]) {
+                        words.push_back(i);
+                        examplars.push_back(d);
+                    }
+                }
+                // 5) if .., global augmentation
+                //  if min_p d_jcp > \lambda_g + ... 
+                if () {
 
-        // 5) if .., global augmentation
-        //  if min_p d_jcp > \lambda_g + ... 
+                }
+                // 6) otherwise, update global association
 
-        // 6) otherwise, update global association
-
-
+            }
+        }
         // 7) re-elect medoids for global cluster
-
+        int nGlobalMedoids = global_medoids.size();
+        for (int g = 0; g < nGlobalMedoids; g++) {
+            p = global_medoids[g];
+            vector<int> words;
+            set<int> examplar_set;
+            for (int d = 0; d < D; d++) {
+                for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
+                    if (z[i] == p) {
+                        words.push_back(i);
+                        examplar_set.insert(d);
+                    }
+                }
+            }
+            vector<int> examplars;
+            for (set<int>::iterator it=myset.begin();it!=myset.end();++it) 
+                examplars.push_back(*it);
+            }
+            int R = words.size(); 
+            int C = examplars.size();
+            double** candidate_dist_mat = mat_init (R,C);
+            for (int r = 0; r < R; r ++) {
+                for (int c = 0; c < C; c ++) {
+                    candidate_dist_mat[r][c] = dist_mat[words[r]][examplars[c]];
+                }
+            }
+            double* min_d_rc = new double [C];
+            mat_sum_col (candidate_dist_mat, min_d_rc, R,C);
+            int min_index;
+            double min_value = INF;
+            for (int m = 0; m < C; m ++) {
+                if (min_d_rc[m] < min_value) {
+                    min_index = m;
+                    min_value = min_d_rc[m];
+                }
+            }
+            int new_p = examplars[m];
+            global_medoids[g] = new_p; // update
+            delete[] min_d_rc;
+            mat_free (candidate_dist_mat, R,C);
+        }
     }
 
     /* De-allocation */
     esmat_free (w);
 
-    /*  put converged solution to destinated W*/
+    /* Put converged solution to destinated W*/
     esmat_copy (z, W);
     esmat_free (z);
 }
@@ -286,7 +393,7 @@ int main (int argc, char ** argv) {
     cerr << "nDocs = " << lookup_tables.nDocs << endl; // # documents
     cerr << "nWords = " << lookup_tables.nWords << endl; // # words
     cerr << "lambda_global = " << LAMBDAs[0] << endl;
-    cerr << "lambda_coverage = " << LAMBDAs[1] << endl;
+    cerr << "lambda_local = " << LAMBDAs[1] << endl;
     cerr << "TRIM_THRESHOLD = " << TRIM_THRESHOLD << endl;
     cerr << "seed = " << seed << endl;
     cerr << "###########################################" << endl;
@@ -297,7 +404,7 @@ int main (int argc, char ** argv) {
     Esmat* W = esmat_init (lookup_tables.nWords, lookup_tables.nDocs);
     Esmat* dist_mat = esmat_init (N, D);
     compute_dist_mat (dist_mat, &lookup_tables, N, D);
-    
+
     ofstream dmat_out ("dist_mat");
     dmat_out << esmat_toInfo(dist_mat);
     dmat_out << esmat_toString(dist_mat);
