@@ -46,15 +46,6 @@ using namespace std;
 // #define DIST_MAT_DUMP
 #define SUBPROBLEM_DUMP
 
-double sign (int input) {
-    if (input > 0) return 1.0;
-    else if ( input < 0 ) return -1.0;
-    else return 0.0;
-}
-bool pair_Second_Elem_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
-    // sort pairs by second element with *decreasing order*
-    return firstElem.second > secondElem.second;
-}
 /* Compute the mutual distance of input instances contained within "data" */
 void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
     // STEP ZERO: parse input
@@ -104,6 +95,61 @@ void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
             }
         }
     }
+}
+void get_all_centroids(Esmat* W, vector<int>* centroids) {
+    Esmat* max_belonging = esmat_init();
+    esmat_max_over_col (W, max_belonging);
+    int size = max_belonging->val.size();
+    for (int i = 0; i < size; i ++ ) {
+        if (fabs(max_belonging->val[i].second) > 0.3) {
+            centroids->push_back(max_belonging->val[i].first +1);
+        }
+    }
+    esmat_free(max_belonging);
+}
+void output_model (Esmat* W) {
+    vector<int> centroids;
+    get_all_centroids (W, &centroids); // contains index of all centroids
+    int nCentroids = centroids.size();
+    ofstream model_out ("opt_model");
+    model_out << "nCentroids: " << nCentroids << endl;
+    for (int i = 0; i < nCentroids; i ++) {
+        model_out << "centroids[" << i <<"]: " << centroids[i] << endl;
+    }
+    model_out.close();
+}
+void output_assignment (Esmat* W, Lookups * tables) {
+    int D = tables->nDocs;
+    int N = tables->nWords;
+    vector< pair<int,int> >* word_lookup = tables->word_lookup;
+    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
+    vector< vector< pair<int, double> > > words_asgn (N, vector< pair<int, double> > ());
+    int nEntries = W->val.size();
+    for (int i = 0; i < nEntries; i ++) {
+        int esmat_index = W->val[i].first;
+        int row_index = esmat_index % W->nRows;
+        int col_index = esmat_index / W->nRows;
+        double value = W->val[i].second;
+        words_asgn[row_index].push_back(make_pair(col_index, value));
+    }
+    ofstream asgn_out ("opt_assignment");
+    // get all centroids
+    for (int d = 0; d < D; d++) {
+        asgn_out << "d = " << d << endl;
+        for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
+            // output identification and its belonging
+            asgn_out << "  id=" << i+1 << ", voc_index=" << (*word_lookup)[i].first << ", "; 
+            for (int j = 0; j < words_asgn[i].size(); j ++) {
+                int index = words_asgn[i][j].first;
+                double value = words_asgn[i][j].second;
+                if( fabs(value) > 0.03 ) {
+                    asgn_out << index+1 << "(" << value << ")";
+                }
+            }
+            asgn_out << endl;
+        }
+    }
+    asgn_out.close();
 }
 /* dummy_penalty = r dot (1 - sum_k w_nk) */
 double get_dummy_loss (Esmat* Z) {
@@ -284,14 +330,14 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
         if (k == 0) {
             gamma = 1.0;
         } else {
-        // gamma* = (sum1 + sum2 + sum3) / sum4, where
-        // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
-        // sum2 = sum_n sum_k (w - s)_nk
-        // sum3 = - RHO * sum_n sum_k  (w - z) 
-        // sum4 = sum_n sum_k RHO * (s - w)
-        esmat_sub (w_1, s, w_minus_s);
-        // cout << esmat_toString(w_minus_s);
-        esmat_sub (w_1, Z_1, w_minus_z);
+            // gamma* = (sum1 + sum2 + sum3) / sum4, where
+            // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
+            // sum2 = sum_n sum_k (w - s)_nk
+            // sum3 = - RHO * sum_n sum_k  (w - z) 
+            // sum4 = sum_n sum_k RHO * (s - w)
+            esmat_sub (w_1, s, w_minus_s);
+            // cout << esmat_toString(w_minus_s);
+            esmat_sub (w_1, Z_1, w_minus_z);
 
 #ifdef EXACT_LINE_SEARCH_DUMP
             cout << "[w_minus_s]" << endl;
@@ -299,33 +345,33 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
             cout << "[w_minus_z]" << endl;
             cout << esmat_toString(w_minus_z);
 #endif
-        // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
-        // since incremental term = w + gamma (s - w), and whatever gamma is,
-        // w^(k+1) = w^(k), this would be equivalent to gamma = 0
-        if (esmat_frob_norm (w_minus_s) == 0) {
-            gamma = 0;
-            is_global_optimal_reached = true;
-            // reach the exit condition, do not make more iteration
-        } else {
-            sum1 = 0.5 * esmat_frob_prod (w_minus_s, dist_mat);
-            sum2 = esmat_frob_prod (Y_1, w_minus_s);
-            sum3 = RHO * esmat_frob_prod (w_minus_z, w_minus_s);
-            sum4 = RHO * esmat_frob_norm (w_minus_s);
-            // gamma should be within interval [0,1]
-            // gamma = (sum1 + sum2 + sum3) / sum4;
-            gamma = (sum1 + sum2 + sum3) / sum4;
+            // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
+            // since incremental term = w + gamma (s - w), and whatever gamma is,
+            // w^(k+1) = w^(k), this would be equivalent to gamma = 0
+            if (esmat_frob_norm (w_minus_s) == 0) {
+                gamma = 0;
+                is_global_optimal_reached = true;
+                // reach the exit condition, do not make more iteration
+            } else {
+                sum1 = 0.5 * esmat_frob_prod (w_minus_s, dist_mat);
+                sum2 = esmat_frob_prod (Y_1, w_minus_s);
+                sum3 = RHO * esmat_frob_prod (w_minus_z, w_minus_s);
+                sum4 = RHO * esmat_frob_norm (w_minus_s);
+                // gamma should be within interval [0,1]
+                // gamma = (sum1 + sum2 + sum3) / sum4;
+                gamma = (sum1 + sum2 + sum3) / sum4;
 
 #ifdef EXACT_LINE_SEARCH_DUMP
-            cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
-                << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
-                << ")"
-                << endl;
+                cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
+                    << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
+                    << ")"
+                    << endl;
 #endif
-        }
-        /* postcondition for early stopping */
-        if (gamma < TRIM_THRESHOLD * 1e-3) {
-            is_global_optimal_reached = true;
-        }
+            }
+            /* postcondition for early stopping */
+            if (gamma < TRIM_THRESHOLD * 1e-3) {
+                is_global_optimal_reached = true;
+            }
         }
 #endif
         // update the w^(k+1)
@@ -340,10 +386,10 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
         // report the #iter and objective function
         /*
            cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
-        */
+           */
 
         k ++;
-    // cout << "within frank_wolfe_solver: next iteration" << endl;
+        // cout << "within frank_wolfe_solver: next iteration" << endl;
     }
     // cout << "within frank_wolfe_solver: to free gradient" << endl;
     esmat_free (gradient);
@@ -376,7 +422,7 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
         // no need to solve all-zero matrix w
         return ;
     }
-    
+
     // i is index of element in esmat->val, j is column index
     int i = 0; int j = 0;
     int begin_idx, end_idx;
@@ -398,7 +444,7 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
             for (int v = 0; v < nValidAlpha; v ++) {
                 sum_alpha += alpha_vec[v].second;
                 new_term = (sum_alpha - lambda) / (v + 1.0);
-               // cout << "new_term: " << new_term << endl;
+                // cout << "new_term: " << new_term << endl;
                 if ( new_term > max_term ) {
                     separator = alpha_vec[v].second;
                     max_term = new_term;
@@ -457,7 +503,7 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
                 ++ mstar;
             }
         }
-            // cout << "mstar: " << mstar << endl;
+        // cout << "mstar: " << mstar << endl;
         // c) assign closed-form solution of current column to w
         if (nValidAlpha == 0 || mstar <= 0) {
             ; // this column of w is all-zero, hence we do nothing for that 
@@ -587,7 +633,7 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         esmat_zeros (w_1);
         esmat_zeros (w_2);
         esmat_zeros (w_3);
-       
+
         // STEP ONE: RESOLVE W_1, W_2, W_3, W_4
         // resolve w_1
         // cout << "[w_1 before frank_wolfe_solver] " << esmat_toInfo(w_1);
@@ -596,7 +642,7 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables, dist_mat);
         // cout << "[w_1 after frank_wolfe_solver]" << esmat_toInfo(w_1);
         // out << esmat_toString (w_1);
-        
+
         // resolve w_2
         global_topic_subproblem (y_2, z, w_2, RHO, LAMBDAs[0]);
         // compute value of objective function
@@ -635,7 +681,7 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // double trace_wtwo_minus_z = esmat_frob_norm (diff_2); 
         // double trace_wtwo_minus_z = esmat_frob_norm (diff_3); 
         // double trace_wfour_minus_z = esmat_frob_norm (diff_4); 
-        
+
         if (iter % 10 == 0) {
             esmat_print(z, "[z]");
             esmat_print(y_1, "[y_1]");
@@ -647,9 +693,9 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         iter ++;
         cout << endl;
         cout << "###################[iter:"<<iter<<"]#####################" << endl;
-       // if (iter == 2) return;
+        // if (iter == 2) return;
     }
-    
+
     // STEP FIVE: memory recollection
     esmat_free (w_1);
     esmat_free (w_2);
@@ -699,7 +745,7 @@ int main (int argc, char ** argv) {
     lookup_tables.word_lookup = &word_lookup;
     lookup_tables.voc_lookup = &voc_lookup;
     document_list_read (doc_file, &lookup_tables);
-    
+
     lookup_tables.nDocs = lookup_tables.doc_lookup->size();
     lookup_tables.nWords = lookup_tables.word_lookup->size();
     lookup_tables.nVocs = nVocs;
@@ -721,7 +767,7 @@ int main (int argc, char ** argv) {
     Esmat* W = esmat_init (lookup_tables.nWords, lookup_tables.nDocs);
     Esmat* dist_mat = esmat_init (N, D);
     compute_dist_mat (dist_mat, &lookup_tables, N, D);
-    
+
     ofstream dmat_out ("dist_mat");
     dmat_out << esmat_toInfo(dist_mat);
     dmat_out << esmat_toString(dist_mat);
@@ -734,7 +780,7 @@ int main (int argc, char ** argv) {
     output_model (W);
 
     /* Output assignment */
-    output_assignment (W, &word_lookup);
+    output_assignment (W, &lookup_tables);
 
     /* reallocation */
     esmat_free (W);
