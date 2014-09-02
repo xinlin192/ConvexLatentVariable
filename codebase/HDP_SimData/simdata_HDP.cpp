@@ -113,7 +113,8 @@ int main(int argc, char** argv){
 	
 		map<int,int>::iterator it;
 		for(it=docs[i].begin();it!=docs[i].end();it++){
-			fout << it->first << ":" << it->second << " ";
+            // Note : 1-based
+			fout << it->first +1 << ":" << it->second << " ";
 		}
 		fout << endl;
 	}
@@ -129,7 +130,8 @@ int main(int argc, char** argv){
 	////word freq
 	fout.open("word_freq");
 	for(int i=0;i<word_freq.size();i++){
-		fout << i << " " << word_freq[i] << endl;;
+        // NOTE: 1-based
+		fout << i+1 << " " << word_freq[i] << endl;;
 	}
 	fout.close();
 	
