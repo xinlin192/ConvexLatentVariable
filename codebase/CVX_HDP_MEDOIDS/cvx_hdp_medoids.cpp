@@ -212,9 +212,11 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
        */
 
     // STEP ONE: compute main term
+    double total = 0.0;
     double main = -1.0;
     if (prob_index == 1) {
         double loss = esmat_frob_prod (dist_mat, Z);
+        total += loss;
 #ifdef SUBPROBLEM_DUMP
         cout << "loss: " << loss << ", ";
 #endif
@@ -240,7 +242,7 @@ double subproblem_objective (int prob_index, Esmat* Y, Esmat* Z, Esmat* W, doubl
     double linear = esmat_frob_prod (Y, w_minus_z);
     // STEP THREE: compute quadratic term: quadratic = 0.5 * RHO * || w - z ||^2 
     double quadratic = 0.5 * RHO * esmat_frob_norm (w_minus_z);
-    double total = main + linear + quadratic;
+    total += main + linear + quadratic;
     esmat_free (w_minus_z);
 #ifdef SUBPROBLEM_DUMP
     cout << title << ": " << main << ", ";
@@ -682,12 +684,14 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // double trace_wtwo_minus_z = esmat_frob_norm (diff_3); 
         // double trace_wfour_minus_z = esmat_frob_norm (diff_4); 
 
+        /*
         if (iter % 10 == 0) {
             esmat_print(z, "[z]");
             esmat_print(y_1, "[y_1]");
             esmat_print(y_2, "[y_2]");
             esmat_print(y_3, "[y_3]");
         }
+        */
 
         // STEP FOUR: trace the objective function
         iter ++;
@@ -771,6 +775,7 @@ int main (int argc, char ** argv) {
     ofstream dmat_out ("dist_mat");
     dmat_out << esmat_toInfo(dist_mat);
     dmat_out << esmat_toString(dist_mat);
+    cerr << "dist_mat output finished.." << endl;
     cvx_hdp_medoids (dist_mat, LAMBDAs, W, &lookup_tables);
 
     /* Output objective */

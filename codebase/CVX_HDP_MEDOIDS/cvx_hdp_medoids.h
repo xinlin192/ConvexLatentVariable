@@ -52,14 +52,15 @@ void split (string input, vector<string>* elements, string delimiter) {
 /* TODO: consider the vocabulary is 0-based or 1-based */
 void voc_list_read (string fname, vector<string>* vocList) {
    	ifstream fin(fname.c_str());
-
-	string line;
+    string line;
 	while (!fin.eof()) {
-        fin >> line;
+        getline(fin, line);
 		if ( fin.eof() ) break;
         vocList->push_back (line);
+        // cout << line << endl;
 	}
 	fin.close(); 
+    cout << "end of file" << endl;
 }
 
 void voc_list_print (vector<string>* vocList) {
