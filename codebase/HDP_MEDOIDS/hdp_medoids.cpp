@@ -113,7 +113,8 @@ void output_model (vector< vector<int> > v, Lookups* tables) {
     }
     int m = 0;
     for (set<int>::iterator it=globals.begin();it!=globals.end();++it)  {
-        medoids_out << "Medoids[" << m << "]: " << *it << endl;
+        // NOTE: all id and global_medoids id are 1-based
+        medoids_out << "Medoids[" << m << "]: " << *it+1<< endl;
         m++;
     }
     medoids_out.close();
@@ -125,7 +126,8 @@ void output_assignment (vector<int> z, vector<vector<int> > v, Lookups* tables) 
     for (int d = 0; d < D; d ++) {
         asgn_out << "d = " << d << endl;
         for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i++) {
-            asgn_out << "  id=" << i+1 << ", " << v[d][z[i]] << "(1)" << endl;
+            // NOTE: all id and global_medoids id are 1-based
+            asgn_out << "  id=" << i+1 << ", " << v[d][z[i]]+1 << "(1)" << endl;
         }
     }
     asgn_out.close();
