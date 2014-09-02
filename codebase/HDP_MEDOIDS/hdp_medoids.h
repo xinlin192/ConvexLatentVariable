@@ -52,9 +52,9 @@ void split (string input, vector<string>* elements, string delimiter) {
 void voc_list_read (string fname, vector<string>* vocList) {
    	ifstream fin(fname.c_str());
 
-	string line;
+    string line;
 	while (!fin.eof()) {
-        fin >> line;
+        getline(fin, line);
 		if ( fin.eof() ) break;
         vocList->push_back (line);
 	}
