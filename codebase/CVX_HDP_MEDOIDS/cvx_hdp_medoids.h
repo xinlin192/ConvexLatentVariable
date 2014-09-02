@@ -55,12 +55,13 @@ void voc_list_read (string fname, vector<string>* vocList) {
     string line;
 	while (!fin.eof()) {
         getline(fin, line);
-		if ( fin.eof() ) break;
+		if ( fin.eof() ) { 
+            break;
+        }
         vocList->push_back (line);
         // cout << line << endl;
 	}
-	fin.close(); 
-    cout << "end of file" << endl;
+	// fin.close(); 
 }
 
 void voc_list_print (vector<string>* vocList) {

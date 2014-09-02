@@ -738,6 +738,7 @@ int main (int argc, char ** argv) {
     // preprocess the input dataset
     vector<string> voc_list;
     voc_list_read (voc_file, &voc_list);
+    cerr << "vocs read done! " << endl;
     int nVocs = voc_list.size();
 
     // init lookup_tables
@@ -749,6 +750,7 @@ int main (int argc, char ** argv) {
     lookup_tables.word_lookup = &word_lookup;
     lookup_tables.voc_lookup = &voc_lookup;
     document_list_read (doc_file, &lookup_tables);
+    cerr << "docs read done" << endl;
 
     lookup_tables.nDocs = lookup_tables.doc_lookup->size();
     lookup_tables.nWords = lookup_tables.word_lookup->size();
