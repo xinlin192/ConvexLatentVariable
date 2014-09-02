@@ -85,6 +85,9 @@ void output_objective (vector<int> z, vector< vector<int> > v, vector<double> LA
     for (int d = 0; d < D; d ++) {
         for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i++) {
             int g = v[d][z[i]];
+            cout << "z[" << i << "]= " << z[i];
+            cout << " v[d].size = " << v[d].size() << endl;
+            cout << "g=" << g << endl;
             obj += dist_mat[i][g];
             globals.insert(g);
         }
@@ -98,11 +101,11 @@ void output_objective (vector<int> z, vector< vector<int> > v, vector<double> LA
     obj_out << "Local: " << local << endl;
     obj_out.close();
 }
-void output_medoids (vector< vector<int> > v, Lookups* tables) {
+void output_model (vector< vector<int> > v, Lookups* tables) {
     int N = tables->nWords;
     int D = tables->nDocs;
     set<int> globals;
-    ofstream medoids_out("opt_medoids");
+    ofstream medoids_out("opt_model");
     for (int d = 0; d < D; d ++) {
         int nLocalMedoids = v[d].size();
         for (int l = 0; l < nLocalMedoids; l++) 
@@ -156,6 +159,7 @@ void hdp_medoids (vector<int>& z, vector<vector<int> >& v, vector<int>& global_m
     int iter = 0;
     int MAX_ITER = 1000;
     while (iter < MAX_ITER) {
+        cout << "========================iter=" << iter << "=============\n";
         for (int d = 0; d < D; d++) {
             for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
                 // 1) preprocess distance
@@ -223,8 +227,7 @@ void hdp_medoids (vector<int>& z, vector<vector<int> >& v, vector<int>& global_m
             for (int l = 0; l < nLocalMedoids; l++) {
                 vector<int> words;
                 for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i++) 
-                    if (z[i] == l) {
-                        words.push_back(i);
+                    if (z[i] == l) words.push_back(i);
                 int nDocWords = words.size();
                 double ** temp_dist_mat = mat_init(nDocWords, D);
                 for (int w = 0; w < nDocWords; w++) 
@@ -240,25 +243,23 @@ void hdp_medoids (vector<int>& z, vector<vector<int> >& v, vector<int>& global_m
                         min_value = sum_temp_dist_col[td];
                     }
                 }
-                // 
-                v[d][l] = min_index; // update the better medoid
+                int is_new_medoid_exist = false;
+                for (int s = 0; s < l; s++) {
+                    if (v[d][s] == min_index) {
+                        v[d].erase(v[d].begin()+l);
+                        is_new_medoid_exist = true;
+                        for (int i=doc_lookup[d].first;i<doc_lookup[d].second; i++) 
+                            if (z[i] == l) z[i] = s;
+                    }
+                    break;
+                }
+                if (!is_new_medoid_exist) 
+                    v[d][l] = min_index;
+                v[d][l] = min_index;
                 delete[] sum_temp_dist_col;
                 mat_free (temp_dist_mat, nDocWords, D);
-                /*
-                // 5) if .., global augmentation
-                //  if min_p d_jcp > \lambda_g + ... 
-                if (min_d_jcp > lambda_global+) {
-                    global_medoids.push_back(new_g);
-                    local_medoids[][] = new_g;
-                }
-                // 6) otherwise, update global association
-                else {
-                    local_medoids[][] = new_g;
-                }
-                */
             }
         }
-
         // 7) re-elect medoids for global cluster
         int nGlobalMedoids = global_medoids.size();
         for (int g = 0; g < nGlobalMedoids; g++) {
@@ -279,11 +280,9 @@ void hdp_medoids (vector<int>& z, vector<vector<int> >& v, vector<int>& global_m
             int R = words.size(); 
             int C = examplars.size();
             double** candidate_dist_mat = mat_init (R,C);
-            for (int r = 0; r < R; r ++) {
-                for (int c = 0; c < C; c ++) {
+            for (int r = 0; r < R; r ++) 
+                for (int c = 0; c < C; c ++) 
                     candidate_dist_mat[r][c] = dist_mat[words[r]][examplars[c]];
-                }
-            }
             double* min_d_rc = new double [C];
             mat_sum_col (candidate_dist_mat, min_d_rc, R,C);
             int min_index;
@@ -366,11 +365,12 @@ int main (int argc, char ** argv) {
     vector< vector<int> > v (D,vector<int>(1,0));
 
     hdp_medoids (z, v, global_medoids, dist_mat, LAMBDAs, &lookup_tables);
+    cout << "out" << endl;
 
     /* Output objective */
     output_objective (z, v, LAMBDAs, dist_mat, &lookup_tables);
     /* Output cluster centroids */
-    output_medoids (v, &lookup_tables);
+    output_model (v, &lookup_tables);
     /* Output assignment */
     output_assignment (z, v, &lookup_tables);
 
