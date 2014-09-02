@@ -22,6 +22,10 @@ Inventory
 
     exSparseMat.h           extensible sparse matrix API
 
+COMMAND
+-------------
+    ./cvx_hdp_medoids ../HDP_SimData/word_freq ../HDP_SimData/docs 1 1.6
+
 DEVELOPMENT LOGS
 ---------------
 

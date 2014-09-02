@@ -609,7 +609,7 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
 void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 2);
-    double ALPHA = 1.0;
+    double ALPHA = 0.1;
     double RHO = 1.0;
     int N = tables->nWords;
     int D = tables->nDocs;
@@ -628,7 +628,7 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
     /* SET ITERATION-RELEVANT VARIABLES */
     double error = INF;
     int iter = 0; 
-    int max_iter = 2000;
+    int max_iter = 5000;
     /* ITERATIVE OPTIMIZATION */
     while ( iter < max_iter ) { // STOPPING CRITERIA
         // STEP ZERO: RESET ALL SUBPROBLEM SOLUTIONS (OPTIONAL) 
