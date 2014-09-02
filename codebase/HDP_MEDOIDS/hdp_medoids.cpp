@@ -264,7 +264,9 @@ void hdp_medoids (vector<int>& z, vector<vector<int> >& v, vector<int>& global_m
         }
         // 7) re-elect medoids for global cluster
         int nGlobalMedoids = global_medoids.size();
+        cout << "re-election: " << nGlobalMedoids << endl;
         for (int g = 0; g < nGlobalMedoids; g++) {
+            cout << "1" << endl;
             int p = global_medoids[g];
             vector<int> words;
             set<int> examplar_set;
@@ -278,7 +280,12 @@ void hdp_medoids (vector<int>& z, vector<vector<int> >& v, vector<int>& global_m
             }
             vector<int> examplars;
             for (set<int>::iterator it=examplar_set.begin();it!=examplar_set.end();++it) 
+            {
                 examplars.push_back(*it);
+                cout << "uniq_examplar: " << *it << endl;
+            }
+            // useless global_medoids
+            if (examplars.size() == 0) { continue;}
             int R = words.size(); 
             int C = examplars.size();
             double** candidate_dist_mat = mat_init (R,C);
@@ -295,6 +302,7 @@ void hdp_medoids (vector<int>& z, vector<vector<int> >& v, vector<int>& global_m
                     min_value = min_d_rc[m];
                 }
             }
+            cout << "size: " << examplars.size() << ", min_index: " << min_index << endl;
             int new_p = examplars[min_index];
             global_medoids[g] = new_p; // update
             delete[] min_d_rc;
