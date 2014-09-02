@@ -49,6 +49,16 @@ void output_model (double** W, int N);
 void output_model (Esmat* W);
 void output_assignment (Esmat* W, vector< pair<int,int> >* word_lookup);
  
+double sign (int input) {
+    if (input > 0) return 1.0;
+    else if ( input < 0 ) return -1.0;
+    else return 0.0;
+}
+bool pair_Second_Elem_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
+    // sort pairs by second element with *decreasing order*
+    return firstElem.second > secondElem.second;
+}
+
 class Instance {
 	public:
 	int id;
@@ -409,52 +419,4 @@ void output_assignment (double ** W, vector<Instance*>& data, int N) {
     }
     asgn_out.close();
 }
-void get_all_centroids(Esmat* W, vector<int>* centroids) {
-    Esmat* max_belonging = esmat_init();
-    esmat_max_over_col (W, max_belonging);
-    int size = max_belonging->val.size();
-    for (int i = 0; i < size; i ++ ) {
-        if (fabs(max_belonging->val[i].second) > 0.3) {
-            centroids->push_back(max_belonging->val[i].first +1);
-        }
-    }
-    esmat_free(max_belonging);
-}
-void output_model (Esmat* W) {
-    vector<int> centroids;
-    get_all_centroids (W, &centroids); // contains index of all centroids
-    int nCentroids = centroids.size();
-    ofstream model_out ("opt_model");
-    model_out << "nCentroids: " << nCentroids << endl;
-    for (int i = 0; i < nCentroids; i ++) {
-        model_out << "centroids[" << i <<"]: " << centroids[i] << endl;
-    }
-    model_out.close();
-}
-void output_assignment (Esmat* W, vector< pair<int,int> >* word_lookup) {
-    int N = word_lookup->size();
-    vector< vector< pair<int, double> > > words_asgn (N, vector< pair<int, double> > ());
-    int W_size = W->val.size();
-    for (int i = 0; i < W_size; i ++) {
-        int esmat_index = W->val[i].first;
-        int row_index = esmat_index % W->nRows;
-        int col_index = esmat_index / W->nRows;
-        double value = W->val[i].second;
-        words_asgn[row_index].push_back(make_pair(col_index, value));
-    }
-    ofstream asgn_out ("opt_assignment");
-    // get all centroids
-    for (int i = 0; i < N; i ++) {
-        // output identification and its belonging
-        asgn_out << "id=" << i+1 << ", voc_index=" << (*word_lookup)[i].first << ", "; 
-        for (int j = 0; j < words_asgn[i].size(); j ++) {
-            int index = words_asgn[i][j].first;
-            double value = words_asgn[i][j].second;
-            if( fabs(value) > 0.3 ) {
-                asgn_out << index+1 << "(" << value << "),\t";
-            }
-        }
-        asgn_out << endl;
-    }
-    asgn_out.close();
-}
+

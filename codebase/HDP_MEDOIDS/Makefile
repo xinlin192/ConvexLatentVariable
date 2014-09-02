@@ -1,5 +1,5 @@
 cpp=$(shell ls *.cpp) 
-headers=$(shell ls *.h)
+headers=$(shell ls ../*.h *.h)
 executable=$(shell echo $(cpp) | cut -d '.' -f 1)
 README=$(shell ls README*)
 

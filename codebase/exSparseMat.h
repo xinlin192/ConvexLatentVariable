@@ -760,6 +760,8 @@ void esmat_sum_row (Esmat* A, Esmat* dest)
 
 void esmat_max_over_col (Esmat* A, Esmat* dest) 
 { esmat_operate_col (A, dest, max, -INF); }
+void esmat_min_over_col (Esmat* A, Esmat* dest) 
+{ esmat_operate_col (A, dest, min, INF); }
 
 void esmat_min_row (Esmat* A, Esmat* dest) 
 { esmat_compare_row (A, dest, lt); }

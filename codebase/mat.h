@@ -148,18 +148,37 @@ double mat_dot (double * vec1, double * vec2, int N) {
 
     return sum;
 }
-
+string mat_toString (double ** src, int nRows, int nCols) {
+    string field_seperator = ",";
+    string line_separator = "\n";
+    string str = "";
+    char buf[1000];
+    for (int i = 0; i < nRows; i ++) {
+        for (int j = 0; j < nCols; j ++) { 
+            if (src[i][j] > 1e299)
+                str += "inf" + field_seperator;
+            else {
+                sprintf(buf, "%f", src[i][j]);
+                string temp = string(buf);
+                str += temp + field_seperator;
+            }
+        }
+        str += line_separator;
+    }
+    return str;
+}
 void mat_print (double ** src, int nRows, int nCols) {
-
     string field_seperator = ",";
     string line_separator = "\n";
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) { 
-            cout << src[i][j] << field_seperator;
+            if (src[i][j] > 1e299)
+                cout << "inf" << field_seperator;
+            else
+                cout << src[i][j] << field_seperator;
         }
         cout << line_separator;
     }
-
 }
 
 void mat_copy (double ** src, double ** dest, int nRows, int nCols) {
