@@ -20,13 +20,6 @@ using namespace std;
 #include "../util.h"
 #endif
 
-/*
-#ifndef EXSPARSE_MAT_H
-#include "../exSparseMat.h"
-#endif
-*/
-
-
 typedef struct {
     int nWords;
     int nVocs;
