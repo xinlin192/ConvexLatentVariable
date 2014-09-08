@@ -17,7 +17,7 @@ TODO list:
   [DONE] 1. compute_dist_mat generates matrix with N by D -- checked
   [DONE] 2. fixup bugs in frank_wolfe_solver -- checked
   [DONE] 3. fixup bugs in exact line search  -- checked
-  4. fixup problem in group_lasso_solver
+  [DONE] 4. fixup problem in group_lasso_solver
   5. fixup local problem separation and -1 problem
   [DONE] 6. develop early stopping detection for frank_wolfe_solver
   [DONE] 7. refactor codes and refine the exSparseMat API
@@ -142,13 +142,14 @@ void output_assignment (Esmat* W, Lookups * tables) {
             for (int j = 0; j < words_asgn[i].size(); j ++) {
                 int index = words_asgn[i][j].first;
                 double value = words_asgn[i][j].second;
-                if( fabs(value) > 0.03 ) {
+                if( fabs(value) > 0.0003 ) {
                     asgn_out << index+1 << "(" << value << ")";
                 }
             }
             asgn_out << endl;
         }
     }
+    asgn_out << esmat_toString(W);
     asgn_out.close();
 }
 /* dummy_penalty = r dot (1 - sum_k w_nk) */
@@ -424,25 +425,30 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
         // no need to solve all-zero matrix w
         return ;
     }
-
     // i is index of element in esmat->val, j is column index
     int i = 0; int j = 0;
     int begin_idx, end_idx;
-    int col_es_begin = wbar->val[0].first;
+    int col_es_begin = 0;
     vector< pair<int,double> > alpha_vec;
-    while (i < SIZE && j < C) {
+    while ((i < SIZE && j < C)) {
         begin_idx = j * R;
         end_idx = (j+1) * R;
         int esWBAR_index = wbar->val[i].first;
-        if (esWBAR_index >= end_idx) { 
+        // cout << "i: " << i << " , j: " << j << endl;
+        if (esWBAR_index >= end_idx) {
+            int nValidAlpha = alpha_vec.size();
+            // cout << "nValidAlpha: " << nValidAlpha << endl;
+            if (nValidAlpha == 0) {
+                j ++;
+                continue;
+            }
             // a) sort existing temp_vec
             std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
             // b) find mstar
             int mstar = 0; // number of elements supporting the sky
-            double separator;
+            double separator; 
             double max_term = -INF, new_term;
             double sum_alpha = 0.0;
-            int nValidAlpha = alpha_vec.size();
             for (int v = 0; v < nValidAlpha; v ++) {
                 sum_alpha += alpha_vec[v].second;
                 new_term = (sum_alpha - lambda) / (v + 1.0);
@@ -453,9 +459,9 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
                     ++ mstar;
                 }
             }
-            // cout << "mstar: " << mstar << endl;
+            // cout << "mstar: " << mstar << ", max_term: " << max_term << endl;
             // c) assign closed-form solution of current column to w
-            if (nValidAlpha == 0 || mstar <= 0) {
+            if (mstar <= 0) {
                 ; // this column of w is all-zero, hence we do nothing for that 
             } else {
                 for (int esi = col_es_begin; wbar->val[esi].first < end_idx; esi ++) {
@@ -498,14 +504,13 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
         for (int v = 0; v < nValidAlpha; v ++) {
             sum_alpha += alpha_vec[v].second;
             new_term = (sum_alpha - lambda) / (v + 1.0);
-            // cout << "new_term: " << new_term << endl;
             if ( new_term > max_term ) {
                 separator = alpha_vec[v].second;
                 max_term = new_term;
                 ++ mstar;
             }
         }
-        // cout << "mstar: " << mstar << endl;
+        // cout << "mstar: " << mstar << ", max_term: " << max_term << endl;
         // c) assign closed-form solution of current column to w
         if (nValidAlpha == 0 || mstar <= 0) {
             ; // this column of w is all-zero, hence we do nothing for that 
@@ -522,13 +527,11 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
         }
     }
 #ifdef GROUP_LASSO_DEBUG
-    cout << "[w]"  << esmat_toInfo (w) << endl;
-    cout << esmat_toString (w);
+    esmat_print (w, "[solved w]");
 #endif
     esmat_trim (w);
 #ifdef GROUP_LASSO_DEBUG
-    cout << "[w after trimming]"  << esmat_toInfo (w) << endl;
-    cout << esmat_toString (w);
+    esmat_print (w, "[w after trimming]");
 #endif
     // STEP THREE: recollect temporary variable - wbar
     esmat_free (wbar);
@@ -578,6 +581,8 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
 
 #ifdef LOCAL_SUBPROBLEM_DUMP
         cout << "res_subW[d" << d << "]" << esmat_toInfo(subW[d]);
+        cout << esmat_toString(subW[d]);
+        cout << endl;
 #endif
 
         // STEP TREE: merge solution of each individual group (place back)
@@ -650,11 +655,13 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // compute value of objective function
         double sub2_obj = subproblem_objective (2, y_2, z, w_2, RHO, LAMBDAs[0],tables, dist_mat);
         // cout << "sub2_objective: " << sub2_obj << endl;
+        esmat_print(w_2, "[w_2] ");
 
         // cout << "[w_3]" << w_3->nRows << "," << w_3->nCols << "," << w_3->val.size() << endl;
         local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[1], tables);
         // cout << "[w_3]" << w_3->nRows << "," << w_3->nCols << "," << w_3->val.size() << endl;
         double sub3_obj = subproblem_objective (3, y_3, z, w_3, RHO, LAMBDAs[1], tables, dist_mat);
+        esmat_print(w_3, "[w_3] ");
 
         // STEP TWO: update z by averaging w_1, w_2 and w_4
         Esmat* temp = esmat_init (N, D);
@@ -696,6 +703,7 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // STEP FOUR: trace the objective function
         iter ++;
         cout << endl;
+        esmat_print(z, "[z] ");
         cout << "###################[iter:"<<iter<<"]#####################" << endl;
         // if (iter == 2) return;
     }
