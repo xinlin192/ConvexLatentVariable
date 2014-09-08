@@ -28,4 +28,5 @@ COMMAND
 
 DEVELOPMENT LOGS
 ---------------
-
+1. for bad pair of lambdas: interger solution cannot be guaranteed. 
+   see lambda\_global = 1.6 and lambda\_local = 1.

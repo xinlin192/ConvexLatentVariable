@@ -606,7 +606,7 @@ void local_topic_subproblem (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double la
     cout << "[local w output]" << w->nRows << "," << w->nCols << "," << w->val.size() << endl;
 #endif
 }
-void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* tables) {
+void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups* tables, int max_iter) {
     // SET MODEL-RELEVANT PARAMETERS 
     assert (LAMBDAs.size() == 2);
     double ALPHA = 0.1;
@@ -628,7 +628,7 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
     /* SET ITERATION-RELEVANT VARIABLES */
     double error = INF;
     int iter = 0; 
-    int max_iter = 5000;
+    // int max_iter = 5000;
     /* ITERATIVE OPTIMIZATION */
     while ( iter < max_iter ) { // STOPPING CRITERIA
         // STEP ZERO: RESET ALL SUBPROBLEM SOLUTIONS (OPTIONAL) 
@@ -722,9 +722,9 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
 int main (int argc, char ** argv) {
 
     // EXCEPTION control: illustrate the usage if get input of wrong format
-    if (argc < 5) {
+    if (argc < 6) {
         cerr << "Usage: " << endl;
-        cerr << "\tcvx_hdp_medoids [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local]" << endl;
+        cerr << "\tcvx_hdp_medoids [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local] [max_iter]" << endl;
         exit(-1);
     }
 
@@ -734,6 +734,7 @@ int main (int argc, char ** argv) {
     vector<double> LAMBDAs (2, 0.0);
     LAMBDAs[0] = atof(argv[3]); // lambda_document
     LAMBDAs[1] = atof(argv[4]); // lambda_topic
+    int max_iter = atoi(argv[5]); // max_iter
 
     // preprocess the input dataset
     vector<string> voc_list;
@@ -778,7 +779,7 @@ int main (int argc, char ** argv) {
     dmat_out << esmat_toInfo(dist_mat);
     dmat_out << esmat_toString(dist_mat);
     cerr << "dist_mat output finished.." << endl;
-    cvx_hdp_medoids (dist_mat, LAMBDAs, W, &lookup_tables);
+    cvx_hdp_medoids (dist_mat, LAMBDAs, W, &lookup_tables, max_iter);
 
     /* Output objective */
     output_objective(clustering_objective (dist_mat, W));
