@@ -17,7 +17,7 @@
 #include "../util.h"
 
 /* algorithmic options */ 
-//#define EXACT_LINE_SEARCH  // comment this to use inexact search
+#define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
@@ -25,6 +25,7 @@
 // #define BLOCKWISE_DUMP
 // #define NCENTROID_DUMP
 
+const double FRANK_WOLFE_TOL = 0.01;
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
 const double EPS = 1.0;
@@ -138,7 +139,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
         // since incremental term = w + gamma (s - w), and whatever gamma is,
         // w^(k+1) = w^(k), this would be equivalent to gamma = 0
-        if (mat_norm2(w_minus_s, N, N) == 0) {
+        if (mat_norm2(w_minus_s, N, N) == FRANK_WOLFE_TOL) {
             gamma = 0;
             is_global_optimal_reached = true;
         } else {
@@ -200,15 +201,6 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     mat_free (s, N, N);
     // cout << "end frank_wolf: finished! " << endl;
 }
-
-double sign (int input) {
-
-    if (input > 0) return 1.0;
-    else if ( input < 0 ) return -1.0;
-    else return 0.0;
-
-}
-
 bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
     // sort pairs by second element with decreasing order
     return firstElem.second > secondElem.second;
