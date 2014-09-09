@@ -23,16 +23,16 @@
 */
 
 /*
-Shrinking methods for frank_wolfe_solver:
-  1. inherently inactive for n,k that dist_mat[n][k] == inf
-  2. inactive 
-  3. gamma < TRIM_THRESHOLD  
- */
+   Shrinking methods for frank_wolfe_solver:
+   1. inherently inactive for n,k that dist_mat[n][k] == inf
+   2. inactive 
+   3. gamma < TRIM_THRESHOLD  
+   */
 
 #include "cvx_hdp_medoids.h"
 using namespace std;
 
-/* algorithmic options */ 
+/* algorithmic options */
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
@@ -43,8 +43,10 @@ using namespace std;
 // #define GROUP_LASSO_DEBUG
 // #define BLOCKWISE_DUMP
 // #define DIST_MAT_DUMP
+
 #define SUBPROBLEM_DUMP
 #define EPSILON 1e-3
+
 bool iszero (double value) { return (value > -EPSILON && value < EPSILON); }
 bool isone (double value) { return (value > 1-EPSILON && value < 1+EPSILON); }
 
@@ -96,7 +98,7 @@ void compute_dist_mat (Esmat* dist_mat, Lookups* tables, int N, int D) {
                     dist = INF;
                 } else {
                     prob_w_d2 = iter->second;
-                //   dist(w, d2) =  - count_w_d1 * log( prob_d2(w) )
+                    //   dist(w, d2) =  - count_w_d1 * log( prob_d2(w) )
                     dist = - count_w_d1 * log(prob_w_d2);
                 }
                 int esmat_index = w + N * j;
@@ -292,9 +294,9 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat * Y_1, Esmat * Z_1, Esmat * w_1,
     Esmat * old_s = esmat_init (w_1);
 
 #ifndef EXACT_LINE_SEARCH
-    int K = 300;
+    int K = 1000;
 #else
-    int K = 50;
+    int K = 500;
     Esmat * w_minus_s = esmat_init ();
     Esmat * w_minus_z = esmat_init ();
 #endif
@@ -706,13 +708,13 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // double trace_wfour_minus_z = esmat_frob_norm (diff_4); 
 
         /*
-        if (iter % 10 == 0) {
-            esmat_print(z, "[z]");
-            esmat_print(y_1, "[y_1]");
-            esmat_print(y_2, "[y_2]");
-            esmat_print(y_3, "[y_3]");
-        }
-        */
+           if (iter % 10 == 0) {
+           esmat_print(z, "[z]");
+           esmat_print(y_1, "[y_1]");
+           esmat_print(y_2, "[y_2]");
+           esmat_print(y_3, "[y_3]");
+           }
+           */
 
         // STEP FOUR: trace the objective function
         iter ++;

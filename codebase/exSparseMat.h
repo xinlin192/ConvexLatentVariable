@@ -21,7 +21,7 @@
 using namespace std;
 
 /* Global variables */
-const double DUMMY_PENALTY_RATE = 1000.0;
+const double DUMMY_PENALTY_RATE = 1e5;
 const double TRIM_THRESHOLD = 10e-5;
 const double EPISILON = 10e-3;
 const double INF = 10e300;
