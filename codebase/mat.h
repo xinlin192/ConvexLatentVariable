@@ -277,6 +277,13 @@ void mat_set_all (double ** mat, double value, int R, int C) {
         }
     }
 }
+void mat_set(double ** mat, double ** z, int R, int C) {
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+            mat[i][j] = z[i][j];
+        }
+    }
+}
 
 // TODO: mat_write and mat_read
 

@@ -139,7 +139,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // NOTE: in case of ||w_1 - s||^2 = 0, not need to optimize anymore
         // since incremental term = w + gamma (s - w), and whatever gamma is,
         // w^(k+1) = w^(k), this would be equivalent to gamma = 0
-        if (mat_norm2(w_minus_s, N, N) == FRANK_WOLFE_TOL) {
+        if (mat_norm2(w_minus_s, N, N) <= FRANK_WOLFE_TOL) {
             gamma = 0;
             is_global_optimal_reached = true;
         } else {
@@ -427,8 +427,8 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe"  << endl;
 #endif
-    mat_zeros (wone, N, N);
-    mat_zeros (wtwo, N, N);
+    mat_set (wone, z, N, N);
+    mat_set (wtwo, z, N, N);
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter); // for w_1
