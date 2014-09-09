@@ -663,21 +663,17 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // cout << esmat_toString (w_1);
         frank_wolfe_solver (dist_mat, y_1, z, w_1, RHO); 
         double sub1_obj = subproblem_objective (1, y_1, z, w_1, RHO, 0.0, tables, dist_mat);
-        // cout << "[w_1 after frank_wolfe_solver]" << esmat_toInfo(w_1);
-        // out << esmat_toString (w_1);
 
         // resolve w_2
         global_topic_subproblem (y_2, z, w_2, RHO, LAMBDAs[0]);
         // compute value of objective function
         double sub2_obj = subproblem_objective (2, y_2, z, w_2, RHO, LAMBDAs[0],tables, dist_mat);
         // cout << "sub2_objective: " << sub2_obj << endl;
-        // esmat_print(w_2, "[w_2] ");
 
         // cout << "[w_3]" << w_3->nRows << "," << w_3->nCols << "," << w_3->val.size() << endl;
         local_topic_subproblem (y_3, z, w_3, RHO, LAMBDAs[1], tables);
         // cout << "[w_3]" << w_3->nRows << "," << w_3->nCols << "," << w_3->val.size() << endl;
         double sub3_obj = subproblem_objective (3, y_3, z, w_3, RHO, LAMBDAs[1], tables, dist_mat);
-        // esmat_print(w_3, "[w_3] ");
 
         // STEP TWO: update z by averaging w_1, w_2 and w_4
         Esmat* temp = esmat_init (N, D);
@@ -719,6 +715,9 @@ void cvx_hdp_medoids (Esmat* dist_mat, vector<double> LAMBDAs, Esmat* W, Lookups
         // STEP FOUR: trace the objective function
         iter ++;
         cout << endl;
+        // esmat_print (w_1, "[w_1]");
+        // esmat_print (w_2, "[w_2]");
+        // esmat_print (w_3, "[w_3]");
         esmat_print (z, "[z]");
         if (stopping(z)) break;
         // esmat_print(z, "[z] ");
