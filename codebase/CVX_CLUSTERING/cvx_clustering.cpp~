@@ -17,7 +17,7 @@
 #include "../util.h"
 
 /* algorithmic options */ 
-#define EXACT_LINE_SEARCH  // comment this to use inexact search
+//#define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
