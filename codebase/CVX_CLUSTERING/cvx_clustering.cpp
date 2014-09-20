@@ -17,7 +17,7 @@
 #include "../util.h"
 
 /* algorithmic options */ 
-#define EXACT_LINE_SEARCH  // comment this to use inexact search
+//#define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
@@ -427,8 +427,11 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe"  << endl;
 #endif
-    mat_set (wone, z, N, N);
-    mat_set (wtwo, z, N, N);
+    // mat_set (wone, z, N, N);
+    // mat_set (wtwo, z, N, N);
+    mat_zeros (wone,  N, N);
+    mat_zeros (wtwo,  N, N);
+
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter); // for w_1
