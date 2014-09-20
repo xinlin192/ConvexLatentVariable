@@ -123,12 +123,10 @@ double L2norm (Instance * ins1, Instance * ins2, int D) {
         diff[i] = 0.0;
     int n1 = ins1->fea.size();
     for (int i = 0; i < n1; i ++) {
-        if (ins1->fea[i].first-1 < 0) continue;
         diff[ ins1->fea[i].first-1 ] = ins1->fea[i].second;
     }
     int n2 = ins2->fea.size();
     for (int i = 0; i < n2; i ++) {
-        if (ins2->fea[i].first-1 < 0) continue;
         diff[ ins2->fea[i].first-1 ] -= ins2->fea[i].second;
     }
 
@@ -139,7 +137,6 @@ double L2norm (Instance * ins1, Instance * ins2, int D) {
     norm = sqrt(norm);
     
     delete[] diff;
-    //cout << norm << endl;
     return norm; 
 }
 
@@ -197,46 +194,44 @@ void readFixDim(char* fname, vector<Instance*>& data, int D){
 class Parser {
 	public:
 	static  vector< Instance* >*  parseSVM(char* fileName, int& numFea){
+        int LINESIZE = 100000;
+        // open input file stream
 		ifstream fin(fileName);
+        // quit if fail to establish stream
 		if( fin.fail() ){
 			cerr << "cannot find file." << endl;
 			exit(0);
 		}
-		
+        // initialize collection
 		vector< Instance* >* data = new vector< Instance* >();
-		
-		char line[100000];
+        // initialize local variables
+		char line[LINESIZE];
 		vector<string> tokens;
 		numFea=0;
 		int id=0;
 		while( !fin.eof() ){
-			
 			Instance* ins = new Instance(id++);
-			
-			fin.getline(line,100000);
+			fin.getline(line, LINESIZE);
 			string str = string(line);
 			tokens = split(str," ");
-			//if( str.length() < 2 )
-			//	continue;
-
-			//label
+			// parse label
 			ins->label = atoi(tokens[0].c_str());
-
-			//feature
+			// parse feature
 			for(int i=1;i<tokens.size();i++){
-				
+                if (tokens[i].find(':') == string::npos) 
+                    continue;
 				vector<string> pv = split(tokens[i],":");
 				pair<int,double> pair;
 				pair.first = atoi(pv[0].c_str());
 				pair.second = atof(pv[1].c_str());
 				ins->fea.push_back(pair);
+                // cout << "i=" << i << ", "<< pair.first << ":" << pair.second << endl;
 			}
 			//cerr << "fea="<< ins->fea.back().second << endl;
 			//cerr << data->size() << ", " << ins->fea.size() <<  endl;
-			if( ins->fea.size()>0 && ins->fea.back().first > numFea )
+			if( ins->fea.size() > 0 && ins->fea.back().first > numFea )
 				numFea = ins->fea.back().first;
-			
-			data->push_back( ins );
+			data->push_back(ins);
 		}
 		
 		data->pop_back();
