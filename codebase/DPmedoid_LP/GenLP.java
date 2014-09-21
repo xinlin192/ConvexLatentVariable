@@ -8,7 +8,7 @@ public class GenLP{
 	
 	static double lambda;
 	
-	static double eps = 1e-2;
+	static double eps = 0.0;
 	static Random ran = new Random();
 	
 	public static void main(String[] args){
