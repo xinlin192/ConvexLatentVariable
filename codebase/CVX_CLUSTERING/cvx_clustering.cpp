@@ -17,7 +17,7 @@
 #include "../util.h"
 
 /* algorithmic options */ 
-//#define EXACT_LINE_SEARCH  // comment this to use inexact search
+#define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
@@ -28,7 +28,7 @@
 const double FRANK_WOLFE_TOL = 1e-20;
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
-const double EPS = 1.0;
+const double EPS = 0;
 
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
     double ** temp = mat_init (N, N);
@@ -497,7 +497,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 int main (int argc, char ** argv) {
     // exception control: illustrate the usage if get input of wrong format
     if (argc < 5) {
-        cerr << "Usage: cvx_clustering [dataFile] [FIX_DIM] [fw_max_iter] [max_iter] [lambda]" << endl;
+        cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [max_iter] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
     }
