@@ -15,7 +15,7 @@ public class GenDistMat{
 		System.err.println("data size=" + data.size());
 		List<double[]> distMat = compute_dist_mat(data);
 		
-		normalize(distMat);
+		//normalize(distMat);
 
 		writeToFile(distMat, datafile+".dist");
 	}
@@ -116,8 +116,8 @@ public class GenDistMat{
 			}
 		}
 		
-		return Math.sqrt(sum);
-		//return sum;
+		return Math.sqrt(sum)/2;
+		//return sum/2;
 	}
 
 	static List<Instance> readData(String fname){

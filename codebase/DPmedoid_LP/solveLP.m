@@ -15,7 +15,7 @@ fval
 fp = fopen('sol','w');
 d = length(x);
 for i=1:d
-	if( x(i) > 1e-3 )
+	if( abs(x(i)) > 1e-3 )
 		fprintf(fp,'%d\t%g\n',i,x(i));
 	end
 end

@@ -23,11 +23,11 @@ class NameMap{
 			while( (line=bufr.readLine()) != null ){
 				tokens = line.split("\t");
 				if(tokens.length==2){
-					index = Integer.valueOf(tokens[0]);
-					bufw.write(nameList.get(index-1)+"\t"+tokens[1]+"\n");
+					index = Integer.valueOf(tokens[0])-1;
+					bufw.write(nameList.get(index)+"\t"+tokens[1]+"\n");
 				}else if(tokens.length==3){
 					index = Integer.valueOf(tokens[1]);
-					bufw.write(tokens[0]+"\t"+nameList.get(index-1)+"\t"+tokens[2]+"\n");
+					bufw.write(tokens[0]+"\t"+nameList.get(index)+"\t"+tokens[2]+"\n");
 				}
 			}
 			bufw.close();
