@@ -15,7 +15,7 @@ public class GenDistMat{
 		System.err.println("data size=" + data.size());
 		List<double[]> distMat = compute_dist_mat(data);
 		
-		normalize(distMat);
+		//normalize(distMat);
 
 		writeToFile(distMat, datafile+".dist");
 	}
