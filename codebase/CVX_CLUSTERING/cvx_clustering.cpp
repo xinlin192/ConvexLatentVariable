@@ -1,5 +1,4 @@
-/*###############################################################
-## MODULE: cvx_clustering.cpp
+/*############################################################### ## MODULE: cvx_clustering.cpp
 ## VERSION: 1.0 
 ## SINCE 2014-06-14
 ## AUTHOR:
@@ -17,22 +16,23 @@
 #include "../util.h"
 
 /* algorithmic options */ 
-//#define EXACT_LINE_SEARCH  // comment this to use inexact search
+#define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define NCENTROID_DUMP
+// #define SPARSE_CLUSTERING_DUMP
 
 const double FRANK_WOLFE_TOL = 1e-20;
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
-const double EPS = 1.0;
+const double EPS = 0;
 
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
     double ** temp = mat_init (N, N);
-    double ** diffone =mat_init (N, N);
+    double ** diffone = mat_init (N, N);
     mat_zeros (diffone, N, N);
 
     // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk) -> loss
@@ -275,7 +275,6 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
               }*/
             alpha_vec.push_back (make_pair(i, abs(value)));
         }
-
         // 2. sorting
         std::sort (alpha_vec.begin(), alpha_vec.end(), pairComparator);
         /*
@@ -284,7 +283,6 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
            cout << alpha_vec[i].second << endl;
            }
            */
-
         // 3. find mstar
         int mstar = 0; // number of elements support the sky
         double separator;
@@ -299,14 +297,12 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
                 mstar = i;
             }
         }
-
         // 4. assign closed-form solution to wtwo
         if( max_term < 0 ){
             for(int i=0;i<N;i++)
                 wtwo[i][j] = 0.0;
             continue;
         }
-
         for (int i = 0; i < N; i ++) {
             // harness vector of pair
             double value = wbar[i][j];
@@ -318,7 +314,6 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
             }
         }
     }
-
     // compute value of objective function
     double penalty = second_subproblem_obj (ytwo, ztwo, wtwo, rho, N, lambda);
     // report the #iter and objective function
@@ -429,19 +424,17 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 #endif
     // mat_set (wone, z, N, N);
     // mat_set (wtwo, z, N, N);
-    mat_zeros (wone,  N, N);
-    mat_zeros (wtwo,  N, N);
+    mat_zeros (wone, N, N);
+    mat_zeros (wtwo, N, N);
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter); // for w_1
 #ifdef SPARSE_CLUSTERING_DUMP
-        cout << "frank_wolfe done. norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
-        cout << "it is place 1 iteration #" << iter << ", going to get into blockwise_closed_form"<< endl;
+        cout << "norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
 #endif
 
         blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N);  // for w_2
 #ifdef SPARSE_CLUSTERING_DUMP
-        cout << "it is place 3 iteration #" << iter << endl;
         cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
 #endif
         
@@ -449,7 +442,6 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
         mat_add (wone, wtwo, z, N, N);
         mat_dot (0.5, z, z, N, N);
 #ifdef SPARSE_CLUSTERING_DUMP
-        cout << "it is place 4 iteration #" << iter << endl;
         cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
 #endif
 
@@ -496,8 +488,8 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 // entry main function
 int main (int argc, char ** argv) {
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 5) {
-        cerr << "Usage: cvx_clustering [dataFile] [FIX_DIM] [fw_max_iter] [max_iter] [lambda]" << endl;
+    if (argc < 6) {
+        cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [max_iter] [lambda] [dmatFile]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
     }
@@ -507,6 +499,7 @@ int main (int argc, char ** argv) {
     int fw_max_iter = atoi(argv[2]);
     int max_iter = atoi(argv[3]);
     double lambda_base = atof(argv[4]);
+    char * dmatFile = argv[5];
 	
     // vector<Instance*> data;
     // readFixDim (dataFile, data, FIX_DIM);
@@ -531,6 +524,7 @@ int main (int argc, char ** argv) {
             dimensions = f->at(last_index).first;
         }
     }
+    assert (dimensions == FIX_DIM);
 
     int D = dimensions;
     cerr << "D = " << D << endl; // # features
@@ -544,19 +538,26 @@ int main (int argc, char ** argv) {
     //create lambda with noise
     double* lambda = new double[N];
     for(int i=0;i<N;i++){
-	lambda[i] = lambda_base + noise();
+        lambda[i] = lambda_base + noise();
     }
     
     // pre-compute distance matrix
     dist_func df = L2norm;
     double ** dist_mat = mat_init (N, N);
+   //  double ** dist_mat = mat_read (dmatFile, N, N);
     mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
-
+    ofstream dist_mat_out ("dist_mat");
+    dist_mat_out << mat_toString(dist_mat, N, N);
+    dist_mat_out.close();
+ 
     // Run sparse convex clustering
     double ** W = mat_init (N, N);
     mat_zeros (W, N, N);
     cvx_clustering (dist_mat, fw_max_iter, max_iter, D, N, lambda, W);
+    ofstream W_OUT("w_out");
+    W_OUT<< mat_toString(W, N, N);
+    W_OUT.close();
 
     // Output cluster
     output_objective(clustering_objective (dist_mat, W, N));
@@ -565,7 +566,7 @@ int main (int argc, char ** argv) {
     output_model (W, N);
 
     /* Output assignment */
-    output_assignment (W, data, N);
+     output_assignment (W, data, N);
 
     /* reallocation */
     mat_free (dist_mat, N, N);

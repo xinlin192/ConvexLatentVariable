@@ -1,0 +1,5 @@
+file1=$1
+file2=$2
+diff $file1/opt_objective $file2/opt_objective
+diff $file1/opt_model $file2/opt_model
+diff $file1/opt_assignment $file2/opt_assignment
