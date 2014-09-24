@@ -1,4 +1,5 @@
-/*############################################################### ## MODULE: cvx_clustering.cpp
+/*############################################################### 
+## MODULE: cvx_clustering.cpp
 ## VERSION: 1.0 
 ## SINCE 2014-06-14
 ## AUTHOR:
@@ -12,6 +13,7 @@
 
 #include "cvx_clustering.h"
 #include <cassert>
+#include <queue>
 
 #include "../util.h"
 
@@ -29,6 +31,11 @@ const double FRANK_WOLFE_TOL = 1e-20;
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
 const double EPS = 0;
+
+bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
+    // sort pairs by second element with decreasing order
+    return firstElem.second > secondElem.second;
+}
 
 double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
     double ** temp = mat_init (N, N);
@@ -71,23 +78,29 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
 
     return total;
 }
+class Compare
+{
+    public:
+        bool operator() (pair<int, double> obj1, pair<int, double> obj2)
+        {
+            return pairComparator(obj1, obj2);
+        }
+};
 
 void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K) {
-    bool is_global_optimal_reached = false;
     // cout << "within frank_wolf" << endl;
-    // This can be computed by using corner point. 
+    // STEP ONE: compute gradient mat initially
+    vector< set< pair<int, double> > > actives (N, set<pair<int,double> >());
+    vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> > pqueues (N, priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> ());
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             double grad =0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
-            pqueues[i].push(new pair(j, gradient));
+            pqueues[i].push(make_pair(j, grad));
         }
     }
-    // STEP ONE: compute gradient mat initially
-    vector< set< pair<int, double> > > actives (N, set<pair<int,double> >());
-    vector< heap< pair<int, double> > > pqueues (N, heap< pair<int,double> >());
-
     // STEP TWO: iteration solve each row 
     int k = 0; // iteration number
+    bool is_global_optimal_reached = false;
     set<pair<int,double> >::iterator it;
     // cout << "within frank_wolf: start iteration" << endl;
     while (k < K && !is_global_optimal_reached) {
@@ -95,8 +108,8 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         vector< pair<int, double> > s (N, pair<int,double>());
         vector<bool> isInActives (N, false);
         for (int i = 0; i < N; i++) {
-            if (pqueues[n].size() <= 0) continue;
-            pair<int,double> tmp_pair = pqueues[n][0];
+            if (pqueues[i].size() <= 0) continue;
+            pair<int,double> tmp_pair = pqueues[i].top();
             s[i].first = tmp_pair.first;
             s[i].second = tmp_pair.second;
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
@@ -116,7 +129,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // sum2 = sum_n sum_k (w - s)_nk
         // sum3 = - rho * sum_n sum_k  (w - z) 
         // sum4 = sum_n sum_k rho * (s - w)
-        double sum1, sum2, sum3, sum4;
+        double sum1=0.0, sum2=0.0, sum3=0.0, sum4=0.0;
         for (int i = 0; i < N; i++) {
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 if (it->first == s[i].first) {
@@ -126,13 +139,14 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
                     sum1 += 0.5 * it->second * dist_mat[i][it->first];
                     sum2 += it->second;
                 }
-                sum3 += -1.0 * rho * (it->second - z[i][it->first]); 
+                sum3 += -1.0 * rho * it->second; 
             }
             if (!isInActives[i]) {
-                sum1 += -1 * dist_mat[i][s[i]->first];
+                sum1 += -0.5 * dist_mat[i][s[i].first];
                 sum2 += -1;
             }
         }
+        sum3 += 1.0 * rho * mat_sum(zone, N, N);
         sum4 = rho * sum2;
         if (sum4 <= FRANK_WOLFE_TOL) {
             gamma = 0;
@@ -149,14 +163,22 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 #endif
         
         // update new actives 
-        for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
-            if (it->first == s[i].first)
-                it->second = it->second*(1-gamma) + s[i]*gamma;
-            else
-                it->second *= 1-gamma;
+        for (int i = 0; i < N; i ++) {
+            set<pair<int, double> > temp;
+            double value;
+            for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
+                if (it->first == s[i].first)
+                    value = (it->second)*(1-gamma) + s[i].second *gamma;
+                else
+                    value = (it->second)*(1-gamma);
+                temp.insert (make_pair(it->first, value));
+            }
+            actives[i].swap(temp);
+            if (!isInActives[i]) {
+                actives[i].insert(pqueues[i].top());
+                pqueues[i].pop();
+            }
         }
-        if (!isInActives[i]) 
-            actives[i].push_back(pqueues[i].pop());
         // cout << "within frank_wolf: next iteration" << endl;
         k ++;
     }
@@ -172,10 +194,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     // report the #iter and objective function
     // cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
 }
-bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
-    // sort pairs by second element with decreasing order
-    return firstElem.second > secondElem.second;
-}
+
 
 double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double* lambda) {
 
@@ -364,11 +383,9 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
 }
 
 void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, int N, double* lambda, double ** W) {
-
     // parameters 
     double alpha = 0.1;
     double rho = 1.0;
-
     // iterative optimization 
     double error = INF;
     double ** wone = mat_init (N, N);
@@ -387,17 +404,15 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
     mat_zeros (difftwo, N, N);
 
     int iter = 0; // Ian: usually we count up (instead of count down)
-
     while ( iter < max_iter ) { // stopping criteria
 
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe"  << endl;
 #endif
-    // mat_set (wone, z, N, N);
-    // mat_set (wtwo, z, N, N);
-    //mat_zeros (wone, N, N);
-    //mat_zeros (wtwo, N, N);
-
+        // mat_set (wone, z, N, N);
+        // mat_set (wtwo, z, N, N);
+        mat_zeros (wone, N, N);
+        mat_zeros (wtwo, N, N);
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter); // for w_1
 #ifdef SPARSE_CLUSTERING_DUMP
@@ -408,7 +423,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
 #endif
-        
+
         // STEP TWO: update z by averaging w_1 and w_2
         mat_add (wone, wtwo, z, N, N);
         mat_dot (0.5, z, z, N, N);
@@ -417,7 +432,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 #endif
 
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
-	
+
         mat_sub (wone, z, diffone, N, N);
         double trace_wone_minus_z = mat_norm2 (diffone, N, N); 
         mat_dot (alpha, diffone, diffone, N, N);
@@ -436,15 +451,15 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
             int nCentroids = get_nCentroids (z, N, N);
 #endif
             cout << "[Overall] iter = " << iter 
-                 << ", Overall Error: " << error 
+                << ", Overall Error: " << error 
 #ifdef NCENTROID_DUMP
-                 << ", nCentroids: " << nCentroids
+                << ", nCentroids: " << nCentroids
 #endif
-                 << endl;
+                << endl;
         }
         iter ++;
     }
-    
+
     // STEP FIVE: memory recollection
     mat_free (wone, N, N);
     mat_free (wtwo, N, N);
@@ -471,10 +486,10 @@ int main (int argc, char ** argv) {
     int max_iter = atoi(argv[3]);
     double lambda_base = atof(argv[4]);
     char * dmatFile = argv[5];
-	
+
     // vector<Instance*> data;
     // readFixDim (dataFile, data, FIX_DIM);
-   
+
     // read in data
     int FIX_DIM;
     Parser parser;
@@ -511,17 +526,17 @@ int main (int argc, char ** argv) {
     for(int i=0;i<N;i++){
         lambda[i] = lambda_base + noise();
     }
-    
+
     // pre-compute distance matrix
     dist_func df = L2norm;
     double ** dist_mat = mat_init (N, N);
-   //  double ** dist_mat = mat_read (dmatFile, N, N);
+    //  double ** dist_mat = mat_read (dmatFile, N, N);
     mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
     ofstream dist_mat_out ("dist_mat");
     dist_mat_out << mat_toString(dist_mat, N, N);
     dist_mat_out.close();
- 
+
     // Run sparse convex clustering
     double ** W = mat_init (N, N);
     mat_zeros (W, N, N);
@@ -537,7 +552,7 @@ int main (int argc, char ** argv) {
     output_model (W, N);
 
     /* Output assignment */
-     output_assignment (W, data, N);
+    output_assignment (W, data, N);
 
     /* reallocation */
     mat_free (dist_mat, N, N);
