@@ -89,6 +89,7 @@ class Compare
 
 void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K) {
     // cout << "within frank_wolf" << endl;
+    double sum_zone = mat_sum(zone, N, N);
     // STEP ONE: compute gradient mat initially
     vector< set< pair<int, double> > > actives (N, set<pair<int,double> >());
     vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> > pqueues (N, priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> ());
@@ -131,27 +132,30 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         } else {
         // gamma* = (sum1 + sum2 + sum3) / sum4, where
         // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
-        // sum2 = sum_n sum_k (w - s)_nk
-        // sum3 = - rho * sum_n sum_k  (w - z) 
-        // sum4 = sum_n sum_k rho * (s - w)
+        // sum2 = sum_n sum_k y(w - s)_nk
+        // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
+        // sum4 = sum_n sum_k rho * (s - w)^2
         for (int i = 0; i < N; i++) {
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
+                double w_minus_s;
+                double w_minus_z = wone[i][it->first] - zone[i][it->first];
                 if (it->first == s[i].first) {
-                    sum1 += 0.5 * (it->second-1) * dist_mat[i][it->first];
-                    sum2 += it->second-1;
+                    w_minus_s = wone[i][it->first]-1.0;
                 } else {
-                    sum1 += 0.5 * it->second * dist_mat[i][it->first];
-                    sum2 += it->second;
+                    w_minus_s = wone[i][it->first];
                 }
-                sum3 += -1.0 * rho * it->second; 
+                sum1 += 0.5 * w_minus_s * dist_mat[i][it->first];
+                sum2 += yone[i][it->first] * w_minus_s;
+                sum3 += rho * w_minus_s * w_minus_z;
+                sum4 += rho * w_minus_s * w_minus_s; 
             }
             if (!isInActives[i]) {
-                sum1 += -0.5 * dist_mat[i][s[i].first];
-                sum2 += -1;
+                sum1 += 0.5 * (-1.0) * dist_mat[i][s[i].first];
+                sum2 += yone[i][it->first] * (-1.0);
+                sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
+                sum4 += rho;
             }
         }
-        sum3 += 1.0 * rho * mat_sum(zone, N, N);
-        sum4 = -1.0 * rho * sum2;
         if (fabs(sum4) <= FRANK_WOLFE_TOL) {
             gamma = 0;
             is_global_optimal_reached = true;
