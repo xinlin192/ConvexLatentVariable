@@ -181,7 +181,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         for (int i = 0; i < N; i ++) {
             set<pair<int, double> > temp;
             if (!isInActives[i]) {
-                temp.insert(pqueues[i].top());
+                actives[i].insert(pqueues[i].top());
                 pqueues[i].pop();
             }
             double new_grad;
@@ -196,13 +196,11 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // cout << "within frank_wolf: next iteration" << endl;
         k ++;
     }
-    
     // compute value of objective function
     double penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
     // report the #iter and objective function
     // cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
 }
-
 
 double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double* lambda) {
 
