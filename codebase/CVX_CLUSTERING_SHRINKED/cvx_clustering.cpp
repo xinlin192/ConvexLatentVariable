@@ -22,7 +22,7 @@
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
-#define EXACT_LINE_SEARCH_DUMP
+// #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define NCENTROID_DUMP
 // #define SPARSE_CLUSTERING_DUMP
