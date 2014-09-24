@@ -22,7 +22,7 @@
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
-// #define EXACT_LINE_SEARCH_DUMP
+#define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define NCENTROID_DUMP
 // #define SPARSE_CLUSTERING_DUMP
@@ -112,6 +112,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
             pair<int,double> tmp_pair = pqueues[i].top();
             s[i].first = tmp_pair.first;
             s[i].second = tmp_pair.second;
+            // cout << s[i].first << ":" << s[i].second << endl;
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 // take the minimal of each row
                 if (it->second < s[i].second) {
@@ -124,12 +125,15 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // compute gamma: inexact or exact
         double gamma; // step size of line search
 #ifdef EXACT_LINE_SEARCH
+        double sum1=0.0, sum2=0.0, sum3=0.0, sum4=0.0;
+        if (k==0) {
+            gamma = 1.0;
+        } else {
         // gamma* = (sum1 + sum2 + sum3) / sum4, where
         // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
         // sum2 = sum_n sum_k (w - s)_nk
         // sum3 = - rho * sum_n sum_k  (w - z) 
         // sum4 = sum_n sum_k rho * (s - w)
-        double sum1=0.0, sum2=0.0, sum3=0.0, sum4=0.0;
         for (int i = 0; i < N; i++) {
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 if (it->first == s[i].first) {
@@ -147,12 +151,13 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
             }
         }
         sum3 += 1.0 * rho * mat_sum(zone, N, N);
-        sum4 = rho * sum2;
-        if (sum4 <= FRANK_WOLFE_TOL) {
+        sum4 = -1.0 * rho * sum2;
+        if (fabs(sum4) <= FRANK_WOLFE_TOL) {
             gamma = 0;
             is_global_optimal_reached = true;
         } else
             gamma = (sum1 + sum2 + sum3) / sum4;
+        }
 #ifdef EXACT_LINE_SEARCH_DUMP
     cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
         << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
@@ -161,34 +166,33 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 #else
         gamma = 2.0 / (k+2.0);
 #endif
-        
+        // update wone
+        for (int i = 0; i < N; i++) {
+            for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
+                wone[i][it->first] *= (1-gamma);
+            }
+            wone[i][s[i].first] += gamma;
+        }    
         // update new actives 
         for (int i = 0; i < N; i ++) {
             set<pair<int, double> > temp;
-            double value;
-            for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
-                if (it->first == s[i].first)
-                    value = (it->second)*(1-gamma) + s[i].second *gamma;
-                else
-                    value = (it->second)*(1-gamma);
-                temp.insert (make_pair(it->first, value));
-            }
-            actives[i].swap(temp);
             if (!isInActives[i]) {
-                actives[i].insert(pqueues[i].top());
+                temp.insert(pqueues[i].top());
                 pqueues[i].pop();
             }
+            double new_grad;
+            for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
+                int j = it->first;
+                new_grad=0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
+                temp.insert (make_pair(it->first, new_grad));
+            }
+            actives[i].swap(temp);
+            // cout << "actives[" << i << "]: " << actives[i].size() << endl;
         }
         // cout << "within frank_wolf: next iteration" << endl;
         k ++;
     }
-    // FINAL STEP: put the result derived by shrinking method to wone 
-    mat_zeros(wone, N, N);
-    for (int i = 0; i < N; i++) {
-        for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
-            wone[i][it->first] = it->second;
-        }
-    }
+    
     // compute value of objective function
     double penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
     // report the #iter and objective function
