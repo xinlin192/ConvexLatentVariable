@@ -129,35 +129,36 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
             if (k==0) {
                 gamma = 1.0;
             } else {
-        // gamma* = (sum1 + sum2 + sum3) / sum4, where
-        // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
-        // sum2 = sum_n sum_k y(w - s)_nk
-        // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
-        // sum4 = sum_n sum_k rho * (s - w)^2
-            for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
-                double w_minus_s;
-                double w_minus_z = wone[i][it->first] - zone[i][it->first];
-                if (it->first == s[i].first) {
-                    w_minus_s = wone[i][it->first]-1.0;
-                } else {
-                    w_minus_s = wone[i][it->first];
+                // gamma* = (sum1 + sum2 + sum3) / sum4, where
+                // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
+                // sum2 = sum_n sum_k y_nk (w - s)_nk
+                // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
+                // sum4 = sum_n sum_k rho * (s - w)^2
+                for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
+                    double w_minus_s;
+                    double w_minus_z = wone[i][it->first] - zone[i][it->first];
+                    if (it->first == s[i].first) {
+                        w_minus_s = wone[i][it->first]-1.0;
+                    } else {
+                        w_minus_s = wone[i][it->first];
+                    }
+                    sum1 += 0.5 * w_minus_s * dist_mat[i][it->first];
+                    sum2 += yone[i][it->first] * w_minus_s;
+                    sum3 += rho * w_minus_s * w_minus_z;
+                    sum4 += rho * w_minus_s * w_minus_s; 
                 }
-                sum1 += 0.5 * w_minus_s * dist_mat[i][it->first];
-                sum2 += yone[i][it->first] * w_minus_s;
-                sum3 += rho * w_minus_s * w_minus_z;
-                sum4 += rho * w_minus_s * w_minus_s; 
+                if (!isInActives[i]) {
+                    sum1 += 0.5 * (-1.0) * dist_mat[i][s[i].first];
+                    sum2 += yone[i][it->first] * (-1.0);
+                    sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
+                    sum4 += rho;
+                }
+                if (fabs(sum4) <= FRANK_WOLFE_TOL) {
+                    gamma = 0;
+                    is_global_optimal_reached = true;
+                } else
+                    gamma = (sum1 + sum2 + sum3) / sum4;
             }
-            if (!isInActives[i]) {
-                sum1 += 0.5 * (-1.0) * dist_mat[i][s[i].first];
-                sum2 += yone[i][it->first] * (-1.0);
-                sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
-                sum4 += rho;
-            }
-            if (fabs(sum4) <= FRANK_WOLFE_TOL) {
-                gamma[i] = 0;
-                is_global_optimal_reached = true;
-            } else
-                gamma[i] = (sum1 + sum2 + sum3) / sum4;
 #ifdef EXACT_LINE_SEARCH_DUMP
             cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
                 << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
@@ -166,15 +167,15 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 #else
             gamma = 2.0 / (k+2.0);
 #endif
-        // update wone
-        // for (int i = 0; i < N; i++) {
+            // update wone
+            // for (int i = 0; i < N; i++) {
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 wone[i][it->first] *= (1-gamma);
             }
             wone[i][s[i].first] += gamma;
-        // }    
-        // update new actives 
-        // for (int i = 0; i < N; i ++) {
+            // }    
+            // update new actives 
+            // for (int i = 0; i < N; i ++) {
             set<pair<int, double> > temp;
             if (!isInActives[i]) {
                 actives[i].insert(pqueues[i].top());
@@ -191,12 +192,12 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         }
         // cout << "within frank_wolf: next iteration" << endl;
         k ++;
-        }
-        // compute value of objective function
-        // double penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
-        // report the #iter and objective function
-        // cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
     }
+    // compute value of objective function
+    double penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
+    // report the #iter and objective function
+    // cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
+}
 
     double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double* lambda) {
 
