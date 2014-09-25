@@ -122,21 +122,18 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
                     s[i].second = it->second;
                 }
             }
-        }
-        // compute gamma: inexact or exact
-        double * gamma = new double [N]; // step size of line search
+            // compute gamma: inexact or exact
+            double gamma; // step size of line search
 #ifdef EXACT_LINE_SEARCH
-        double sum1=0.0, sum2=0.0, sum3=0.0, sum4=0.0;
-        if (k==0) {
-            for (int n = 0; n < N; n++)
-                gamma[n] = 1.0;
-        } else {
+            double sum1=0.0, sum2=0.0, sum3=0.0, sum4=0.0;
+            if (k==0) {
+                gamma = 1.0;
+            } else {
         // gamma* = (sum1 + sum2 + sum3) / sum4, where
         // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
         // sum2 = sum_n sum_k y(w - s)_nk
         // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
         // sum4 = sum_n sum_k rho * (s - w)^2
-        for (int i = 0; i < N; i++) {
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 double w_minus_s;
                 double w_minus_z = wone[i][it->first] - zone[i][it->first];
@@ -161,15 +158,13 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
                 is_global_optimal_reached = true;
             } else
                 gamma[i] = (sum1 + sum2 + sum3) / sum4;
-        }
 #ifdef EXACT_LINE_SEARCH_DUMP
-        cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
-            << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
-            << ")" << endl;
+            cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
+                << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
+                << ")" << endl;
 #endif
 #else
-        for (int n = 0; n < N; n++)
-            gamma[n] = 2.0 / (k+2.0);
+            gamma = 2.0 / (k+2.0);
 #endif
         // update wone
         // for (int i = 0; i < N; i++) {
