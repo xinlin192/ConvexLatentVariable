@@ -22,7 +22,7 @@
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
-// #define EXACT_LINE_SEARCH_DUMP
+#define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define NCENTROID_DUMP
 // #define SPARSE_CLUSTERING_DUMP
@@ -153,16 +153,23 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
                     sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
                     sum4 += rho;
                 }
-                if (fabs(sum4) <= FRANK_WOLFE_TOL) {
-                    gamma = 0;
-                    is_global_optimal_reached = true;
-                } else
+                if (fabs(sum4) > FRANK_WOLFE_TOL) {
                     gamma = (sum1 + sum2 + sum3) / sum4;
+                    if (gamma < FRANK_WOLFE_TOL) {
+                        gamma = 0.0;
+                        is_global_optimal_reached = true;
+                    }
+                } else {
+                    gamma = 0.0;
+                    is_global_optimal_reached = true;
+                }
             }
 #ifdef EXACT_LINE_SEARCH_DUMP
+            if (gamma > 1 || gamma < 0) {
             cout << "[exact line search] (sum1, sum2, sum3, sum4, gamma) = ("
                 << sum1 << ", " << sum2 << ", " << sum3 << ", " << sum4 << ", " << gamma
                 << ")" << endl;
+            }
 #endif
 #else
             gamma = 2.0 / (k+2.0);
