@@ -14,11 +14,11 @@ end
 
 C = Y - rho*Z;
 c = C(:);
-c = [c ; lambda*ones(K)];
+c = [c ; lambda*ones(K,1)];
 
 A = sparse(N*K, n);
 b = zeros(N*K,1);
-int count = 1;
+count = 1;
 for j = 1:K
 	for i = 1:N
 		A(count, (j-1)*N+i) = 1;
@@ -43,5 +43,5 @@ end
 fclose(fp);
 
 fp = fopen('xi_out','w');
-fprintf(fp,'%g\n',x(N*K+1,:end));
+fprintf(fp,'%g\n',x(N*K+1:end));
 fclose(fp);
