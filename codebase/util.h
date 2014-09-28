@@ -398,7 +398,7 @@ void output_assignment (double ** W, vector<Instance*>& data, int N) {
         // output identification and its belonging
         asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
         for (int j = 0; j < N; j ++) {
-            if( fabs(W[i][j]) > 3e-1 ) {
+            if( fabs(W[i][j]) > 1e-1 ) {
                 asgn_out << j+1 << "(" << W[i][j] << "),\t";
             }
         }
