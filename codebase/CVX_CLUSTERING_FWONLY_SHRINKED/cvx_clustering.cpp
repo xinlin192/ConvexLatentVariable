@@ -149,7 +149,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
                 sum4 += rho * w_minus_s * w_minus_s; 
             }
             if (!isInActives[i]) {
-                sum1 += 0.5 * (-1.0) * dist_mat[i][s[i].first];
+                sum1 += 0.5 * (-1.0) * (dist_mat[i][s[i].first] -r);
                 sum2 += yone[i][it->first] * (-1.0);
                 sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
                 sum4 += rho;
