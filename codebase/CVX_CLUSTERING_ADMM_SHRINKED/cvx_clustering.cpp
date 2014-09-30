@@ -272,7 +272,7 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
         set<int>::iterator it;
         for(it=column_active_sets[j].begin();it!=column_active_sets[j].end();++it){
             int i = *it;
-            double value = wbar[i][j];
+            double value = (rho * ztwo[i][j] - ytwo[i][j]) / rho;
             /*if( wbar[i][j] < 0 ){
               cerr << "wbar[" << i << "][" << j << "]" << endl;
               exit(0);
@@ -310,12 +310,12 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
         for(it=column_active_sets[j].begin();it!=column_active_sets[j].end();++it){
             // harness vector of pair
             int i = *it;
-            double wbar = (rho * ztwo[i][j] - ytwo[i][j]) / rho;
+            double value = (rho * ztwo[i][j] - ytwo[i][j]) / rho;
             if ( abs(value) >= separator ) {
                 wtwo[i][j] = max_term;
             } else {
                 // its ranking is above m*, directly inherit the wbar
-                wtwo[i][j] = max(wbar,0.0);
+                wtwo[i][j] = max(value,0.0);
             }
         }
     }
@@ -324,9 +324,6 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
     // report the #iter and objective function
     /*cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
       cout << endl;*/
-
-    // STEP THREE: recollect temporary variable - wbar
-    mat_free (wbar, N, N);
 }
 
 double overall_objective (double ** dist_mat, double* lambda, int N, double ** z) {
@@ -408,6 +405,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
     double ** yone = mat_init (N, N);
     double ** ytwo = mat_init (N, N);
     double ** z = mat_init (N, N);
+    double ** z_old = mat_init (N, N);
     double ** diffzero = mat_init (N, N);
     double ** diffone = mat_init (N, N);
     double ** difftwo = mat_init (N, N);
@@ -416,13 +414,14 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
     mat_zeros (yone, N, N);
     mat_zeros (ytwo, N, N);
     mat_zeros (z, N, N);
+    mat_zeros (z_old, N, N);
     mat_zeros (diffzero, N, N);
     mat_zeros (diffone, N, N);
     mat_zeros (difftwo, N, N);
 
     // variables for shriking method
-    vector< set<int> > row_active_sets;
-    vector< set<int> > column_active_sets;
+    vector< set<int> > row_active_sets (N, set<int>());
+    vector< set<int> > column_active_sets (N, set<int>());
     // set initial active_set as all elements
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
@@ -432,6 +431,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
     }
 
     int iter = 0; // Ian: usually we count up (instead of count down)
+    bool no_active_element = false, admm_opt_reached = false;
     while ( !admm_opt_reached ) { // stopping criteria
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe"  << endl;
@@ -445,7 +445,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
         for (int i = 0; i < N; i ++) {
             set<int>::iterator it;
             for (it=row_active_sets[i].begin();it!=row_active_sets[i].end();++it) {
-                j = *it;
+                int j = *it;
                 z[i][j] = (wone[i][j] + wtwo[i][j]) / 2.0;
                 yone[i][j] += alpha * (wone[i][j] - z[i][j]) ;
                 ytwo[i][j] += alpha * (wtwo[i][j] - z[i][j]) ;
@@ -479,8 +479,8 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
                     if (rho*(z[i][j] - z_old[i][j])*(z[i][j] - z_old[i][j]) < ADMM_EPS)
                         is_primal_shrink = true;
                     // (B) dual shrinking:
-                    if (rho*(wone[i][j] - z)*(wone[i][j] - z) < ADMM_EPS &&
-                        rho*(wtwo[i][j] - z)*(wtwo[i][j] - z) < ADMM_EPS)
+                    if (rho*(wone[i][j]-z[i][j])*(wone[i][j]-z[i][j]) < ADMM_EPS &&
+                        rho*(wtwo[i][j]-z[i][j])*(wtwo[i][j]-z[i][j]) < ADMM_EPS)
                         is_dual_shrink = true;
                     // (C) cache index of element to be removed
                     if (is_primal_shrink && is_dual_shrink) 
@@ -490,14 +490,14 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
             for (int i = 0; i < N; i++) {
                 set<int>::iterator it;
                 for (it=row_active_sets[i].begin();it!=row_active_sets[i].end();++it) {
+                    int j = *it;
                     z_old[i][j] = z[i][j];
                 }
             }
             // remove shrinked element from row/column active sets
-            pair<int,int>::iterator it;
-            for (it=to_shrink.begin(); it!=to_shrink.end(); ++it) {
-                int row_index = it->first;
-                int column_index = it->second;
+            for (int s = 0; s < to_shrink.size(); s ++) {
+                int row_index = to_shrink[s].first;
+                int column_index = to_shrink[s].second;
                 row_active_sets[row_index].erase(column_index);
                 column_active_sets[column_index].erase(row_index);
             }
@@ -564,8 +564,6 @@ int main (int argc, char ** argv) {
     vector<Instance*> data;
     pdata = parser.parseSVM(dataFile, FIX_DIM);
     data = *pdata;
-    // vector<Instance*> data;
-    // readFixDim (dataFile, data, FIX_DIM);
 
     // explore the data 
     int dimensions = -1;
@@ -607,7 +605,7 @@ int main (int argc, char ** argv) {
     // Run sparse convex clustering
     double ** W = mat_init (N, N);
     mat_zeros (W, N, N);
-    cvx_clustering (dist_mat, fw_max_iter, max_iter, D, N, lambda, W);
+    cvx_clustering (dist_mat, fw_max_iter, D, N, lambda, W);
     ofstream W_OUT("w_out");
     W_OUT<< mat_toString(W, N, N);
     W_OUT.close();
