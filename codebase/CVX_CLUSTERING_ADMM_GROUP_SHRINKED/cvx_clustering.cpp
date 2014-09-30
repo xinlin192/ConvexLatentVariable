@@ -426,42 +426,14 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         set<int>::iterator it;
-        /*
-        for (it=row_active_sets.begin();it!=row_active_sets.end();++it) {
-            int i = *it;
-            for (int j = 0; j < N; j ++) {
-                z[i][j] = (wone[i][j] + wtwo[i][j]) / 2.0;
-            }
-        }
         for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
             int j = *it;
             for (int i = 0; i < N; i ++) {
                 z[i][j] = (wone[i][j] + wtwo[i][j]) / 2.0;
-            }
-        }
-        for (it=row_active_sets.begin();it!=row_active_sets.end();++it) {
-            int i = *it;
-            for (int j = 0; j < N; j ++) {
                 yone[i][j] += alpha * (wone[i][j] - z[i][j]) ;
-            }
-        }
-        for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
-            int j = *it;
-            for (int i = 0; i < N; i ++) {
                 ytwo[i][j] += alpha * (wtwo[i][j] - z[i][j]) ;
             }
         }
-        */
-        mat_add (wone, wtwo, z, N, N);
-        mat_dot (0.5, z, z, N, N);
-
-        mat_sub (wone, z, diffone, N, N);
-        mat_dot (alpha, diffone, diffone, N, N);
-        mat_add (yone, diffone, yone, N, N);
-        
-        mat_sub (wtwo, z, difftwo, N, N);
-        mat_dot (alpha, difftwo, difftwo, N, N);
-        mat_add (ytwo, difftwo, ytwo, N, N);
 
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
@@ -470,7 +442,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
 #endif
 
         // STEP FOUR: trace the objective function
-        if (iter % 100 == 0) {
+        if ((iter+1) % 1000 == 0) {
             error = overall_objective (dist_mat, lambda, N, z);
             cout << "[Overall] iter = " << iter 
                 << ", Overall Error: " << error << endl;
@@ -484,14 +456,11 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
             int i;
             for (i = 0; i < N; i++) {
                 // (A) primal shrinking:
-                //if (rho*(z[i][j]-z_old[i][j])*(z[i][j]-z_old[i][j]) > ADMM_EPS) {
                 if ( z[i][j] > ADMM_EPS || z_old[i][j] > ADMM_EPS ) {
                     break;
                 }
                 // (B) dual shrinking:
-                //if (  (wone[i][j]-z[i][j])*(wone[i][j]-z[i][j]) > ADMM_EPS || (wtwo[i][j]-z[i][j])*(wtwo[i][j]-z[i][j]) > ADMM_EPS)
                 if (  wone[i][j] > ADMM_EPS || wtwo[i][j] > ADMM_EPS )
-                //if (  (wtwo[i][j]-z[i][j])*(wtwo[i][j]-z[i][j]) > ADMM_EPS)
                     break;
             }
             // cache index of element to be removed
@@ -513,7 +482,6 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
             }
         }
         // update z_old
-        //mat_copy (z, z_old, N, N);
         for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
             int j = *it;
             for (int i = 0; i < N; i++) {
@@ -523,7 +491,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
 
         // count number of active elements
         int num_active_cols = col_active_sets.size();
-        if (iter % 100 == 0) {
+        if ((iter+1) % 1000 == 0) {
             cout << "iter: " << iter;
             cout << ", num_active_cols: " << num_active_cols <<endl;
         }
