@@ -24,6 +24,8 @@
 // #define BLOCKWISE_DUMP
 // #define NCENTROID_DUMP
 // #define SPARSE_CLUSTERING_DUMP
+// #define GROUP_LASSO_CHECK
+const int GROUP_LASSO_CHECK_ITER = 2000;
 
 const double FRANK_WOLFE_TOL = 1e-20;
 typedef double (* dist_func) (Instance*, Instance*, int); 
@@ -122,11 +124,8 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         gamma = 2.0 / (k + 2.0);
 #else
         // Here we use exact line search 
-        if (k == 0) {
-            gamma = 1.0;
-        } else {
         // gamma* = (sum1 + sum2 + sum3) / sum4, where
-        // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
+        // sum1 = 1/2 sum_n sum_k (w - s)_nk * (|| x_n - mu_k ||^2 -r)
         // sum2 = sum_n sum_k (w - s)_nk
         // sum3 = - rho * sum_n sum_k  (w - z) 
         // sum4 = sum_n sum_k rho * (s - w)
@@ -143,8 +142,14 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
             gamma = 0;
             is_global_optimal_reached = true;
         } else {
+            sum1 = 0;
             mat_times (w_minus_s, dist_mat, tempS, N, N);
-            sum1 = 0.5 * mat_sum (tempS, N, N);
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    sum1 += w_minus_s[i][j] * (dist_mat[i][j] - r);
+                }
+            }
+            // sum1 = 0.5 * mat_sum (tempS, N, N) - ...;
 
             mat_zeros (tempS, N, N);
             mat_tdot (yone, w_minus_s, tempS, N, N);
@@ -159,6 +164,8 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 
             // gamma should be within interval [0,1]
             gamma = (sum1 + sum2 + sum3) / sum4;
+            gamma = max (gamma, 0.0);
+            gamma = min (gamma, 1.0);
 
 #ifdef FRANK_WOLFE_DUMP
             cout << "mat_norm2 (w_minus_s, N, N)" << mat_norm2 (w_minus_s, N, N) << endl;
@@ -172,8 +179,6 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
                 << ")"
                 << endl;
 #endif
-        }
-
         }
 #endif
         // update the w^(k+1)
@@ -235,23 +240,32 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     mat_zeros (temp, N, N);
     mat_sub (wtwo, z, difftwo, N, N);
     mat_tdot (ytwo, difftwo, temp, N, N);
-    double sum2 = mat_sum (temp, N, N);
+    double linear = mat_sum (temp, N, N);
 
     // sum3 = 0.5 * rho * || w_2 - z_2 ||^2 -> quadratic mat_zeros (temp, N, N);
     mat_sub (wtwo, z, temp, N, N);
-    double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
+    double quadratic = 0.5 * rho * mat_norm2 (temp, N, N);
 
     mat_free (temp, N, N);
+    double total = group_lasso + linear + quadratic;
 
     // ouput values of each components
 #ifdef BLOCKWISE_DUMP
     cout << "[Blockwise] (group_lasso, linear, quadratic) = ("
-        << group_lasso << ", " << sum2 << ", " << sum3
+        << group_lasso << ", " << linear << ", " << quadratic
         << ")" << endl;
 #endif
 
-    //cerr << group_lasso << ", " << sum2 << ", " << sum3 << endl;
-    return group_lasso + sum2 + sum3;
+#ifdef GROUP_LASSO_CHECK
+    ofstream glasso_obj ("lasso_objective");
+    glasso_obj << "total: " << total << endl;
+    glasso_obj << "group_lasso: " << group_lasso << endl;
+    glasso_obj << "linear: " << linear << endl;
+    glasso_obj << "quadratic: " << quadratic << endl;
+    glasso_obj.close();
+#endif
+
+    return total;
 }
 
 void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double* lambda, int N) {
@@ -314,14 +328,13 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
             }
         }
     }
-    // compute value of objective function
-    double penalty = second_subproblem_obj (ytwo, ztwo, wtwo, rho, N, lambda);
     // report the #iter and objective function
     /*cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
       cout << endl;*/
 
     // STEP THREE: recollect temporary variable - wbar
     mat_free (wbar, N, N);
+
 }
 
 double overall_objective (double ** dist_mat, double* lambda, int N, double ** z) {
@@ -422,22 +435,36 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe"  << endl;
 #endif
-    // mat_set (wone, z, N, N);
-    // mat_set (wtwo, z, N, N);
-    mat_zeros (wone, N, N);
-    mat_zeros (wtwo, N, N);
-
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter); // for w_1
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
 #endif
 
+#ifdef GROUP_LASSO_CHECK
+        if (iter == GROUP_LASSO_CHECK_ITER) { 
+            ofstream y2_out ("y2_input");
+            y2_out << mat_toString (ytwo, N, N);
+            y2_out.close();
+            ofstream z2_out ("z2_input");
+            z2_out << mat_toString (z, N, N);
+            z2_out.close();
+        }
+#endif
         blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N);  // for w_2
+#ifdef GROUP_LASSO_CHECK
+        if (iter == GROUP_LASSO_CHECK_ITER) { 
+            double penalty = second_subproblem_obj (ytwo, z, wtwo, rho, N, lambda);
+            ofstream w2_out ("w2_output");
+            w2_out << mat_toString (wtwo, N, N);
+            w2_out.close();
+        }
+#endif
+
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
 #endif
-        
+
         // STEP TWO: update z by averaging w_1 and w_2
         mat_add (wone, wtwo, z, N, N);
         mat_dot (0.5, z, z, N, N);
@@ -446,7 +473,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 #endif
 
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
-	
+
         mat_sub (wone, z, diffone, N, N);
         double trace_wone_minus_z = mat_norm2 (diffone, N, N); 
         mat_dot (alpha, diffone, diffone, N, N);
@@ -465,15 +492,15 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
             int nCentroids = get_nCentroids (z, N, N);
 #endif
             cout << "[Overall] iter = " << iter 
-                 << ", Overall Error: " << error 
+                << ", Overall Error: " << error 
 #ifdef NCENTROID_DUMP
-                 << ", nCentroids: " << nCentroids
+                << ", nCentroids: " << nCentroids
 #endif
-                 << endl;
+                << endl;
         }
         iter ++;
     }
-    
+
     // STEP FIVE: memory recollection
     mat_free (wone, N, N);
     mat_free (wtwo, N, N);
@@ -488,13 +515,8 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 // entry main function
 int main (int argc, char ** argv) {
     // exception control: illustrate the usage if get input of wrong format
-<<<<<<< HEAD
-    if (argc < 5) {
-        cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [max_iter] [lambda]" << endl;
-=======
     if (argc < 6) {
         cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [max_iter] [lambda] [dmatFile]" << endl;
->>>>>>> 2169bbe8c3d57c3e8c3fa1f547f5b9a9dfd891aa
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
     }
@@ -505,10 +527,10 @@ int main (int argc, char ** argv) {
     int max_iter = atoi(argv[3]);
     double lambda_base = atof(argv[4]);
     char * dmatFile = argv[5];
-	
+
     // vector<Instance*> data;
     // readFixDim (dataFile, data, FIX_DIM);
-   
+
     // read in data
     int FIX_DIM;
     Parser parser;
