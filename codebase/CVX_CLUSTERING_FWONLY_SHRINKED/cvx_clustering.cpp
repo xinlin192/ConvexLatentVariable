@@ -95,7 +95,11 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             double grad =0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
-            pqueues[i].push(make_pair(j, grad));
+            if (wone[i][j] > 1e-10) {
+                actives[i].insert(make_pair(j, grad));
+            } else {
+                pqueues[i].push(make_pair(j, grad));
+            }
         }
     }
     // STEP TWO: iteration solve each row 
@@ -126,62 +130,50 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
             double gamma; // step size of line search
 #ifdef EXACT_LINE_SEARCH
             double sum1=0.0, sum2=0.0, sum3=0.0, sum4=0.0;
-            if (k==0) {
-                gamma = 1.0;
-            } else {
-                // gamma* = (sum1 + sum2 + sum3) / sum4, where
-                // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
-                // sum2 = sum_n sum_k y_nk (w - s)_nk
-                // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
-                // sum4 = sum_n sum_k rho * (s - w)^2
-                for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
-                    double w_minus_s;
-                    double w_minus_z = wone[i][it->first] - zone[i][it->first];
-                    if (it->first == s[i].first) {
-                        w_minus_s = wone[i][it->first]-1.0;
-                    } else {
-                        w_minus_s = wone[i][it->first];
-                    }
-                    sum1 += 0.5 * w_minus_s * dist_mat[i][it->first];
-                    sum2 += yone[i][it->first] * w_minus_s;
-                    sum3 += rho * w_minus_s * w_minus_z;
-                    sum4 += rho * w_minus_s * w_minus_s; 
-                }
-                if (!isInActives[i]) {
-                    sum1 += 0.5 * (-1.0) * dist_mat[i][s[i].first];
-                    sum2 += yone[i][it->first] * (-1.0);
-                    sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
-                    sum4 += rho;
-                }
-
-                if (fabs(sum4) > 0) {
-                    gamma = (sum1 + sum2 + sum3) / sum4;
-#ifdef EXACT_LINE_SEARCH_DUMP
-                    if (gamma < 0) {
-                        cout << "[exact] i=" << i ;
-                        cout << ",k=" << k;
-                        cout << ",sum1="<< sum1;
-                        cout << ",sum2="<< sum2;
-                        cout << ",sum3="<< sum3;
-                        cout << ",sum4="<< sum4;
-                        cout << ",gamma="<< gamma;
-                        cout << endl;
-                    }
-#endif
-                    gamma = max(gamma, 0.0);
-                    gamma = min(gamma, 1.0);
-                    /*
-                    if (gamma < FRANK_WOLFE_TOL) {
-                        gamma = 0.0;
-                        is_global_optimal_reached = true;
-                    }
-                    */
+            // gamma* = (sum1 + sum2 + sum3) / sum4, where
+            // sum1 = 1/2 sum_n sum_k (w - s)_nk * (|| x_n - mu_k ||^2 - r)
+            // sum2 = sum_n sum_k y_nk (w - s)_nk
+            // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
+            // sum4 = sum_n sum_k rho * (s - w)^2
+            for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
+                double w_minus_s;
+                double w_minus_z = wone[i][it->first] - zone[i][it->first];
+                if (it->first == s[i].first) {
+                    w_minus_s = wone[i][it->first]-1.0;
                 } else {
-                    gamma = 0.0;
-                    is_global_optimal_reached[i] = true;
+                    w_minus_s = wone[i][it->first];
                 }
+                sum1 += 0.5 * w_minus_s * (dist_mat[i][it->first] - r);
+                sum2 += yone[i][it->first] * w_minus_s;
+                sum3 += rho * w_minus_s * w_minus_z;
+                sum4 += rho * w_minus_s * w_minus_s; 
+            }
+            if (!isInActives[i]) {
+                sum1 += 0.5 * (-1.0) * dist_mat[i][s[i].first];
+                sum2 += yone[i][it->first] * (-1.0);
+                sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
+                sum4 += rho;
             }
 
+            if (fabs(sum4) > 0) {
+                gamma = (sum1 + sum2 + sum3) / sum4;
+#ifdef EXACT_LINE_SEARCH_DUMP
+                cout << "[exact] i=" << i ;
+                cout << ",k=" << k;
+                cout << ",sum1="<< sum1;
+                cout << ",sum2="<< sum2;
+                cout << ",sum3="<< sum3;
+                cout << ",sum4="<< sum4;
+                cout << ",gamma="<< gamma;
+                cout << endl;
+#endif
+                gamma = max(gamma, 0.0);
+                gamma = min(gamma, 1.0);
+
+            } else {
+                gamma = 0.0;
+                is_global_optimal_reached[i] = true;
+            }
 #else
             gamma = 2.0 / (k+2.0);
 #endif
@@ -432,8 +424,8 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 #endif
         // mat_set (wone, z, N, N);
         // mat_set (wtwo, z, N, N);
-        mat_zeros (wone, N, N);
-        mat_zeros (wtwo, N, N);
+        // mat_zeros (wone, N, N);
+        // mat_zeros (wtwo, N, N);
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter); // for w_1
 #ifdef SPARSE_CLUSTERING_DUMP
@@ -495,8 +487,8 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int max_iter, int D, 
 // entry main function
 int main (int argc, char ** argv) {
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 6) {
-        cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [max_iter] [lambda] [dmatFile]" << endl;
+    if (argc < 5) {
+        cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [max_iter] [lambda] " << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
     }
