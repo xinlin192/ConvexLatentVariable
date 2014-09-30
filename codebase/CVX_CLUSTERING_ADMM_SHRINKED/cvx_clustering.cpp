@@ -27,7 +27,7 @@
 // #define SPARSE_CLUSTERING_DUMP
 
 const double FRANK_WOLFE_TOL = 1e-20;
-const double ADMM_EPS = 1e-10;
+const double ADMM_EPS = 1e-2;
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
 const double EPS = 0;
@@ -87,22 +87,32 @@ class Compare
         }
 };
 
-void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K, vector< set<int> > row_active_sets) {
+void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K, set<int> row_active_sets) {
     // cout << "within frank_wolf" << endl;
     // STEP ONE: compute gradient mat initially
     vector< set< pair<int, double> > > actives (N, set<pair<int,double> >());
     vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> > pqueues (N, priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> ());
+    // for (set<int>::iterator it=row_active_sets.begin();it!=row_active_sets.end();++it) {
+    //   int i = *it;
     for (int i = 0; i < N; i++) {
-        set<int>::iterator it;
-        for (it=row_active_sets[i].begin();it!=row_active_sets[i].end();++it) {
-            int j = *it;
+        for (int j = 0; j < N; j++) {
             double grad=0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
-            pqueues[i].push(make_pair(j, grad));
+            if (wone[i][j] > 1e-10) 
+                actives[i].insert(make_pair(j,grad));
+            else 
+                pqueues[i].push(make_pair(j, grad));
         }
     }
     // STEP TWO: iteration solve each row 
     int k = 0;  // iteration number
     vector<bool> is_fw_opt_reached (N, false);
+    /*
+    for (set<int>::iterator it=row_active_sets.begin(); it!=row_active_sets.end(); ++it) {
+        int i = *it;
+        is_fw_opt_reached[i] = false;
+    }
+    */
+    
     set<pair<int,double> >::iterator it;
     // cout << "within frank_wolf: start iteration" << endl;
     while (k < K) { // TODO: change to use portional criteria
@@ -128,60 +138,48 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
             double gamma; // step size of line search
 #ifdef EXACT_LINE_SEARCH
             double sum1=0.0, sum2=0.0, sum3=0.0, sum4=0.0;
-            if (k==0) {
-                gamma = 1.0;
-            } else {
-                // gamma* = (sum1 + sum2 + sum3) / sum4, where
-                // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
-                // sum2 = sum_n sum_k y_nk (w - s)_nk
-                // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
-                // sum4 = sum_n sum_k rho * (s - w)^2
-                for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
-                    double w_minus_s;
-                    double w_minus_z = wone[i][it->first] - zone[i][it->first];
-                    if (it->first == s[i].first) {
-                        w_minus_s = wone[i][it->first]-1.0;
-                    } else {
-                        w_minus_s = wone[i][it->first];
-                    }
-                    sum1 += 0.5 * w_minus_s * dist_mat[i][it->first];
-                    sum2 += yone[i][it->first] * w_minus_s;
-                    sum3 += rho * w_minus_s * w_minus_z;
-                    sum4 += rho * w_minus_s * w_minus_s; 
-                }
-                if (!isInActives[i]) {
-                    sum1 += 0.5 * (-1.0) * dist_mat[i][s[i].first];
-                    sum2 += yone[i][it->first] * (-1.0);
-                    sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
-                    sum4 += rho;
-                }
-
-                if (fabs(sum4) > 0) {
-                    gamma = (sum1 + sum2 + sum3) / sum4;
-#ifdef EXACT_LINE_SEARCH_DUMP
-                    if (gamma < 0) {
-                        cout << "[exact] i=" << i ;
-                        cout << ",k=" << k;
-                        cout << ",sum1="<< sum1;
-                        cout << ",sum2="<< sum2;
-                        cout << ",sum3="<< sum3;
-                        cout << ",sum4="<< sum4;
-                        cout << ",gamma="<< gamma;
-                        cout << endl;
-                    }
-#endif
-                    gamma = max(gamma, 0.0);
-                    gamma = min(gamma, 1.0);
-                    /*
-                    if (gamma < FRANK_WOLFE_TOL) {
-                        gamma = 0.0;
-                        is_fw_opt_reached = true;
-                    }
-                    */
+            // gamma* = (sum1 + sum2 + sum3) / sum4, where
+            // sum1 = 1/2 sum_n sum_k (w - s)_nk * || x_n - mu_k ||^2
+            // sum2 = sum_n sum_k y_nk (w - s)_nk
+            // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
+            // sum4 = sum_n sum_k rho * (s - w)^2
+            for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
+                double w_minus_s;
+                double w_minus_z = wone[i][it->first] - zone[i][it->first];
+                if (it->first == s[i].first) {
+                    w_minus_s = wone[i][it->first]-1.0;
                 } else {
-                    gamma = 0.0;
-                    is_fw_opt_reached[i] = true;
+                    w_minus_s = wone[i][it->first];
                 }
+                sum1 += 0.5 * w_minus_s * (dist_mat[i][it->first] -r);
+                sum2 += yone[i][it->first] * w_minus_s;
+                sum3 += rho * w_minus_s * w_minus_z;
+                sum4 += rho * w_minus_s * w_minus_s; 
+            }
+            if (!isInActives[i]) {
+                sum1 += 0.5 * (-1.0) * (dist_mat[i][s[i].first] - r);
+                sum2 += yone[i][it->first] * (-1.0);
+                sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
+                sum4 += rho;
+            }
+
+            if (fabs(sum4) > 0) {
+                gamma = (sum1 + sum2 + sum3) / sum4;
+#ifdef EXACT_LINE_SEARCH_DUMP
+                cout << "[exact] i=" << i ;
+                cout << ",k=" << k;
+                cout << ",sum1="<< sum1;
+                cout << ",sum2="<< sum2;
+                cout << ",sum3="<< sum3;
+                cout << ",sum4="<< sum4;
+                cout << ",gamma="<< gamma;
+                cout << endl;
+#endif
+                gamma = max(gamma, 0.0);
+                gamma = min(gamma, 1.0);
+            } else {
+                gamma = 0.0;
+                is_fw_opt_reached[i] = true;
             }
 #else
             gamma = 2.0 / (k+2.0);
@@ -192,7 +190,6 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
             }
             wone[i][s[i].first] += gamma;
             // update new actives 
-            // for (int i = 0; i < N; i ++) {
             set<pair<int, double> > temp;
             if (!isInActives[i]) {
                 actives[i].insert(pqueues[i].top());
@@ -264,35 +261,35 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     return group_lasso + sum2 + sum3;
 }
 
-void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double* lambda, int N, vector< set<int> > column_active_sets) {
+void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double* lambda, int N, set<int> col_active_sets) {
 
-    for (int j = 0; j < N; j ++) {
+    //vector<bool> is_bw_opt_reached (N, false);
+    /*
+    for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
+        int j = *it;
+        is_bw_opt_reached[j] = false;
+    }
+    */
+    // for (int j = 0; j < N; j ++) {
+    set<int>::iterator it;
+    for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
+        int j = *it;
+        // if (is_bw_opt_reached[j]) continue;
         // 1. bifurcate the set of values
         vector< pair<int,double> > alpha_vec;
         set<int>::iterator it;
-        for(it=column_active_sets[j].begin();it!=column_active_sets[j].end();++it){
-            int i = *it;
+        for (int i = 0; i < N; i ++) {
             double value = (rho * ztwo[i][j] - ytwo[i][j]) / rho;
-            /*if( wbar[i][j] < 0 ){
-              cerr << "wbar[" << i << "][" << j << "]" << endl;
-              exit(0);
-              }*/
             alpha_vec.push_back (make_pair(i, abs(value)));
         }
         // 2. sorting
         std::sort (alpha_vec.begin(), alpha_vec.end(), pairComparator);
-        /*
-           for (int i = 0; i < N; i ++) {
-           if (alpha_vec[i].second != 0)
-           cout << alpha_vec[i].second << endl;
-           }
-           */
         // 3. find mstar
         int mstar = 0; // number of elements support the sky
         double separator;
         double max_term = -INF, new_term;
         double sum_alpha = 0.0;
-        for (int i = 0; i < alpha_vec.size(); i ++) {
+        for (int i = 0; i < N; i ++) {
             sum_alpha += alpha_vec[i].second;
             new_term = (sum_alpha - lambda[j]) / (i + 1.0);
             if ( new_term > max_term ) {
@@ -307,9 +304,7 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
                 wtwo[i][j] = 0.0;
             continue;
         }
-        for(it=column_active_sets[j].begin();it!=column_active_sets[j].end();++it){
-            // harness vector of pair
-            int i = *it;
+        for (int i = 0; i < N; i ++) {
             double value = (rho * ztwo[i][j] - ytwo[i][j]) / rho;
             if ( abs(value) >= separator ) {
                 wtwo[i][j] = max_term;
@@ -320,7 +315,7 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
         }
     }
     // compute value of objective function
-    double penalty = second_subproblem_obj (ytwo, ztwo, wtwo, rho, N, lambda);
+    // double penalty = second_subproblem_obj (ytwo, ztwo, wtwo, rho, N, lambda);
     // report the #iter and objective function
     /*cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
       cout << endl;*/
@@ -380,8 +375,8 @@ double overall_objective (double ** dist_mat, double* lambda, int N, double ** z
     return loss + reg + dummy_penalty;
 }
 
-double noise(){
-    return EPS * (((double)rand()/RAND_MAX)*2.0 -1.0) ;
+double noise() {
+    return EPS * (((double)rand()/RAND_MAX)*2.0 -1.0);
 }
 /* Compute the mutual distance of input instances contained within "data" */
 void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
@@ -420,45 +415,69 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
     mat_zeros (difftwo, N, N);
 
     // variables for shriking method
-    vector< set<int> > row_active_sets (N, set<int>());
-    vector< set<int> > column_active_sets (N, set<int>());
+    set<int> row_active_sets;
+    set<int> col_active_sets;
     // set initial active_set as all elements
     for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            row_active_sets[i].insert(j);
-            column_active_sets[j].insert(i);
-        }
+        row_active_sets.insert(i);
+        col_active_sets.insert(i);
     }
-
     int iter = 0; // Ian: usually we count up (instead of count down)
     bool no_active_element = false, admm_opt_reached = false;
     while ( !admm_opt_reached ) { // stopping criteria
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe"  << endl;
 #endif
+
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter, row_active_sets);
-        blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N, column_active_sets);
+        blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N, col_active_sets);
 
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
-        for (int i = 0; i < N; i ++) {
-            set<int>::iterator it;
-            for (it=row_active_sets[i].begin();it!=row_active_sets[i].end();++it) {
-                int j = *it;
+        set<int>::iterator it;
+        /*
+        for (it=row_active_sets.begin();it!=row_active_sets.end();++it) {
+            int i = *it;
+            for (int j = 0; j < N; j ++) {
                 z[i][j] = (wone[i][j] + wtwo[i][j]) / 2.0;
+            }
+        }
+        for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
+            int j = *it;
+            for (int i = 0; i < N; i ++) {
+                z[i][j] = (wone[i][j] + wtwo[i][j]) / 2.0;
+            }
+        }
+        for (it=row_active_sets.begin();it!=row_active_sets.end();++it) {
+            int i = *it;
+            for (int j = 0; j < N; j ++) {
                 yone[i][j] += alpha * (wone[i][j] - z[i][j]) ;
+            }
+        }
+        for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
+            int j = *it;
+            for (int i = 0; i < N; i ++) {
                 ytwo[i][j] += alpha * (wtwo[i][j] - z[i][j]) ;
             }
         }
+        */
+        mat_add (wone, wtwo, z, N, N);
+        mat_dot (0.5, z, z, N, N);
+
+        mat_sub (wone, z, diffone, N, N);
+        mat_dot (alpha, diffone, diffone, N, N);
+        mat_add (yone, diffone, yone, N, N);
+        
+        mat_sub (wtwo, z, difftwo, N, N);
+        mat_dot (alpha, difftwo, difftwo, N, N);
+        mat_add (ytwo, difftwo, ytwo, N, N);
+
 #ifdef SPARSE_CLUSTERING_DUMP
         cout << "norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
         cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
         cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
 #endif
-
-        // double trace_wone_minus_z = mat_norm2 (diffone, N, N); 
-        // double trace_wtwo_minus_z = mat_norm2 (difftwo, N, N); 
 
         // STEP FOUR: trace the objective function
         if (iter % 100 == 0) {
@@ -467,65 +486,111 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
                 << ", Overall Error: " << error << endl;
         }
         // Shrinking Method:
-        if (iter > 0) {
-            // STEP ONE: reduce number of elements considered in next iteration
-            vector<pair<int,int> > to_shrink;
-            for (int i = 0; i < N; i++) {
-                set<int>::iterator it;
-                for (it=row_active_sets[i].begin();it!=row_active_sets[i].end();++it) {
-                    int j = *it;
-                    bool is_primal_shrink=false, is_dual_shrink=false;
-                    // (A) primal shrinking:
-                    if (rho*(z[i][j] - z_old[i][j])*(z[i][j] - z_old[i][j]) < ADMM_EPS)
-                        is_primal_shrink = true;
-                    // (B) dual shrinking:
-                    if (rho*(wone[i][j]-z[i][j])*(wone[i][j]-z[i][j]) < ADMM_EPS &&
-                        rho*(wtwo[i][j]-z[i][j])*(wtwo[i][j]-z[i][j]) < ADMM_EPS)
-                        is_dual_shrink = true;
-                    // (C) cache index of element to be removed
-                    if (is_primal_shrink && is_dual_shrink) 
-                        to_shrink.push_back(make_pair(i,j));
-                }
+        // STEP ONE: reduce number of elements considered in next iteration
+        vector<int> row_to_shrink;
+        for (it=row_active_sets.begin();it!=row_active_sets.end();++it) {
+            int i = *it;
+            bool is_primal_shrink=false, is_dual_shrink=false;
+            int j;
+            for (j = 0; j < N; j++) {
+                // (A) primal shrinking:
+                if (rho*(z[i][j]-z_old[i][j])*(z[i][j]-z_old[i][j]) > ADMM_EPS)
+                    break;
+                // (B) dual shrinking:
+                // if (  (wone[i][j]-z[i][j])*(wone[i][j]-z[i][j]) > ADMM_EPS || (wtwo[i][j]-z[i][j])*(wtwo[i][j]-z[i][j]) > ADMM_EPS)
+                if (  (wone[i][j]-z[i][j])*(wone[i][j]-z[i][j]) > ADMM_EPS)
+                    break;
             }
-            for (int i = 0; i < N; i++) {
-                set<int>::iterator it;
-                for (it=row_active_sets[i].begin();it!=row_active_sets[i].end();++it) {
-                    int j = *it;
-                    z_old[i][j] = z[i][j];
-                }
-            }
-            // remove shrinked element from row/column active sets
-            for (int s = 0; s < to_shrink.size(); s ++) {
-                int row_index = to_shrink[s].first;
-                int column_index = to_shrink[s].second;
-                row_active_sets[row_index].erase(column_index);
-                column_active_sets[column_index].erase(row_index);
-            }
-            // count number of active elements
-            int num_active_elements = 0;
-            for (int i = 0; i < N; i ++) {
-                num_active_elements += row_active_sets[i].size();
-                num_active_elements += column_active_sets[i].size();
-            }
-            // STEP TWO: consider to open all elements to check optimality
-            if (num_active_elements == 0 && !no_active_element) {
-                no_active_element = true;
-                // open all elements to verify the result
-                for (int i = 0; i < N; i++) {
-                    row_active_sets[i].clear();
-                    column_active_sets[i].clear();
-                }
-                for (int i = 0; i < N; i++) {
-                    for (int j = 0; j < N; j++) {
-                        row_active_sets[i].insert(j);
-                        column_active_sets[j].insert(i);
-                    }
-                }
-            } else if (num_active_elements == 0 && no_active_element) 
-                admm_opt_reached = true;
-            else if (num_active_elements > 0) 
-                no_active_element = false;
+            // cache index of element to be removed
+            if ( j == N ) 
+                row_to_shrink.push_back(i);
         }
+        vector<int> col_to_shrink;
+        for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
+            int j = *it;
+            bool is_primal_shrink=false, is_dual_shrink=false;
+            int i;
+            for (i = 0; i < N; i++) {
+                // (A) primal shrinking:
+                //if (rho*(z[i][j]-z_old[i][j])*(z[i][j]-z_old[i][j]) > ADMM_EPS) {
+                if ( z[i][j] > ADMM_EPS || z_old[i][j] > ADMM_EPS ) {
+                    break;
+                }
+                // (B) dual shrinking:
+                //if (  (wone[i][j]-z[i][j])*(wone[i][j]-z[i][j]) > ADMM_EPS || (wtwo[i][j]-z[i][j])*(wtwo[i][j]-z[i][j]) > ADMM_EPS)
+                if (  wone[i][j] > ADMM_EPS || wtwo[i][j] > ADMM_EPS )
+                //if (  (wtwo[i][j]-z[i][j])*(wtwo[i][j]-z[i][j]) > ADMM_EPS)
+                    break;
+            }
+            // cache index of element to be removed
+            if ( i == N ) 
+                col_to_shrink.push_back(j);
+        }
+        /*
+           for (it=row_active_sets.begin();it!=row_active_sets.end();++it) {
+           int i = *it;
+           for (int j = 0; j < N; j++) {
+           z_old[i][j] = z[i][j];
+           }
+           }
+           for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
+           int j = *it;
+           for (int i = 0; i < N; i++) {
+           z_old[i][j] = z[i][j];
+           }
+           }
+           */
+        // remove shrinked row/column from row/column active sets
+        int num_row_to_shrink = row_to_shrink.size();
+        for (int s = 0; s < num_row_to_shrink; s ++) 
+            row_active_sets.erase(row_to_shrink[s]);
+        int num_col_to_shrink = col_to_shrink.size();
+        for (int s = 0; s < num_col_to_shrink; s ++) {
+            if (col_to_shrink[s] == 8-1 || col_to_shrink[s] == 127-1)
+                cerr << "iter: " << iter << ", erase real cluster: " << col_to_shrink[s] << endl;
+            int j_shr = col_to_shrink[s];
+            col_active_sets.erase(j_shr);
+            for(int i=0;i<N;i++){
+                wone[i][j_shr] = 0.0;
+                z[i][j_shr] = 0.0;
+            }
+        }
+        // update z_old
+        mat_copy (z, z_old, N, N);
+        
+        // count number of active elements
+        int num_active_rows = row_active_sets.size();
+        int num_active_cols = col_active_sets.size();
+        if (iter % 100 == 0) {
+            cout << "iter: " << iter;
+            cout << ", num_active_rows: " << num_active_rows;
+            cout << ", num_active_cols: " << num_active_cols <<endl;
+        }
+        int num_active_elements=num_active_rows+num_active_cols;
+        // STEP TWO: consider to open all elements to check optimality
+        if (num_active_elements == 0 && !no_active_element) {
+            no_active_element = true;
+            // open all elements to verify the result
+            cout << "open all elements for optimality checking!" << endl;
+            row_active_sets.clear();
+            col_active_sets.clear();
+            for (int i = 0; i < N; i++) {
+                row_active_sets.insert(i);
+                col_active_sets.insert(i);
+            }
+        } else if (num_active_elements == 0 && no_active_element) 
+            admm_opt_reached = true;
+        else if (num_active_elements > 0 && no_active_element) {
+            no_active_element = false;
+            cout << "fail to reach global ADMM optima!" << endl;
+        }
+        /*
+        if (iter == 5000) {
+            ofstream W_OUT("w_out");
+            W_OUT<< mat_toString(z, N, N);
+            W_OUT.close();
+        }
+        */
         iter ++;
     }
 
@@ -536,8 +601,10 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
     mat_free (ytwo, N, N);
     mat_free (diffone, N, N);
     mat_free (difftwo, N, N);
+    mat_free (z_old, N, N);
     // STEP SIX: put converged solution to destination W
     mat_copy (z, W, N, N);
+    mat_free (z, N, N);
 }
 
 // entry main function
@@ -606,9 +673,11 @@ int main (int argc, char ** argv) {
     double ** W = mat_init (N, N);
     mat_zeros (W, N, N);
     cvx_clustering (dist_mat, fw_max_iter, D, N, lambda, W);
+    /*
     ofstream W_OUT("w_out");
     W_OUT<< mat_toString(W, N, N);
     W_OUT.close();
+    */
 
     // Output cluster
     output_objective(clustering_objective (dist_mat, W, N));
