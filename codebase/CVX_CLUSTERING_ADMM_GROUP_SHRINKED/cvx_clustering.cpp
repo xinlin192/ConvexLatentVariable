@@ -92,8 +92,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     // STEP ONE: compute gradient mat initially
     vector< set< pair<int, double> > > actives (N, set<pair<int,double> >());
     vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> > pqueues (N, priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> ());
-    set<int>::iterator it;
-    for (it=row_active_sets[i].begin();it!=row_active_sets[i].end();++it) {
+    for (set<int>::iterator it=row_active_sets.begin();it!=row_active_sets.end();++it) {
         int i = *it;
         for (int j = 0; j < N; j++) {
             double grad=0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
@@ -106,8 +105,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     // STEP TWO: iteration solve each row 
     int k = 0;  // iteration number
     vector<bool> is_fw_opt_reached (N, true);
-    set<int> iterator it;
-    for (it=row_active_sets.begin(); it!=row_active_sets.end(); ++it) {
+    for (set<int>::iterator it=row_active_sets.begin(); it!=row_active_sets.end(); ++it) {
         int i = *it;
         is_fw_opt_reached[i] = false;
     }
@@ -178,12 +176,6 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
 #endif
                 gamma = max(gamma, 0.0);
                 gamma = min(gamma, 1.0);
-                /*
-                   if (gamma < FRANK_WOLFE_TOL) {
-                   gamma = 0.0;
-                   is_fw_opt_reached = true;
-                   }
-                   */
             } else {
                 gamma = 0.0;
                 is_fw_opt_reached[i] = true;
@@ -269,15 +261,20 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     return group_lasso + sum2 + sum3;
 }
 
-void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double* lambda, int N, set<int> column_active_sets) {
+void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double* lambda, int N, set<int> col_active_sets) {
 
+    vector<bool> is_bw_opt_reached (N, true);
+    set<int>::iterator it;
+    for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
+        int j = *it;
+        is_bw_opt_reached[j] = false;
+    }
     for (int j = 0; j < N; j ++) {
+        if (is_bw_opt_reached[j]) continue;
         // 1. bifurcate the set of values
         vector< pair<int,double> > alpha_vec;
         set<int>::iterator it;
         for (int i = 0; i < N; i ++) {
-        //for(it=column_active_sets[j].begin();it!=column_active_sets[j].end();++it){
-         //   int i = *it;
             double value = (rho * ztwo[i][j] - ytwo[i][j]) / rho;
             alpha_vec.push_back (make_pair(i, abs(value)));
         }
@@ -304,9 +301,6 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
             continue;
         }
         for (int i = 0; i < N; i ++) {
-        // for(it=column_active_sets[j].begin();it!=column_active_sets[j].end();++it){
-            // harness vector of pair
-            //int i = *it;
             double value = (rho * ztwo[i][j] - ytwo[i][j]) / rho;
             if ( abs(value) >= separator ) {
                 wtwo[i][j] = max_term;
@@ -418,11 +412,11 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
 
     // variables for shriking method
     set<int> row_active_sets;
-    set<int> column_active_sets;
+    set<int> col_active_sets;
     // set initial active_set as all elements
     for (int i = 0; i < N; i++) {
         row_active_sets.insert(i);
-        column_active_sets.insert(i);
+        col_active_sets.insert(i);
     }
 
     int iter = 0; // Ian: usually we count up (instead of count down)
@@ -434,7 +428,7 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter, row_active_sets);
-        blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N, column_active_sets);
+        blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N, col_active_sets);
 
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
@@ -525,10 +519,10 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
                 row_active_sets.erase(row_to_shrink[s]);
             int num_col_to_shrink = col_to_shrink.size();
             for (int s = 0; s < num_col_to_shrink; s ++) 
-                column_active_sets.erase(col_to_shrink[s]);
+                col_active_sets.erase(col_to_shrink[s]);
             // count number of active elements
             int num_active_rows = row_active_sets.size();
-            int num_active_cols = column_active_sets.size();
+            int num_active_cols = col_active_sets.size();
             if (iter % 100 == 0) {
                 cout << "iter: " << iter;
                 cout << ", num_active_rows: " << num_active_rows;
@@ -541,10 +535,10 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
                 // open all elements to verify the result
                 cout << "open all elements for optimality checking!" << endl;
                 row_active_sets.clear();
-                column_active_sets.clear();
+                col_active_sets.clear();
                 for (int i = 0; i < N; i++) {
                     row_active_sets.insert(i);
-                    column_active_sets.insert(i);
+                    col_active_sets.insert(i);
                 }
             } else if (num_active_elements == 0 && no_active_element) 
                 admm_opt_reached = true;
@@ -553,11 +547,13 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
                 cout << "fail to reach global ADMM optima!" << endl;
             }
         }
+        /*
         if (iter == 5000) {
             ofstream W_OUT("w_out");
             W_OUT<< mat_toString(z, N, N);
             W_OUT.close();
         }
+        */
         iter ++;
     }
 
