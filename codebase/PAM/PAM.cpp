@@ -146,8 +146,8 @@ double PAM (double** dist_mat, int N, int K, double** W, int* medoids) {
 int main (int argc, char ** argv) {
 
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 5) {
-        cerr << "Usage: PAM [dataFile] [FIX_DIM] [nRuns] [K]" << endl;
+    if (argc < 4) {
+        cerr << "Usage: PAM [dataFile] [nRuns] [K]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         cerr << "Note: nRuns is the number of running to get global optima" << endl;
         exit(-1);
@@ -155,13 +155,8 @@ int main (int argc, char ** argv) {
 
     // parse arguments
     char* dataFile = argv[1];
-    // int FIX_DIM = atoi(argv[2]);
-    int nRuns = atoi(argv[3]);
-    int K = atoi(argv[4]);
-
-    // read in data
-    // vector<Instance*> data;
-    // readFixDim (dataFile, data, FIX_DIM);
+    int nRuns = atoi(argv[2]);
+    int K = atoi(argv[3]);
 
     // read in data
     int FIX_DIM;
