@@ -335,7 +335,7 @@ double overall_objective (double ** dist_mat, double* lambda, int N, double ** z
     delete[] temp_vec;
     double overall = loss + reg + dummy_penalty;
     cout << ", overall=" <<  overall << endl;
-    return loss;
+    return loss + reg;
 }
 
 double noise() {
