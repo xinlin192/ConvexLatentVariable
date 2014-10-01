@@ -1,6 +1,7 @@
 /*###############################################################
 ## MODULE: DP_MEDOIDS.cpp
-## VERSION: 1.0 ## SINCE 2014-06-14
+## VERSION: 1.0 
+## SINCE 2014-06-14
 ## AUTHOR:
 ##     Jimmy Lin (xl5224) - JimmyLin@utexas.edu  
 ## DESCRIPTION: 
@@ -14,10 +15,9 @@
 #include "../util.h"
 #include <cassert>
 #include <cmath>
-#define INTEGER_MAX 30000
+#define INTEGER_MAX 3000000
 
 typedef double (* dist_func) (Instance*, Instance*, int); 
-
 /* Compute the mutual distance of input instances contained within "data" */
 void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
     for (int i = 0; i < N; i ++) {
@@ -37,10 +37,12 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         }
     }
     // STEP ONE: a. randomly pick up the initial *global* medoid
-    vector<int> last_medoids (1, 0);
-    vector<int> new_medoids (1, 0);
+    vector<int> new_medoids (1,0);
     new_medoids[0] = random() % N;
-    last_medoids[0] = new_medoids[0];
+    //new_medoids[0] = 7;
+    //new_medoids[1] = 126;
+    
+    vector<int> last_medoids (new_medoids);
     cout << "randomized medoids: " << last_medoids[0]  << endl;
 
     // OPTIONAL: write randomized medoids to stdout or external files
@@ -97,7 +99,7 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         mat_free(temp, N,K);
 
         // STEP THREE: compute cost
-        new_cost = 0.5 * mat_frob_dot (w, dist_mat, N,N);
+        new_cost = 0.5 * mat_frob_dot (w, dist_mat, N,N)+ K * lambda ;
 
         cout << "new_cost: " << new_cost << endl;
         // STEP FOUR: stopping criteria
@@ -165,8 +167,8 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
 int main (int argc, char ** argv) {
 
     // exception control: illustrate the usage if get input of wrong format
-    if (argc != 5) {
-        cerr << "Usage: DP_MEDOIDS [dataFile] [FIX_DIM] [nRuns] [lambda]" << endl;
+    if (argc != 4) {
+        cerr << "Usage: DP_MEDOIDS [dataFile] [nRuns] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         cerr << "Note: nRuns is the number of running to get global optima" << endl;
         exit(-1);
@@ -174,9 +176,8 @@ int main (int argc, char ** argv) {
 
     // parse arguments
     char* dataFile = argv[1];
-    // int FIX_DIM = atoi(argv[2]);
-    int nRuns = atoi(argv[3]);
-    double lambda = atof(argv[4]);
+    int nRuns = atoi(argv[2]);
+    double lambda = atof(argv[3]);
 
     // read in data
     //vector<Instance*> data;
