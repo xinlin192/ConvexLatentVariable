@@ -30,7 +30,6 @@ const double FRANK_WOLFE_TOL = 1e-20;
 const double ADMM_EPS = 1e-2;
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
-const double EPS = 0;
 
 double first_subproblm_obj (double** dist_mat, double** yone, double** zone, double** wone, double rho, int N) {
     double ** temp = mat_init (N, N);
@@ -71,8 +70,8 @@ double first_subproblm_obj (double** dist_mat, double** yone, double** zone, dou
 
     return total;
 }
-void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K, set<int>& col_active_set) {
-    // cout << "within frank_wolf" << endl;
+void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K, set<int>& col_active_set) {
+    // cout << "within frank_wolfe_solver" << endl;
     // STEP ONE: compute gradient mat initially
     vector< set< pair<int, double> > > actives (N, set<pair<int,double> >());
     vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> > pqueues (N, priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> ());
@@ -90,7 +89,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
     int k = 0;  // iteration number
     vector<bool> is_fw_opt_reached (N, false);
     set<pair<int,double> >::iterator it;
-    // cout << "within frank_wolf: start iteration" << endl;
+    // cout << "within frank_wolfe_solver: start iteration" << endl;
     while (k < K) { // TODO: change to use portional criteria
         // compute new active atom: can be in active set or not
         vector< pair<int, double> > s (N, pair<int,double>());
@@ -180,7 +179,7 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
             actives[i].swap(temp);
             // cout << "actives[" << i << "]: " << actives[i].size() << endl;
         }
-        // cout << "within frank_wolf: next iteration" << endl;
+        // cout << "within frank_wolfe_solver: next iteration" << endl;
         k ++;
     }
 #ifdef FRANK_WOLFE_DUMP
@@ -232,7 +231,7 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     return group_lasso + sum2 + sum3;
 }
 
-void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double* lambda, int N, set<int> col_active_sets) {
+void group_lasso_solver (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double* lambda, int N, set<int> col_active_sets) {
     set<int>::iterator it;
     for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
         int j = *it;
@@ -300,7 +299,6 @@ double overall_objective (double ** dist_mat, double* lambda, int N, double ** z
     }
     double loss = 0.5 * (normSum);
     cout << "loss=" << loss;
-
     // STEP TWO: compute dummy loss
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
     double * temp_vec = new double [N];
@@ -312,7 +310,6 @@ double overall_objective (double ** dist_mat, double* lambda, int N, double ** z
         dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
     }
     cout << ", dummy= " << dummy_penalty;
-
     // STEP THREE: compute group-lasso regularization
     double * maxn = new double [N]; 
     for (int i = 0;i < N; i ++) { // Ian: need initial 
@@ -330,7 +327,6 @@ double overall_objective (double ** dist_mat, double* lambda, int N, double ** z
     }
     double reg = sumk; 
     cout << ", reg=" << reg ;
-
     delete[] maxn;
     delete[] temp_vec;
     double overall = loss + reg + dummy_penalty;
@@ -338,16 +334,13 @@ double overall_objective (double ** dist_mat, double* lambda, int N, double ** z
     return loss + reg;
 }
 
-double noise() {
-    return EPS * (((double)rand()/RAND_MAX)*2.0 -1.0);
-}
 /* Compute the mutual distance of input instances contained within "data" */
 void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
             Instance * xi = data[i];
             Instance * muj = data[j];
-            dist_mat[i][j] = df (xi, muj, D) + noise();
+            dist_mat[i][j] = df (xi, muj, D);
         }
     }
 }
@@ -396,8 +389,8 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* 
     while ( iter < ADMM_max_iter ) { // stopping criteria
 
         // STEP ONE: resolve w_1 and w_2
-        frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_sets);
-        blockwise_closed_form (ytwo, z, wtwo, rho, lambda, N, col_active_sets);
+        frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_sets);
+        group_lasso_solver (ytwo, z, wtwo, rho, lambda, N, col_active_sets);
 
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
@@ -429,12 +422,9 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* 
             int i;
             for (i = 0; i < N; i++) {
                 // (A) primal shrinking:
-                if ( z[i][j] > ADMM_EPS || z_old[i][j] > ADMM_EPS ) {
-                    break;
-                }
+                if ( z[i][j] > ADMM_EPS || z_old[i][j] > ADMM_EPS ) break;
                 // (B) dual shrinking:
-                if (  wone[i][j] > ADMM_EPS || wtwo[i][j] > ADMM_EPS )
-                    break;
+                if ( wone[i][j] > ADMM_EPS || wtwo[i][j] > ADMM_EPS ) break;
             }
             // cache index of element to be removed
             if ( i == N ) 
@@ -546,10 +536,9 @@ int main (int argc, char ** argv) {
     srand (seed);
     cerr << "seed = " << seed << endl;
 
-    //create lambda with noise
     double* lambda = new double[N];
     for(int i=0;i<N;i++){
-        lambda[i] = lambda_base + noise();
+        lambda[i] = lambda_base;
     }
 
     // pre-compute distance matrix
