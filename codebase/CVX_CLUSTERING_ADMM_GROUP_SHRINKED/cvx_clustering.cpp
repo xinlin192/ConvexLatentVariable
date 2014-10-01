@@ -14,6 +14,7 @@
 #include "cvx_clustering.h"
 #include <cassert>
 #include <queue>
+#include <time.h>
 
 #include "../util.h"
 
@@ -24,7 +25,6 @@
 // #define FRANK_WOLFE_DUMP
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
-// #define SPARSE_CLUSTERING_DUMP
 
 const double FRANK_WOLFE_TOL = 1e-20;
 const double ADMM_EPS = 1e-2;
@@ -32,12 +32,7 @@ typedef double (* dist_func) (Instance*, Instance*, int);
 const double r = 10000.0;
 const double EPS = 0;
 
-bool pairComparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
-    // sort pairs by second element with decreasing order
-    return firstElem.second > secondElem.second;
-}
-
-double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N) {
+double first_subproblm_obj (double** dist_mat, double** yone, double** zone, double** wone, double rho, int N) {
     double ** temp = mat_init (N, N);
     double ** diffone = mat_init (N, N);
     mat_zeros (diffone, N, N);
@@ -66,11 +61,9 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
         dummy_penalty += r*(1 - temp_vec[i]);
     }
     double total = sum1+sum2+sum3+dummy_penalty;
-#ifdef FRANK_WOLFE_DUMP
     cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
         << sum1 << ", " << sum2 << ", " << sum3 << ", " << dummy_penalty << ", " << total
         <<  ")" << endl;
-#endif
 
     mat_free (temp, N, N);
     mat_free (diffone, N, N);
@@ -78,15 +71,6 @@ double first_subproblm_obj (double ** dist_mat, double ** yone, double ** zone, 
 
     return total;
 }
-class Compare
-{
-    public:
-        bool operator() (pair<int, double> obj1, pair<int, double> obj2)
-        {
-            return pairComparator(obj1, obj2);
-        }
-};
-
 void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K, set<int>& col_active_set) {
     // cout << "within frank_wolf" << endl;
     // STEP ONE: compute gradient mat initially
@@ -199,10 +183,10 @@ void frank_wolf (double ** dist_mat, double ** yone, double ** zone, double ** w
         // cout << "within frank_wolf: next iteration" << endl;
         k ++;
     }
-    // compute value of objective function
-    // double penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
-    // report the #iter and objective function
-    // cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
+#ifdef FRANK_WOLFE_DUMP
+     double penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
+     cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
+#endif
 }
 
 double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double* lambda) {
@@ -241,28 +225,14 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
 
     mat_free (temp, N, N);
-
     // ouput values of each components
-#ifdef BLOCKWISE_DUMP
     cout << "[Blockwise] (group_lasso, linear, quadratic) = ("
         << group_lasso << ", " << sum2 << ", " << sum3
         << ")" << endl;
-#endif
-
-    //cerr << group_lasso << ", " << sum2 << ", " << sum3 << endl;
     return group_lasso + sum2 + sum3;
 }
 
 void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double* lambda, int N, set<int> col_active_sets) {
-
-    //vector<bool> is_bw_opt_reached (N, false);
-    /*
-    for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
-        int j = *it;
-        is_bw_opt_reached[j] = false;
-    }
-    */
-    // for (int j = 0; j < N; j ++) {
     set<int>::iterator it;
     for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
         int j = *it;
@@ -306,11 +276,10 @@ void blockwise_closed_form (double ** ytwo, double ** ztwo, double ** wtwo, doub
             }
         }
     }
-    // compute value of objective function
-    // double penalty = second_subproblem_obj (ytwo, ztwo, wtwo, rho, N, lambda);
-    // report the #iter and objective function
-    /*cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
-      cout << endl;*/
+#ifdef BLOCKWISE_DUMP
+    double penalty = second_subproblem_obj (ytwo, ztwo, wtwo, rho, N, lambda);
+    cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
+#endif
 }
 
 double overall_objective (double ** dist_mat, double* lambda, int N, double ** z) {
@@ -360,11 +329,13 @@ double overall_objective (double ** dist_mat, double* lambda, int N, double ** z
         sumk += lambda[i]*maxn[i];
     }
     double reg = sumk; 
-    cout << ", reg=" << reg << endl;
+    cout << ", reg=" << reg ;
 
     delete[] maxn;
     delete[] temp_vec;
-    return loss + reg + dummy_penalty;
+    double overall = loss + reg + dummy_penalty;
+    cout << ", overall=" <<  overall << endl;
+    return loss;
 }
 
 double noise() {
@@ -381,10 +352,14 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
     }
 }
 
-void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double* lambda, double ** W, int ADMM_max_iter) {
+void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* lambda, double ** W, int ADMM_max_iter, int SS_PERIOD) {
     // parameters 
     double alpha = 0.1;
     double rho = 1;
+    ofstream ss_out ("plot_cputime_objective");
+    ss_out << "Time Objective" << endl;
+    clock_t cputime = 0;
+    clock_t prev = clock();
     // iterative optimization 
     double error = INF;
     double ** wone = mat_init (N, N);
@@ -412,12 +387,13 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
     for (int i = 0; i < N; i++) {
         col_active_sets.insert(i);
     }
+
+    cputime += clock() - prev;
+    ss_out << cputime << " " << 0 << endl;
+    prev = clock();
     int iter = 0; // Ian: usually we count up (instead of count down)
     bool no_active_element = false, admm_opt_reached = false;
     while ( iter < ADMM_max_iter ) { // stopping criteria
-#ifdef SPARSE_CLUSTERING_DUMP
-        cout << "it is place 0 iteration #" << iter << ", going to get into frank_wolfe"  << endl;
-#endif
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolf (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_sets);
@@ -435,17 +411,14 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
             }
         }
 
-#ifdef SPARSE_CLUSTERING_DUMP
-        cout << "norm2(w_1) = " << mat_norm2 (wone, N, N) << endl;
-        cout << "norm2(w_2) = " << mat_norm2 (wtwo, N, N) << endl;
-        cout << "norm2(z) = " << mat_norm2 (z, N, N) << endl;
-#endif
-
         // STEP FOUR: trace the objective function
-        if ((iter+1) % 1000 == 0) {
+        if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
+            cputime += clock() - prev;
             error = overall_objective (dist_mat, lambda, N, z);
             cout << "[Overall] iter = " << iter 
-                << ", Overall Error: " << error << endl;
+                << ", Loss Error: " << error << endl;
+            ss_out << cputime << " " << error << endl;
+            prev = clock();
         }
         // Shrinking Method:
         // STEP ONE: reduce number of elements considered in next iteration
@@ -468,11 +441,9 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
                 col_to_shrink.push_back(j);
         }
         
-            // remove shrinked row/column from row/column active sets
+        // remove shrinked row/column from row/column active sets
         int num_col_to_shrink = col_to_shrink.size();
         for (int s = 0; s < num_col_to_shrink; s ++) {
-            if (col_to_shrink[s] == 8-1 || col_to_shrink[s] == 127-1)
-                cerr << "iter: " << iter << ", erase real cluster: " << col_to_shrink[s] << endl;
             int j_shr = col_to_shrink[s];
             col_active_sets.erase(j_shr);
             for(int i=0;i<N;i++){
@@ -488,15 +459,15 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
                 z_old[i][j] = z[i][j];
             }
         }
-
         // count number of active elements
         int num_active_cols = col_active_sets.size();
-        if ((iter+1) % 1000 == 0) {
+        if ((iter+1) % SS_PERIOD == 0) {
             cout << "iter: " << iter;
             cout << ", num_active_cols: " << num_active_cols <<endl;
         }
         int num_active_elements=N*num_active_cols;
         // STEP TWO: consider to open all elements to check optimality
+        /*
         if (num_active_elements == 0 && !no_active_element) {
             no_active_element = true;
             // open all elements to verify the result
@@ -510,12 +481,6 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
         else if (num_active_elements > 0 && no_active_element) {
             no_active_element = false;
             cout << "fail to reach global ADMM optima!" << endl;
-        }
-        /*
-        if (iter == 5000) {
-            ofstream W_OUT("w_out");
-            W_OUT<< mat_toString(z, N, N);
-            W_OUT.close();
         }
         */
         iter ++;
@@ -532,13 +497,14 @@ void cvx_clustering ( double ** dist_mat, int fw_max_iter, int D, int N, double*
     // STEP SIX: put converged solution to destination W
     mat_copy (z, W, N, N);
     mat_free (z, N, N);
+    ss_out.close();
 }
 
 // entry main function
 int main (int argc, char ** argv) {
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 5) {
-        cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [ADMM_max_iter] [lambda]" << endl;
+    if (argc < 6) {
+        cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [ADMM_max_iter] [lambda] [sc_period]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
     }
@@ -548,9 +514,7 @@ int main (int argc, char ** argv) {
     int fw_max_iter = atoi(argv[2]);
     int ADMM_max_iter = atoi(argv[3]);
     double lambda_base = atof(argv[4]);
-
-    // vector<Instance*> data;
-    // readFixDim (dataFile, data, FIX_DIM);
+    int screenshot_period = atoi(argv[5]);
 
     // read in data
     int FIX_DIM;
@@ -577,6 +541,7 @@ int main (int argc, char ** argv) {
     cerr << "N = " << N << endl; // # instances
     cerr << "lambda = " << lambda_base << endl;
     cerr << "r = " << r << endl;
+    cerr << "Screenshot period = " << screenshot_period << endl;
     int seed = time(NULL);
     srand (seed);
     cerr << "seed = " << seed << endl;
@@ -593,26 +558,16 @@ int main (int argc, char ** argv) {
     //  double ** dist_mat = mat_read (dmatFile, N, N);
     mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
-    ofstream dist_mat_out ("dist_mat");
-    dist_mat_out << mat_toString(dist_mat, N, N);
-    dist_mat_out.close();
 
     // Run sparse convex clustering
     double ** W = mat_init (N, N);
     mat_zeros (W, N, N);
-    cvx_clustering (dist_mat, fw_max_iter, D, N, lambda, W, ADMM_max_iter);
-    /*
-    ofstream W_OUT("w_out");
-    W_OUT<< mat_toString(W, N, N);
-    W_OUT.close();
-    */
+    cvx_clustering (dist_mat, fw_max_iter, D, N, lambda, W, ADMM_max_iter, screenshot_period);
 
     // Output cluster
     output_objective(clustering_objective (dist_mat, W, N));
-
     /* Output cluster centroids */
     output_model (W, N);
-
     /* Output assignment */
     output_assignment (W, data, N);
 
