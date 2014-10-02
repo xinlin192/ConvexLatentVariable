@@ -103,7 +103,7 @@ string esmat_toInfo (Esmat* A);
 void esmat_print (Esmat* A, string str);
 
 /* Compute dummy term */
-double esmat_compute_dummy (Esmat* A);
+double esmat_compute_dummy (Esmat* A, double r);
 
 /* Add and Subtract two extensible sparse matrices */
 void esmat_add (Esmat* A, Esmat* B, Esmat* dest);
@@ -111,6 +111,7 @@ void esmat_sub (Esmat* A, Esmat* B, Esmat* dest);
 
 /* min, max and sum over column and row elements */
 void esmat_max_over_col (Esmat* A, Esmat* dest); 
+void esmat_count_over_col (Esmat* A, Esmat* dest); 
 void esmat_sum_col (Esmat* A, Esmat* dest);
 void esmat_sum_row (Esmat* A, Esmat* dest); 
 
@@ -748,20 +749,21 @@ double esmat_frob_norm (Esmat* A)
 { return esmat_unary_operate (A, power2); }
 /* Compute dummy term */
 double esmat_compute_dummy (Esmat* A, double r) {
-    Esmat* row_sum = esmat_init (N, 1);
-    esmat_sum_row (w, row_sum);
-    vector<double> temp_vec (N, 0.0);
-    double dummy= 0.0;
-    int size = row_sum->val.size();
+    int R = A->nRows;
+    vector<double> temp_vec (R, 0.0);
+    int size = A->val.size();
     for (int i = 0; i < size; i ++) {
-        int row_index = row_sum->val[i].first;
-        int value = row_sum->val[i].second;
-        temp_vec[row_index] = value;
+        int esmat_index = A->val[i].first;
+        int row_index = esmat_index % A->nRows;
+        int col_index = esmat_index / A->nRows;
+        double value = A->val[i].second;
+        temp_vec[row_index] += value;
     }
-    for (int i = 0; i < N; i ++) {
-        dummy += r*(1.0 - temp_vec[i]);
+    double dummy= 0.0;
+    for (int i = 0; i < R; i ++) {
+        dummy += r * (1.0 - temp_vec[i]);
+        cout << i << "," << temp_vec[i] << endl;
     }
-    esmat_free (row_sum);
     return dummy; 
 }
 
@@ -783,6 +785,8 @@ void esmat_sum_col (Esmat* A, Esmat* dest)
 void esmat_sum_row (Esmat* A, Esmat* dest) 
 { esmat_operate_row (A, dest, sum, 0.0); }
 
+void esmat_count_over_col (Esmat* A, Esmat* dest) 
+{ esmat_operate_col (A, dest, count, 0.0); }
 void esmat_max_over_col (Esmat* A, Esmat* dest) 
 { esmat_operate_col (A, dest, max, -INF); }
 void esmat_min_over_col (Esmat* A, Esmat* dest) 

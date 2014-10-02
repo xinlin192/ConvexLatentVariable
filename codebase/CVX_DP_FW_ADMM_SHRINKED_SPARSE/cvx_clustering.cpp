@@ -451,8 +451,8 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_map);
-        // cout << "[wone]" << endl;
-        // cout << esmat_toString(wone);
+         cout << "[wone]" << endl;
+         cout << esmat_toString(wone);
         group_lasso_solver (ytwo, z, wtwo, rho, lambda);
 
 #ifdef SUBPROBLEM_DUMP
@@ -469,6 +469,9 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         Esmat* diff = esmat_init (N, N);
         esmat_add (wone, wtwo, temp);
         esmat_scalar_mult (0.5, temp, z);
+        
+        cout << "[z]" << endl;
+        cout << esmat_toString (z) << endl;
 
         esmat_copy (yone, temp);
         esmat_sub (wone, z, diff);
