@@ -131,6 +131,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
         int row_index = esmat_index % wone->nCols;
         int col_index = esmat_index / wone->nCols;
         double value = grad[row_index][col_active_map[col_index]];
+        // TODO: insert info of w_ij, y_ij, z_ij
         actives[row_index].insert(make_pair(col_index, value));
     }
     // set up queue with ruling out inactive columns
