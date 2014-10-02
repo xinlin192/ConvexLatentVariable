@@ -381,6 +381,8 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
 
     // variables for shriking method
     vector<int> col_active_map (N, -1);
+    for (int i = 0; i < N; i ++) 
+        col_active_map[i] = i;
 
     cputime += clock() - prev;
     ss_out << cputime << " " << 0 << endl;
@@ -443,7 +445,7 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         esmat_count_over_col (temp3, temp1);
         int temp_size = temp1->val.size();
         int map_index = 0;
-        assert (temp->nRows == 1);
+        assert (temp1->nRows == 1);
         // TODO: can improve
         for (int i = 0; i < N; i ++) 
             col_active_map[i] = -1;
