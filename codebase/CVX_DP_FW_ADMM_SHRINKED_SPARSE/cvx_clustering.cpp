@@ -34,9 +34,8 @@ const double r = 10000.0;
 
 /* \lambda_g \sumk \maxn |\wnk| */
 double compute_group_lasso (Esmat* w, double lambda) {
-    if (w->val.size() == 0) {
+    if (w->val.size() == 0) 
         return 0.0;
-    }
     Esmat* maxn = esmat_init (1, w->nCols);
     Esmat* sumk = esmat_init (1, 1);
     esmat_max_over_col (w, maxn);
@@ -51,13 +50,13 @@ double compute_group_lasso (Esmat* w, double lambda) {
     return lasso;
 }
 
-void subproblem_objective (Esmat* dist_mat, Esmat* y, Esmat* z, Esmat* w, double rho, int N, double lambda) {
+void subproblem_objective (double** dist_mat, Esmat* y, Esmat* z, Esmat* w, double rho, int N, double lambda) {
     Esmat* diff = esmat_init (N, N);
     esmat_zeros (diff);
     // reg = 0.5 * sum_k max_n | w_nk |  -> group-lasso
     double group_lasso = compute_group_lasso(w, lambda); 
     // loss = 0.5 * sum_n sum_k (w_nk * d^2_nk) -> loss
-    double loss = 0.5 * esmat_frob_prod (w, dist_mat);
+    double loss = 0.5 * esmat_frob_prod (dist_mat, w);
     // linear = y_1^T dot (w_1 - z) -> linear
     esmat_sub (w, z, diff); // temp = w_1 - z_1
     double linear = esmat_frob_prod (y, diff);
@@ -72,27 +71,81 @@ void subproblem_objective (Esmat* dist_mat, Esmat* y, Esmat* z, Esmat* w, double
     esmat_free (diff);
     // return total;
 }
-void frank_wolfe_solver (Esmat* dist_mat, Esmat* yone, Esmat* zone, Esmat* wone, double rho, int N, int K, set<int>& col_active_set) {
+double overall_objective (double** dist_mat, double* lambda, int N, Esmat* z) {
+    // N is number of entities in "data", and z is N by N.
+    // z is current valid solution (average of w_1 and w_2)
+    // STEP ONE: compute 
+    //     loss = sum_i sum_j z[i][j] * dist_mat[i][j]
+    double loss = 0.5 * esmat_frob_prod(dist_mat, z);
+    cout << "loss=" << loss;
+    // STEP TWO: compute dummy loss
+    // sum4 = r dot (1 - sum_k w_nk) -> dummy
+    double dummy_penalty = esmat_compute_dummy (z, r);
+    cout << ", dummy= " << dummy_penalty;
+    // STEP THREE: compute group-lasso regularization
+    double reg = compute_group_lasso(z, lambda); 
+    cout << ", reg=" << reg ;
+    double overall = loss + reg + dummy_penalty;
+    cout << ", overall=" <<  overall << endl;
+    return loss + reg;
+}
+
+/* Compute the mutual distance of input instances contained within "data" */
+void compute_dist_mat (vector<Instance*>& data, Esmat* dist_mat, int N, int D, dist_func df, bool isSym) {
+    for (int j = 0; j < N; j ++) {
+        Instance * muj = data[j];
+        for (int i = 0; i < N; i ++) {
+            Instance * xi = data[i];
+            double dist_value = df (xi, muj, D);
+            dist_mat->val.push_back(make_pair(j*N+i,dist_value));
+        }
+    }
+}
+void compute_dist_mat (vector<Instance*>& data, double** dist_mat, int N, int D, dist_func df, bool isSym) {
+    for (int i = 0; i < N; i ++) {
+        Instance * xi = data[i];
+        for (int j = 0; j < N; j ++) {
+            Instance * muj = data[j];
+            double dist_value = df (xi, muj, D);
+            dist_mat[i][j] = dist_value;
+        }
+    }
+}
+void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* wone, double rho, int N, int K, map<int,int>& col_active_map) {
     // cout << "within frank_wolfe_solver" << endl;
     // STEP ONE: compute gradient mat initially
     vector< set< pair<int, double> > > actives (N, set<pair<int,double> >());
     vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> > pqueues (N, priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> ());
+    // compute N by K active gradient matrix
+    Esmat* assist = esmat_init (N, N);
+    esmat_sub (wone, zone, assist);
+    esmat_scalar_mult (rho, assist);
+    esmat_add (assist, yone);
+    int num_active_cols = col_active_map.size();
+    double** grad = mat_init (N, num_active_cols);
+    mat_zeros (grad, N, num_active_cols);
+    // set up actives for wone > 1e-10
+    int num_active_elements = wone->val.size();
+    for (int i = 0; i < num_active_elements; i ++) {
+        int esmat_index = wone->val[i].first;
+        int row_index = esmat_index % wone->nCols;
+        int col_index = esmat_index / wone->nCols;
+        double value = grad[row_index][col_active_map[col_index]];
+        actives[row_index].insert(make_pair(col_index, value));
+    }
+    // set up queue with ruling out inactive columns
     for (int i = 0; i < N; i++) {
-        for (set<int>::iterator it=col_active_set.begin();it != col_active_set.end(); ++it) {
-            int j = *it;
-            double grad=0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
-            if (wone[i][j] > 1e-10) 
-                actives[i].insert(make_pair(j,grad));
-            else 
-                pqueues[i].push(make_pair(j, grad));
-        }
+        int j = *it;
+        double grad=0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
+        // pqueues[i].push(make_pair(j, grad));
+
     }
     // STEP TWO: iteration solve each row 
     int k = 0;  // iteration number
     vector<bool> is_fw_opt_reached (N, false);
     set<pair<int,double> >::iterator it;
     // cout << "within frank_wolfe_solver: start iteration" << endl;
-    while (k < K) { // TODO: change to use portional criteria
+    while (k < K) { 
         // compute new active atom: can be in active set or not
         vector< pair<int, double> > s (N, pair<int,double>());
         vector<bool> isInActives (N, false);
@@ -145,11 +198,11 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat* yone, Esmat* zone, Esmat* wone,
 #ifdef EXACT_LINE_SEARCH_DUMP
                 cout << "[exact] i=" << i ;
                 cout << ",k=" << k;
-                cout << ",sum1="<< sum1;
-                cout << ",sum2="<< sum2;
-                cout << ",sum3="<< sum3;
-                cout << ",sum4="<< sum4;
-                cout << ",gamma="<< gamma;
+                cout << ",sum1=" << sum1;
+                cout << ",sum2=" << sum2;
+                cout << ",sum3=" << sum3;
+                cout << ",sum4=" << sum4;
+                cout << ",gamma=" << gamma;
                 cout << endl;
 #endif
                 gamma = max(gamma, 0.0);
@@ -185,105 +238,139 @@ void frank_wolfe_solver (Esmat* dist_mat, Esmat* yone, Esmat* zone, Esmat* wone,
         k ++;
     }
 }
+void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
+    // STEP ONE: compute the optimal solution for truncated problem
+    Esmat* wbar = esmat_init (Z);
+    Esmat* temp = esmat_init (Z);
+    esmat_scalar_mult (RHO, Z, temp); // wbar = RHO * z
+    // cout << wbar->nRows << "," << wbar->nCols << endl;
+    // cout << Y->nRows << "," << Y->nCols << endl;
+    esmat_sub (temp, Y, wbar); // wbar = RHO * z - y
+    esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z - y) / RHO
+    esmat_free (temp);
+#ifdef GROUP_LASSO_DEBUG
+    cout << "[wbar]" << endl;
+    cout << esmat_toString(wbar);
+    cout << "lambda: " << lambda << endl;
+#endif
+    // STEP TWO: find the closed-form solution for second subproblem
+    int SIZE = wbar->val.size();
+    int R = wbar->nRows; int C = wbar->nCols;
 
-void group_lasso_solver (Esmat* ytwo, Esmat* ztwo, Esmat* wtwo, double rho, double* lambda, int N, set<int> col_active_sets) {
-    set<int>::iterator it;
-    for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
-        int j = *it;
-        // if (is_bw_opt_reached[j]) continue;
-        // 1. bifurcate the set of values
-        vector< pair<int,double> > alpha_vec;
-        set<int>::iterator it;
-        for (int i = 0; i < N; i ++) {
-            double value = (rho * ztwo[i][j] - ytwo[i][j]) / rho;
-            alpha_vec.push_back (make_pair(i, abs(value)));
+    if (wbar->val.size() == 0) {
+        // no need to solve all-zero matrix w
+        return ;
+    }
+    // i is index of element in esmat->val, j is column index
+    int i = 0; int j = 0;
+    int begin_idx, end_idx;
+    int col_es_begin = 0;
+    vector< pair<int,double> > alpha_vec;
+    while ((i < SIZE && j < C)) {
+        begin_idx = j * R;
+        end_idx = (j+1) * R;
+        int esWBAR_index = wbar->val[i].first;
+        // cout << "i: " << i << " , j: " << j << endl;
+        if (esWBAR_index >= end_idx) {
+            int nValidAlpha = alpha_vec.size();
+            // cout << "nValidAlpha: " << nValidAlpha << endl;
+            if (nValidAlpha == 0) {
+                j ++;
+                continue;
+            }
+            // a) sort existing temp_vec
+            std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
+            // b) find mstar
+            int mstar = 0; // number of elements supporting the sky
+            double separator; 
+            double max_term = -INF, new_term;
+            double sum_alpha = 0.0;
+            for (int v = 0; v < nValidAlpha; v ++) {
+                sum_alpha += alpha_vec[v].second;
+                new_term = (sum_alpha - lambda) / (v + 1.0);
+                // cout << "new_term: " << new_term << endl;
+                if ( new_term > max_term ) {
+                    separator = alpha_vec[v].second;
+                    max_term = new_term;
+                    ++ mstar;
+                }
+            }
+            // cout << "mstar: " << mstar << ", max_term: " << max_term << endl;
+            // c) assign closed-form solution of current column to w
+            if (mstar <= 0) {
+                ; // this column of w is all-zero, hence we do nothing for that 
+            } else {
+                for (int esi = col_es_begin; wbar->val[esi].first < end_idx; esi ++) {
+                    double pos = wbar->val[esi].first;
+                    double value = wbar->val[esi].second;
+                    if (fabs(value) >= separator) 
+                        w->val.push_back(make_pair(pos, max(max_term, 0.0)));
+                    else 
+                        // w->val.push_back(make_pair(pos, max(value, 0.0)));
+                        w->val.push_back(make_pair(pos, value));
+                }
+            }
+            // d) clear all elements in alpha_vec 
+            alpha_vec.clear();
+            // e) push current element to the cleared alpha_vec
+            double value = wbar->val[i].second;
+            alpha_vec.push_back (make_pair(esWBAR_index % R, fabs(value)));
+            // f) go to operate next element and next column
+            col_es_begin = i;
+            ++ i; ++ j;
+        } else if (esWBAR_index >= begin_idx) {
+            // a) push current element to the cleared temp_vec
+            double value = wbar->val[i].second;
+            alpha_vec.push_back (make_pair(esWBAR_index % R, fabs(value)));
+            // b) go to operate next element with fixed column index (j)
+            ++ i; 
+        } else { // impossible to occur
+            assert (false);
         }
-        // 2. sorting
-        std::sort (alpha_vec.begin(), alpha_vec.end(), pairComparator);
-        // 3. find mstar
-        int mstar = 0; // number of elements support the sky
+    }
+    if (alpha_vec.size() > 0) {
+        // a) sort existing temp_vec
+        std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
+        // b) find mstar
+        int mstar = 0; // number of elements supporting the sky
         double separator;
         double max_term = -INF, new_term;
         double sum_alpha = 0.0;
-        for (int i = 0; i < N; i ++) {
-            sum_alpha += alpha_vec[i].second;
-            new_term = (sum_alpha - lambda[j]) / (i + 1.0);
+        int nValidAlpha = alpha_vec.size();
+        for (int v = 0; v < nValidAlpha; v ++) {
+            sum_alpha += alpha_vec[v].second;
+            new_term = (sum_alpha - lambda) / (v + 1.0);
             if ( new_term > max_term ) {
-                separator = alpha_vec[i].second;
+                separator = alpha_vec[v].second;
                 max_term = new_term;
-                mstar = i;
+                ++ mstar;
             }
         }
-        // 4. assign closed-form solution to wtwo
-        if( max_term < 0 ){
-            for(int i=0;i<N;i++)
-                wtwo[i][j] = 0.0;
-            continue;
-        }
-        for (int i = 0; i < N; i ++) {
-            double value = (rho * ztwo[i][j] - ytwo[i][j]) / rho;
-            if ( abs(value) >= separator ) {
-                wtwo[i][j] = max_term;
-            } else {
-                // its ranking is above m*, directly inherit the wbar
-                wtwo[i][j] = max(value,0.0);
+        // cout << "mstar: " << mstar << ", max_term: " << max_term << endl;
+        // c) assign closed-form solution of current column to w
+        if (nValidAlpha == 0 || mstar <= 0) {
+            ; // this column of w is all-zero, hence we do nothing for that 
+        } else {
+            for (int esi = col_es_begin; esi < SIZE; esi ++) {
+                double pos = wbar->val[esi].first;
+                double value = wbar->val[esi].second;
+                if (fabs(value) >= separator) 
+                    w->val.push_back(make_pair(pos, max(max_term, 0.0)));
+                else 
+                    // w->val.push_back(make_pair(pos, max(value, 0.0)));
+                    w->val.push_back(make_pair(pos, value));
             }
         }
     }
-}
-
-double overall_objective (Esmat* dist_mat, double* lambda, int N, Esmat* z) {
-    // N is number of entities in "data", and z is N by N.
-    // z is current valid solution (average of w_1 and w_2)
-    // STEP ONE: compute 
-    //     loss = sum_i sum_j z[i][j] * dist_mat[i][j]
-    double loss = 0.5 * esmat_frob_prod(dist_mat, z);
-    cout << "loss=" << loss;
-    // STEP TWO: compute dummy loss
-    // sum4 = r dot (1 - sum_k w_nk) -> dummy
-    double * temp_vec = new double [N];
-    esmat_sum_row (z, temp_vec, N, N);
-    double dummy_penalty=0.0;
-    double avg=0.0;
-    for (int i = 0; i < N; i ++) {
-        avg += temp_vec[i];
-        dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
-    }
-    cout << ", dummy= " << dummy_penalty;
-    // STEP THREE: compute group-lasso regularization
-    double * maxn = new double [N]; 
-    for (int i = 0;i < N; i ++) { // Ian: need initial 
-        maxn[i] = -INF;
-    }
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            if ( fabs(z[i][j]) > maxn[j])
-                maxn[j] = fabs(z[i][j]);
-        }
-    }
-    double sumk = 0.0;
-    for (int i = 0; i < N; i ++) {
-        sumk += lambda[i]*maxn[i];
-    }
-    double reg = sumk; 
-    cout << ", reg=" << reg ;
-    delete[] maxn;
-    delete[] temp_vec;
-    double overall = loss + reg + dummy_penalty;
-    cout << ", overall=" <<  overall << endl;
-    return loss + reg;
-}
-
-/* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (vector<Instance*>& data, Esmat* dist_mat, int N, int D, dist_func df, bool isSym) {
-    for (int j = 0; j < N; j ++) {
-        Instance * muj = data[j];
-        for (int i = 0; i < N; i ++) {
-            Instance * xi = data[i];
-            double dist_value = df (xi, muj, D);
-            dist_mat->val.push_back(make_pair(j*N+i,dist_value));
-        }
-    }
+#ifdef GROUP_LASSO_DEBUG
+    esmat_print (w, "[solved w]");
+#endif
+    esmat_trim (w);
+#ifdef GROUP_LASSO_DEBUG
+    esmat_print (w, "[w after trimming]");
+#endif
+    // STEP THREE: recollect temporary variable - wbar
+    esmat_free (wbar);
 }
 
 void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lambda, double** W, int ADMM_max_iter, int SS_PERIOD) {
@@ -331,7 +418,7 @@ void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lamb
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_sets);
-        group_lasso_solver (ytwo, z, wtwo, rho, lambda, N, col_active_sets);
+        group_lasso_solver (ytwo, z, wtwo, rho, lambda);
 
 #ifdef SUBPROBLEM_DUMP
      cout << "[Frank_wolfe]";
@@ -371,6 +458,7 @@ void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lamb
         }
         // Shrinking Method:
         // STEP ONE: reduce number of elements considered in next iteration
+        /*
         esmat_trim (z, ADMM_EPS);
         vector<int> col_to_shrink;
         // TODO: detect active set O(N*K*eps)
@@ -390,6 +478,7 @@ void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lamb
         }
         
         // remove shrinked row/column from row/column active sets
+        // TODO: modify
         int num_col_to_shrink = col_to_shrink.size();
         for (int s = 0; s < num_col_to_shrink; s ++) {
             int j_shr = col_to_shrink[s];
@@ -401,12 +490,7 @@ void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lamb
             }
         }
         // update z_old
-        for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
-            int j = *it;
-            for (int i = 0; i < N; i++) {
-                z_old[i][j] = z[i][j];
-            }
-        }
+        esmat_copy (z, z_old);
         // count number of active elements
         int num_active_cols = col_active_sets.size();
         if ((iter+1) % SS_PERIOD == 0) {
@@ -414,6 +498,7 @@ void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lamb
             cout << ", num_active_cols: " << num_active_cols <<endl;
         }
         int num_active_elements=N*num_active_cols;
+        */
         // STEP TWO: consider to open all elements to check optimality
         /*
         if (num_active_elements == 0 && !no_active_element) {
@@ -496,9 +581,9 @@ int main (int argc, char ** argv) {
 
     // pre-compute distance matrix
     dist_func df = L2norm;
-    Esmat* dist_mat = esmat_init (N, N);
+    double** dist_mat = esmat_init (N, N);
     //  Esmat* dist_mat = esmat_read (dmatFile, N, N);
-    esmat_zeros (dist_mat, N, N);
+    mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
 
     // Run sparse convex clustering
