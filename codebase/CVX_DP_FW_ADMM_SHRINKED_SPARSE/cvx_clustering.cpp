@@ -116,30 +116,53 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
     // STEP ONE: compute gradient mat initially
     vector< set< pair<int, double> > > actives (N, set<pair<int,double> >());
     vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> > pqueues (N, priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> ());
-    // compute N by K active gradient matrix
-    Esmat* assist = esmat_init (N, N);
-    esmat_sub (wone, zone, assist);
-    esmat_scalar_mult (rho, assist);
-    esmat_add (assist, yone);
+    
     int num_active_cols = col_active_map.size();
     double** grad = mat_init (N, num_active_cols);
     mat_zeros (grad, N, num_active_cols);
-    // set up actives for wone > 1e-10
-    int num_active_elements = wone->val.size();
-    for (int i = 0; i < num_active_elements; i ++) {
-        int esmat_index = wone->val[i].first;
-        int row_index = esmat_index % wone->nCols;
-        int col_index = esmat_index / wone->nCols;
-        double value = grad[row_index][col_active_map[col_index]];
-        // TODO: insert info of w_ij, y_ij, z_ij
-        actives[row_index].insert(make_pair(col_index, value));
+    // compute N by K active gradient matrix TODO: put this copy to overall ADMM
+    for (map::iterator it=col_active_map.begin();it!=col_active_map.end();++it) {
+        int j = it->first;
+        int gj = it->second;
+        for (int i = 0; i < N; i ++)
+            grad[i][gj] = 0.5*dist_mat[i][j];
     }
-    // set up queue with ruling out inactive columns
-    for (int i = 0; i < N; i++) {
-        int j = *it;
-        double grad=0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
-        // pqueues[i].push(make_pair(j, grad));
-
+    Esmat* assist = esmat_init (N, N);
+    Esmat* temp = esmat_init (N, N);
+    esmat_sub (wone, zone, temp);
+    esmat_scalar_mult (rho, temp);
+    esmat_add (temp, yone, assist);
+    esmat_free (temp);
+    int assist_size = assist->val.size();
+    for (int i = 0; i < assist_size; i++) {
+        int assist_esmat_index = assist->val[i].first;
+        int row_index = assist_esmat_index % assist->nRows;
+        int col_index = assist_esmat_index / assist->nRows;
+        double value = assist->val[i].second;
+        grad[row_index][col_index] += value;
+    }
+    esmat_free (assist);
+    // set up actives and pqueues
+    int grad_esmat_index = 0, wone_index = 0;
+    int num_active_elements = wone->val.size();
+    int grad_size = N* num_active_cols;
+    while (grad_esmat_index < grad_size) {
+        int row_index = grad_esmat_index % N;
+        int col_index = grad_esmat_index / N;
+        double value = grad[row_index][col_index];
+        if (wone_index == num_active_elements) {
+            pqueues[row_index].push(make_pair(col_index, value));
+            ++ grad_esmat_index;
+            continue;
+        }
+        int wone_esmat_index = wone->val[wone_index];
+        if (grad_esmat_index == wone_esmat_index) {
+            actives[row_index].insert(make_pair(col_index, value)); // active
+            ++ wone_index;
+        } else if (grad_esmat_index < wone_esmat_index) {
+            pqueues[row_index].push(make_pair(j, value)); // potentially active
+        }
+        ++ grad_esmat_index;
     }
     // STEP TWO: iteration solve each row 
     int k = 0;  // iteration number
