@@ -762,7 +762,6 @@ double esmat_compute_dummy (Esmat* A, double r) {
     double dummy= 0.0;
     for (int i = 0; i < R; i ++) {
         dummy += r * (1.0 - temp_vec[i]);
-        cout << i << "," << temp_vec[i] << endl;
     }
     return dummy; 
 }
