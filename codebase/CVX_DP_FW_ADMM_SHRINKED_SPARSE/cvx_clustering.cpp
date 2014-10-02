@@ -13,6 +13,14 @@
 
 #include "cvx_clustering.h"
 #define INF_INT 60000
+/* algorithmic options */ 
+#define EXACT_LINE_SEARCH  // comment this to use inexact search
+
+/* dumping options */
+// #define FRANK_WOLFE_DUMP
+#define EXACT_LINE_SEARCH_DUMP
+// #define BLOCKWISE_DUMP
+// #define SUBPROBLEM_DUMP 
 
 void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* wone, double rho, int N, int K, vector<int> col_active_map) {
     // cout << "within frank_wolfe_solver" << endl;
@@ -144,14 +152,18 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
     vector<bool> is_fw_opt_reached (N, false);
     // cout << "within frank_wolfe_solver: start iteration" << endl;
     while (k < K) { 
+        cout << "k: " << k << endl;
         // compute new active atom: can be in active set or not
         vector<cell> s (N, cell());
         vector<bool> isInActives (N, false);
+        cout << "1" << endl;
         for (int i = 0; i < N; i++) {
             if (is_fw_opt_reached[i]) continue;
             if (pqueues[i].size() <= 0) continue;
+            cout << "2" << endl;
             cell tmp_cell = pqueues[i].top();
             s[i].copy_from(tmp_cell);
+            cout << "3" << endl;
             // cout << s[i].first << ":" << s[i].second << endl;
             vector<cell>::iterator it;
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
@@ -170,6 +182,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
             // sum2 = sum_n sum_k y_nk (w - s)_nk
             // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
             // sum4 = sum_n sum_k rho * (s - w)^2
+            cout << "4" << endl;
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 double w_minus_s;
                 double w_minus_z = it->w - it->z;
@@ -183,10 +196,15 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
                 sum3 += rho * w_minus_s * w_minus_z;
                 sum4 += rho * w_minus_s * w_minus_s; 
             }
+            cout << "5" << endl;
             if (!isInActives[i]) {
+            cout << "6" << endl;
                 sum1 += 0.5 * (-1.0) * (dist_mat[i][s[i].index] - r);
+            cout << "7" << endl;
                 sum2 += it->y * (-1.0);
+            cout << "8" << endl;
                 sum3 += rho * (-1.0) * (s[i].w - s[i].z);
+            cout << "9" << endl;
                 sum4 += rho;
             }
 
