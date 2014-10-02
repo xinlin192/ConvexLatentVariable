@@ -14,11 +14,11 @@
 #include "cvx_clustering.h"
 #define INF_INT 60000
 /* algorithmic options */ 
-#define EXACT_LINE_SEARCH  // comment this to use inexact search
+ #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define FRANK_WOLFE_DUMP
-#define EXACT_LINE_SEARCH_DUMP
+// #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 // #define SUBPROBLEM_DUMP 
 
@@ -34,7 +34,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
         if (col_active_map[i] < 0) continue;
         else count ++;
     }
-    cout << "active: " << count << endl;
+    // cout << "active: " << count << endl;
     
     int num_active_cols = col_active_map.size();
     double** grad = mat_init (N, num_active_cols);
@@ -74,8 +74,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
     int y_size = yone->val.size();
     int z_size = zone->val.size();
     int grad_size = N* num_active_cols;
-    if (w_size == 0) 
-        wone_esmat_index = INF_INT;
+    if (w_size == 0) wone_esmat_index = INF_INT;
     else {
         while (true) {
             ++ wone_index;
@@ -89,6 +88,8 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
             break;
         }
     }
+    if (y_size == 0) yone_esmat_index = INF_INT;
+    if (z_size == 0) zone_esmat_index = INF_INT;
     // TODO: conversion from grad_esmat_index to NN esmat index
     while (grad_esmat_index < grad_size) {
         int row_index = grad_esmat_index % N;
@@ -144,35 +145,44 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
         }
         ++ grad_esmat_index;
     }
+    /*
     for (int i = 0;i < N; i ++) {
         cout << "size: " << pqueues[i].size() << endl;
     }
+    */
     // STEP TWO: iteration solve each row 
     int k = 0;  // iteration number
     vector<bool> is_fw_opt_reached (N, false);
     // cout << "within frank_wolfe_solver: start iteration" << endl;
     while (k < K) { 
-        cout << "k: " << k << endl;
+        // cout << "k: " << k << endl;
         // compute new active atom: can be in active set or not
-        vector<cell> s (N, cell());
+        vector<cell *> s (N, NULL);
         vector<bool> isInActives (N, false);
-        cout << "1" << endl;
         for (int i = 0; i < N; i++) {
             if (is_fw_opt_reached[i]) continue;
             if (pqueues[i].size() <= 0) continue;
-            cout << "2" << endl;
-            cell tmp_cell = pqueues[i].top();
-            s[i].copy_from(tmp_cell);
-            cout << "3" << endl;
+            cell tmp_cell;
+            tmp_cell.copy_from(pqueues[i].top());
+            s[i] = &tmp_cell;
             // cout << s[i].first << ":" << s[i].second << endl;
             vector<cell>::iterator it;
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 // take the minimal of each row
-                if (it->grad < s[i].grad) {
+                if (it->grad < s[i]->grad) {
                     isInActives[i] = true;
-                    s[i].copy_from(*it);
+                    s[i] = &(*it);
+                    // s[i].copy_from(*it);
                 }
             }
+            /*
+            cout << "s[" << i <<  "]" 
+                 << "j="<< s[i]->index
+                << ",w=" << s[i]->w 
+                << ",y=" << s[i]->y 
+                << ",z=" << s[i]->z 
+                << ",grad=" << s[i]->grad << endl;
+                */
             // compute gamma: inexact or exact
             double gamma; // step size of line search
 #ifdef EXACT_LINE_SEARCH
@@ -182,11 +192,10 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
             // sum2 = sum_n sum_k y_nk (w - s)_nk
             // sum3 = - rho * sum_n sum_k  (w - z) (w-s)
             // sum4 = sum_n sum_k rho * (s - w)^2
-            cout << "4" << endl;
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 double w_minus_s;
                 double w_minus_z = it->w - it->z;
-                if (it->index == s[i].index) {
+                if (it->index == s[i]->index) {
                     w_minus_s = it->w -1.0;
                 } else {
                     w_minus_s = it->w;
@@ -196,20 +205,17 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
                 sum3 += rho * w_minus_s * w_minus_z;
                 sum4 += rho * w_minus_s * w_minus_s; 
             }
-            cout << "5" << endl;
             if (!isInActives[i]) {
-            cout << "6" << endl;
-                sum1 += 0.5 * (-1.0) * (dist_mat[i][s[i].index] - r);
-            cout << "7" << endl;
-                sum2 += it->y * (-1.0);
-            cout << "8" << endl;
-                sum3 += rho * (-1.0) * (s[i].w - s[i].z);
-            cout << "9" << endl;
+                sum1 += 0.5 * (-1.0) * (dist_mat[i][s[i]->index] - r);
+                sum2 += s[i]->y * (-1.0);
+                sum3 += rho * (-1.0) * (s[i]->w - s[i]->z);
                 sum4 += rho;
             }
 
             if (fabs(sum4) > 0) {
                 gamma = (sum1 + sum2 + sum3) / sum4;
+                gamma = max(gamma, 0.0);
+                gamma = min(gamma, 1.0);
 #ifdef EXACT_LINE_SEARCH_DUMP
                 cout << "[exact] i=" << i ;
                 cout << ",k=" << k;
@@ -220,8 +226,6 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
                 cout << ",gamma=" << gamma;
                 cout << endl;
 #endif
-                gamma = max(gamma, 0.0);
-                gamma = min(gamma, 1.0);
             } else {
                 gamma = 0.0;
                 is_fw_opt_reached[i] = true;
@@ -233,10 +237,10 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
             int active_size = actives[i].size();
             for (int actj = 0; actj < active_size; actj++) 
                 actives[i][actj].w *= (1-gamma);
-            s[i].w += gamma; // gamma * (1.0)
+            s[i]->w += gamma; // gamma * (1.0)
             // update new actives 
             if (!isInActives[i]) {
-                actives[i].push_back(s[i]);
+                actives[i].push_back(*(s[i]));
                 pqueues[i].pop();
                 ++ active_size;
             }
@@ -257,6 +261,11 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
         int num_active_elem = actives[i].size();
         for (int j = 0; j < num_active_elem; j++) {
             int esmat_index = i + actives[i][j].index * N;
+            /*
+            cout << "esmat_index: " << esmat_index
+                << ", r="<< esmat_index % N
+                << ", c="<< esmat_index / N  << endl;
+                */
             double value = actives[i][j].w;
             if (value > ADMM_EPS)
                 wone->val.push_back(make_pair(esmat_index, value));
@@ -442,8 +451,8 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_map);
-        cout << "[wone]" << endl;
-        cout << esmat_toString(wone);
+        // cout << "[wone]" << endl;
+        // cout << esmat_toString(wone);
         group_lasso_solver (ytwo, z, wtwo, rho, lambda);
 
 #ifdef SUBPROBLEM_DUMP
