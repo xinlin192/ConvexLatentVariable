@@ -25,52 +25,54 @@
 // #define FRANK_WOLFE_DUMP
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
+// #define SUBPROBLEM_DUMP 
 
 const double FRANK_WOLFE_TOL = 1e-20;
 const double ADMM_EPS = 1e-2;
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
 
-double first_subproblm_obj (double** dist_mat, double** yone, double** zone, double** wone, double rho, int N) {
-    double ** temp = mat_init (N, N);
-    double ** diffone = mat_init (N, N);
-    mat_zeros (diffone, N, N);
-
-    // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk) -> loss
-    mat_zeros (temp, N, N);
-    mat_times (wone, dist_mat, temp, N, N);
-    double sum1 = 0.5 * mat_sum (temp, N, N);
-
-    // sum2 = y_1^T dot (w_1 - z) -> linear
-    mat_zeros (temp, N, N);
-    mat_sub (wone, zone, diffone, N, N); // temp = w_1 - z_1
-    mat_tdot (yone, diffone, temp, N, N);
-    double sum2 = mat_sum (temp, N, N);
-
-    // sum3 = 0.5 * rho * || w_1 - z_1 ||^2 -> quadratic
-    mat_zeros (temp, N, N);
-    mat_sub (wone, zone, temp, N, N);
-    double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
-
-    // sum4 = r dot (1 - sum_k w_nk) -> dummy
-    double * temp_vec = new double [N];
-    mat_sum_row (wone, temp_vec, N, N);
-    double dummy_penalty = 0.0;
-    for (int i = 0; i < N; i ++) {
-        dummy_penalty += r*(1 - temp_vec[i]);
+/* \lambda_g \sumk \maxn |\wnk| */
+double compute_group_lasso (Esmat* w, double lambda) {
+    if (w->val.size() == 0) {
+        return 0.0;
     }
-    double total = sum1+sum2+sum3+dummy_penalty;
-    cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
-        << sum1 << ", " << sum2 << ", " << sum3 << ", " << dummy_penalty << ", " << total
-        <<  ")" << endl;
-
-    mat_free (temp, N, N);
-    mat_free (diffone, N, N);
-    delete [] temp_vec;
-
-    return total;
+    Esmat* maxn = esmat_init (1, w->nCols);
+    Esmat* sumk = esmat_init (1, 1);
+    esmat_max_over_col (w, maxn);
+    esmat_sum_row (maxn, sumk);
+    double lasso = -INF;
+    if (sumk->val.size() > 0)
+        lasso = lambda * sumk->val[0].second; 
+    else 
+        lasso = 0.0;
+    esmat_free (sumk);
+    esmat_free (maxn);
+    return lasso;
 }
-void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K, set<int>& col_active_set) {
+
+void subproblem_objective (Esmat* dist_mat, Esmat* y, Esmat* z, Esmat* w, double rho, int N, double lambda) {
+    Esmat* diff = esmat_init (N, N);
+    esmat_zeros (diff);
+    // reg = 0.5 * sum_k max_n | w_nk |  -> group-lasso
+    double group_lasso = compute_group_lasso(w, lambda); 
+    // loss = 0.5 * sum_n sum_k (w_nk * d^2_nk) -> loss
+    double loss = 0.5 * esmat_frob_prod (w, dist_mat);
+    // linear = y_1^T dot (w_1 - z) -> linear
+    esmat_sub (w, z, diff); // temp = w_1 - z_1
+    double linear = esmat_frob_prod (y, diff);
+    // quadratic = 0.5 * rho * || w_1 - z_1 ||^2 -> quadratic
+    double quadratic = 0.5 * rho * esmat_frob_norm (diff);
+    // dummy = r dot (1 - sum_k w_nk) -> dummy
+    dummy_penalty = esmat_compute_dummy (w, r);
+    // double total = loss+linear+quadratic+dummy_penalty;
+    cout << "(loss, lasso, linear, quadratic, dummy, total) = (" 
+        << loss << ", " << lasso << ", " << linear << ", " <<
+        quadratic << ", " << dummy_penalty << ", " << total <<  ")" << endl;
+    esmat_free (diff);
+    // return total;
+}
+void frank_wolfe_solver (Esmat* dist_mat, Esmat* yone, Esmat* zone, Esmat* wone, double rho, int N, int K, set<int>& col_active_set) {
     // cout << "within frank_wolfe_solver" << endl;
     // STEP ONE: compute gradient mat initially
     vector< set< pair<int, double> > > actives (N, set<pair<int,double> >());
@@ -182,56 +184,9 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
         // cout << "within frank_wolfe_solver: next iteration" << endl;
         k ++;
     }
-#ifdef FRANK_WOLFE_DUMP
-     double penalty = first_subproblm_obj (dist_mat, yone, zone, wone, rho, N);
-     cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
-#endif
 }
 
-double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double* lambda) {
-
-    double ** temp = mat_init (N, N);
-    double ** difftwo = mat_init (N, N);
-    mat_zeros (difftwo, N, N);
-
-    // reg = 0.5 * sum_k max_n | w_nk |  -> group-lasso
-    mat_zeros (temp, N, N);
-    double * maxn = new double [N]; 
-    for (int i = 0; i < N; i ++) { // Ian: need initial 
-        maxn[i] = -INF;
-    }
-
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            if (wtwo[i][j] > maxn[j])
-                maxn[j] = wtwo[i][j];
-        }
-    }
-    double sumk = 0.0;
-    for (int i = 0; i < N; i ++) {
-        sumk += lambda[i]*maxn[i];
-    }
-    double group_lasso = sumk; 
-
-    // sum2 = y_2^T dot (w_2 - z) -> linear
-    mat_zeros (temp, N, N);
-    mat_sub (wtwo, z, difftwo, N, N);
-    mat_tdot (ytwo, difftwo, temp, N, N);
-    double sum2 = mat_sum (temp, N, N);
-
-    // sum3 = 0.5 * rho * || w_2 - z_2 ||^2 -> quadratic mat_zeros (temp, N, N);
-    mat_sub (wtwo, z, temp, N, N);
-    double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
-
-    mat_free (temp, N, N);
-    // ouput values of each components
-    cout << "[Blockwise] (group_lasso, linear, quadratic) = ("
-        << group_lasso << ", " << sum2 << ", " << sum3
-        << ")" << endl;
-    return group_lasso + sum2 + sum3;
-}
-
-void group_lasso_solver (double ** ytwo, double ** ztwo, double ** wtwo, double rho, double* lambda, int N, set<int> col_active_sets) {
+void group_lasso_solver (Esmat* ytwo, Esmat* ztwo, Esmat* wtwo, double rho, double* lambda, int N, set<int> col_active_sets) {
     set<int>::iterator it;
     for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
         int j = *it;
@@ -275,34 +230,19 @@ void group_lasso_solver (double ** ytwo, double ** ztwo, double ** wtwo, double 
             }
         }
     }
-#ifdef BLOCKWISE_DUMP
-    double penalty = second_subproblem_obj (ytwo, ztwo, wtwo, rho, N, lambda);
-    cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
-#endif
 }
 
-double overall_objective (double ** dist_mat, double* lambda, int N, double ** z) {
+double overall_objective (Esmat* dist_mat, double* lambda, int N, Esmat* z) {
     // N is number of entities in "data", and z is N by N.
     // z is current valid solution (average of w_1 and w_2)
-    double sum = 0.0;
-    for(int i=0;i<N;i++)
-        for(int j=0;j<N;j++)
-            sum += z[i][j];
-    // cerr << "sum=" << sum/N << endl;
     // STEP ONE: compute 
     //     loss = sum_i sum_j z[i][j] * dist_mat[i][j]
-    double normSum = 0.0;
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            normSum += z[i][j] * dist_mat[i][j];
-        }
-    }
-    double loss = 0.5 * (normSum);
+    double loss = 0.5 * esmat_frob_prod(dist_mat, z);
     cout << "loss=" << loss;
     // STEP TWO: compute dummy loss
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
     double * temp_vec = new double [N];
-    mat_sum_row (z, temp_vec, N, N);
+    esmat_sum_row (z, temp_vec, N, N);
     double dummy_penalty=0.0;
     double avg=0.0;
     for (int i = 0; i < N; i ++) {
@@ -335,17 +275,18 @@ double overall_objective (double ** dist_mat, double* lambda, int N, double ** z
 }
 
 /* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
+void compute_dist_mat (vector<Instance*>& data, Esmat* dist_mat, int N, int D, dist_func df, bool isSym) {
+    for (int j = 0; j < N; j ++) {
+        Instance * muj = data[j];
+        for (int i = 0; i < N; i ++) {
             Instance * xi = data[i];
-            Instance * muj = data[j];
-            dist_mat[i][j] = df (xi, muj, D);
+            double dist_value = df (xi, muj, D);
+            dist_mat->val.push_back(make_pair(j*N+i,dist_value));
         }
     }
 }
 
-void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* lambda, double ** W, int ADMM_max_iter, int SS_PERIOD) {
+void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lambda, double** W, int ADMM_max_iter, int SS_PERIOD) {
     // parameters 
     double alpha = 0.1;
     double rho = 1;
@@ -355,24 +296,24 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* 
     clock_t prev = clock();
     // iterative optimization 
     double error = INF;
-    double ** wone = mat_init (N, N);
-    double ** wtwo = mat_init (N, N);
-    double ** yone = mat_init (N, N);
-    double ** ytwo = mat_init (N, N);
-    double ** z = mat_init (N, N);
-    double ** z_old = mat_init (N, N);
-    double ** diffzero = mat_init (N, N);
-    double ** diffone = mat_init (N, N);
-    double ** difftwo = mat_init (N, N);
-    mat_zeros (wone, N, N);
-    mat_zeros (wtwo, N, N);
-    mat_zeros (yone, N, N);
-    mat_zeros (ytwo, N, N);
-    mat_zeros (z, N, N);
-    mat_zeros (z_old, N, N);
-    mat_zeros (diffzero, N, N);
-    mat_zeros (diffone, N, N);
-    mat_zeros (difftwo, N, N);
+    Esmat* wone = esmat_init (N, N);
+    Esmat* wtwo = esmat_init (N, N);
+    Esmat* yone = esmat_init (N, N);
+    Esmat* ytwo = esmat_init (N, N);
+    Esmat* z = esmat_init (N, N);
+    Esmat* z_old = esmat_init (N, N);
+    Esmat* diffzero = esmat_init (N, N);
+    Esmat* diffone = esmat_init (N, N);
+    Esmat* difftwo = esmat_init (N, N);
+    esmat_zeros (wone);
+    esmat_zeros (wtwo);
+    esmat_zeros (yone);
+    esmat_zeros (ytwo);
+    esmat_zeros (z);
+    esmat_zeros (z_old);
+    esmat_zeros (diffzero);
+    esmat_zeros (diffone);
+    esmat_zeros (difftwo);
 
     // variables for shriking method
     set<int> col_active_sets;
@@ -392,17 +333,32 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* 
         frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_sets);
         group_lasso_solver (ytwo, z, wtwo, rho, lambda, N, col_active_sets);
 
+#ifdef SUBPROBLEM_DUMP
+     cout << "[Frank_wolfe]";
+     subproblem_objective (dist_mat, yone, zone, wone, rho, N, lambda);
+     cout << "[Blockwise]";
+     subproblem_objective (dist_mat, ytwo, ztwo, wtwo, rho, N, lambda);
+#endif
+
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         set<int>::iterator it;
-        for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
-            int j = *it;
-            for (int i = 0; i < N; i ++) {
-                z[i][j] = (wone[i][j] + wtwo[i][j]) / 2.0;
-                yone[i][j] += alpha * (wone[i][j] - z[i][j]) ;
-                ytwo[i][j] += alpha * (wtwo[i][j] - z[i][j]) ;
-            }
-        }
+        Esmat* temp = esmat_init (N, N);
+        Esmat* diff = esmat_init (N, N);
+        esmat_add (wone, wtwo, temp);
+        esmat_scalar_mult (0.5, temp, z);
+
+        esmat_copy (yone, temp)
+        esmat_sub (wone, z, diff);
+        esmat_scalar_mult (alpha, diff);
+        esmat_add (temp, diff, yone);
+
+        esmat_copy (ytwo, temp)
+        esmat_sub (wtwo, z, diff);
+        esmat_scalar_mult (alpha, diff);
+        esmat_add (temp, diff, ytwo);
+        esmat_free (diff);
+        esmat_free (temp);
 
         // STEP FOUR: trace the objective function
         if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
@@ -415,7 +371,9 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* 
         }
         // Shrinking Method:
         // STEP ONE: reduce number of elements considered in next iteration
+        esmat_trim (z, ADMM_EPS);
         vector<int> col_to_shrink;
+        // TODO: detect active set O(N*K*eps)
         for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
             int j = *it;
             bool is_primal_shrink=false, is_dual_shrink=false;
@@ -477,16 +435,16 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* 
     }
 
     // STEP FIVE: memory recollection
-    mat_free (wone, N, N);
-    mat_free (wtwo, N, N);
-    mat_free (yone, N, N);
-    mat_free (ytwo, N, N);
-    mat_free (diffone, N, N);
-    mat_free (difftwo, N, N);
-    mat_free (z_old, N, N);
+    esmat_free (wone);
+    esmat_free (wtwo);
+    esmat_free (yone);
+    esmat_free (ytwo);
+    esmat_free (diffone);
+    esmat_free (difftwo);
+    esmat_free (z_old);
     // STEP SIX: put converged solution to destination W
-    mat_copy (z, W, N, N);
-    mat_free (z, N, N);
+    esmat_copy (z, W);
+    esmat_free (z);
     ss_out.close();
 }
 
@@ -503,7 +461,7 @@ int main (int argc, char ** argv) {
     char * dataFile = argv[1];
     int fw_max_iter = atoi(argv[2]);
     int ADMM_max_iter = atoi(argv[3]);
-    double lambda_base = atof(argv[4]);
+    double lambda = atof(argv[4]);
     int screenshot_period = atoi(argv[5]);
 
     // read in data
@@ -536,24 +494,19 @@ int main (int argc, char ** argv) {
     srand (seed);
     cerr << "seed = " << seed << endl;
 
-    double* lambda = new double[N];
-    for(int i=0;i<N;i++){
-        lambda[i] = lambda_base;
-    }
-
     // pre-compute distance matrix
     dist_func df = L2norm;
-    double ** dist_mat = mat_init (N, N);
-    //  double ** dist_mat = mat_read (dmatFile, N, N);
-    mat_zeros (dist_mat, N, N);
+    Esmat* dist_mat = esmat_init (N, N);
+    //  Esmat* dist_mat = esmat_read (dmatFile, N, N);
+    esmat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
 
     // Run sparse convex clustering
-    double ** W = mat_init (N, N);
-    mat_zeros (W, N, N);
-    cvx_clustering (dist_mat, fw_max_iter, D, N, lambda, W, ADMM_max_iter, screenshot_period);
+    Esmat* esmatW = esmat_init (N, N);  esmat_zeros (esmatW);
+    cvx_clustering (dist_mat, fw_max_iter, D, N, lambda, esmatW, ADMM_max_iter, screenshot_period);
 
-    // Output cluster
+    double** W = esmat2mat (esmatW);
+    /* Output cluster */
     output_objective(clustering_objective (dist_mat, W, N));
     /* Output cluster centroids */
     output_model (W, N);
@@ -561,6 +514,7 @@ int main (int argc, char ** argv) {
     output_assignment (W, data, N);
 
     /* reallocation */
-    mat_free (dist_mat, N, N);
+    esmat_free (dist_mat, N, N);
+    esmat_free (esmatW);
     mat_free (W, N, N);
 }
