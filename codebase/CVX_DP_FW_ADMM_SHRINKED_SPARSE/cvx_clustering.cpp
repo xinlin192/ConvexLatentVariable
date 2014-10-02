@@ -19,6 +19,14 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
     // STEP ONE: compute gradient mat initially
     vector< vector<cell> > actives (N, vector<cell>());
     vector< priority_queue<cell, vector<cell>, CellCompare> > pqueues (N, priority_queue<cell,vector<cell>, CellCompare> ());
+
+    int count = 0;
+    for (int i = 0; i < N; i ++) {
+        // cout << col_active_map[i] << endl;
+        if (col_active_map[i] < 0) continue;
+        else count ++;
+    }
+    cout << "active: " << count << endl;
     
     int num_active_cols = col_active_map.size();
     double** grad = mat_init (N, num_active_cols);
@@ -30,6 +38,8 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
         for (int i = 0; i < N; i ++)
             grad[i][gj] = 0.5*dist_mat[i][j];
     }
+    // cout << "[grad]" << endl;
+    // cout << mat_toString(grad, N, num_active_cols);
     Esmat* assist = esmat_init (N, N);
     Esmat* temp = esmat_init (N, N);
     esmat_sub (wone, zone, temp);
@@ -56,6 +66,21 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
     int y_size = yone->val.size();
     int z_size = zone->val.size();
     int grad_size = N* num_active_cols;
+    if (w_size == 0) 
+        wone_esmat_index = INF_INT;
+    else {
+        while (true) {
+            ++ wone_index;
+            if (wone_index == w_size) wone_esmat_index = INF_INT;
+            else {
+                wone_esmat_index = wone->val[wone_index].first;
+                int wone_col_index = col_active_map[wone_esmat_index/wone->nRows];
+                if (wone_col_index < 0) continue;
+                wone_esmat_index = wone_col_index*wone->nRows + wone_esmat_index % wone->nRows;
+            }
+            break;
+        }
+    }
     // TODO: conversion from grad_esmat_index to NN esmat index
     while (grad_esmat_index < grad_size) {
         int row_index = grad_esmat_index % N;
@@ -69,7 +94,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
             else {
                 yone_esmat_index = yone->val[yone_index].first;
                 int yone_col_index = col_active_map[yone_esmat_index/yone->nRows];
-                if (yone_esmat_index < 0) continue;
+                if (yone_col_index < 0) continue;
                 yone_esmat_index = yone_col_index*yone->nRows + yone_esmat_index % yone->nRows;
             }
         }
@@ -83,7 +108,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
             else {
                 zone_esmat_index = zone->val[zone_index].first;
                 int zone_col_index = col_active_map[zone_esmat_index/zone->nRows];
-                if (zone_esmat_index < 0) continue;
+                if (zone_col_index < 0) continue;
                 zone_esmat_index = zone_col_index*zone->nRows + zone_esmat_index % zone->nRows;
             }
         }
@@ -92,21 +117,27 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
             z = zone->val[zone_index].second;
         // get w and insert to set or push to stack
         if (grad_esmat_index == wone_esmat_index) {
-            w = wone->val[wone_index].second;
+            w = wone->val[wone_index].second; 
             actives[row_index].push_back(cell(col_index,w,z,y,g)); // active
+            while (true) {
             ++ wone_index;
             if (wone_index == w_size) wone_esmat_index = INF_INT;
             else {
                 wone_esmat_index = wone->val[wone_index].first;
                 int wone_col_index = col_active_map[wone_esmat_index/wone->nRows];
-                if (wone_esmat_index < 0) continue;
+                if (wone_col_index < 0) continue;
                 wone_esmat_index = wone_col_index*wone->nRows + wone_esmat_index % wone->nRows;
             }
-        } else if (grad_esmat_index < wone_esmat_index) {
+            break;
+            }
+        } else if (grad_esmat_index < wone_esmat_index) { // TODO: this is the problem
             w = 0.0;
             pqueues[row_index].push(cell(col_index,w,z,y,g)); // potentially active
         }
         ++ grad_esmat_index;
+    }
+    for (int i = 0;i < N; i ++) {
+        cout << "size: " << pqueues[i].size() << endl;
     }
     // STEP TWO: iteration solve each row 
     int k = 0;  // iteration number
@@ -393,6 +424,8 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_map);
+        cout << "[wone]" << endl;
+        cout << esmat_toString(wone);
         group_lasso_solver (ytwo, z, wtwo, rho, lambda);
 
 #ifdef SUBPROBLEM_DUMP
