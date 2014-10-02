@@ -48,6 +48,20 @@ void output_objective (double obj);
 void output_model (double** W, int N); 
 void output_model (Esmat* W);
 void output_assignment (Esmat* W, vector< pair<int,int> >* word_lookup);
+
+double** esmat2mat (Esmat* esmat) {
+    int R = esmat->nRows;
+    int C = esmat->nCols;
+    double ** mat = mat_init(R, C);
+    mat_zeros (mat, R, C);
+    int numElem = esmat->val.size();
+    for (int i = 0; i < numElem; i ++) {
+        int row_index = esmat->val[i].first % C;
+        int col_index = esmat->val[i].first / C;
+        mat[row_index][col_index] = esmat->val[i].second;
+    }
+    return mat;
+}
  
 double sign (int input) {
     if (input > 0) return 1.0;

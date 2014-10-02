@@ -43,8 +43,6 @@ double diff (double a, double b) { return a - b; } // non-symmetric
 double times (double a, double b) { return a * b; }
 double power2 (double val, double counter) 
     { return counter + val * val; } // non-symmetric
-double dummy_penalty (double val, double counter) 
-    { return counter + DUMMY_PENALTY_RATE * (1 - val); }
 double count (double value, double counter) { 
     // note that for this "count" function, two input is not symmetric
     if (fabs(value) > TRIM_THRESHOLD) counter += 1.0;
@@ -486,16 +484,29 @@ void esmat_copy (Esmat* A, Esmat* D) {
     }
 }
 
-void esmat_trim (Esmat* A) {
+
+void esmat_trim (Esmat* A, double threshold) {
     int sizeA = A->val.size();
 	for (int i = 0; i < sizeA; i ++) {
         double value = A->val[i].second;
-        if ( fabs(value) < TRIM_THRESHOLD ) {
+        if ( fabs(value) < threshold ) {
             // remove this index:value pair
             A->val.erase(A->val.begin()+i);
             -- i; -- sizeA;
         }
 	}
+}
+void esmat_trim (Esmat* A) { esmat_trim(A, TRIM_THRESHOLD); }
+
+double esmat_frob_prod (double** dist_mat, Esmat * A) {
+    double result = 0.0;
+    int sizeA = A->val.size();
+    for (int i = 0; i < sizeA; i++) {
+        int row_index = A->val[i].first % A->nCols;
+        int col_index = A->val[i].first / A->nCols;
+        result += dist_mat[row_index][col_index] * A->val[i].second;
+    }
+    return result;
 }
 
 //=========================================================
@@ -507,9 +518,8 @@ void esmat_trim (Esmat* A) {
 double esmat_unary_operate (Esmat * A, Operator opt) {
     double result = 0.0;
     int sizeA = A->val.size();
-    for (int i = 0; i < sizeA; i++) {
+    for (int i = 0; i < sizeA; i++) 
         result = opt(A->val[i].second, result);
-    }
     return result;
 }
 /* Framework of binary operation for Esmat A */
@@ -737,8 +747,23 @@ double esmat_sum (Esmat* A)
 double esmat_frob_norm (Esmat* A) 
 { return esmat_unary_operate (A, power2); }
 /* Compute dummy term */
-double esmat_compute_dummy (Esmat* A) 
-{ return esmat_unary_operate (A, dummy_penalty); }
+double esmat_compute_dummy (Esmat* A, double r) {
+    Esmat* row_sum = esmat_init (N, 1);
+    esmat_sum_row (w, row_sum);
+    vector<double> temp_vec (N, 0.0);
+    double dummy= 0.0;
+    int size = row_sum->val.size();
+    for (int i = 0; i < size; i ++) {
+        int row_index = row_sum->val[i].first;
+        int value = row_sum->val[i].second;
+        temp_vec[row_index] = value;
+    }
+    for (int i = 0; i < N; i ++) {
+        dummy += r*(1.0 - temp_vec[i]);
+    }
+    esmat_free (row_sum);
+    return dummy; 
+}
 
 /* Add and Subtract two extensible sparse matrices */
 void esmat_add (Esmat* A, Esmat* B, Esmat* dest) 
