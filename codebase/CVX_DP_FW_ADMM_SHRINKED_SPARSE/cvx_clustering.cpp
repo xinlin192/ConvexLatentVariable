@@ -12,6 +12,7 @@
 ################################################################*/
 
 #include "cvx_clustering.h"
+#define INF_INT 60000
 
 void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* wone, double rho, int N, int K, vector<int> col_active_map) {
     // cout << "within frank_wolfe_solver" << endl;
@@ -64,7 +65,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
         // get y
         while (yone_esmat_index < grad_esmat_index) {
             ++ yone_index;
-            if (yone_index == y_size) yone_esmat_index = INT32_MAX;
+            if (yone_index == y_size) yone_esmat_index = INF_INT;
             else {
                 yone_esmat_index = yone->val[yone_index].first;
                 int yone_col_index = col_active_map[yone_esmat_index/yone->nRows];
@@ -78,7 +79,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
         // get z 
         while (zone_esmat_index < grad_esmat_index) {
             ++ zone_index;
-            if (zone_index == z_size) zone_esmat_index = INT32_MAX;
+            if (zone_index == z_size) zone_esmat_index = INF_INT;
             else {
                 zone_esmat_index = zone->val[zone_index].first;
                 int zone_col_index = col_active_map[zone_esmat_index/zone->nRows];
@@ -94,7 +95,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
             w = wone->val[wone_index].second;
             actives[row_index].push_back(cell(col_index,w,z,y,g)); // active
             ++ wone_index;
-            if (wone_index == w_size) wone_esmat_index = INT32_MAX;
+            if (wone_index == w_size) wone_esmat_index = INF_INT;
             else {
                 wone_esmat_index = wone->val[wone_index].first;
                 int wone_col_index = col_active_map[wone_esmat_index/wone->nRows];
@@ -152,7 +153,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
                 sum4 += rho * w_minus_s * w_minus_s; 
             }
             if (!isInActives[i]) {
-                sum1 += 0.5 * (-1.0) * (dist_mat[i][s[i].first] - r);
+                sum1 += 0.5 * (-1.0) * (dist_mat[i][s[i].index] - r);
                 sum2 += it->y * (-1.0);
                 sum3 += rho * (-1.0) * (s[i].w - s[i].z);
                 sum4 += rho;
@@ -349,7 +350,7 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
     esmat_free (wbar);
 }
 
-void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lambda, double** W, int ADMM_max_iter, int SS_PERIOD) {
+void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double lambda, Esmat* W, int ADMM_max_iter, int SS_PERIOD) {
     // parameters 
     double alpha = 0.1;
     double rho = 1;
@@ -389,7 +390,7 @@ void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lamb
     while ( iter < ADMM_max_iter ) { // stopping criteria
 
         // STEP ONE: resolve w_1 and w_2
-        frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_sets);
+        frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_map);
         group_lasso_solver (ytwo, z, wtwo, rho, lambda);
 
 #ifdef SUBPROBLEM_DUMP
@@ -407,12 +408,12 @@ void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lamb
         esmat_add (wone, wtwo, temp);
         esmat_scalar_mult (0.5, temp, z);
 
-        esmat_copy (yone, temp)
+        esmat_copy (yone, temp);
         esmat_sub (wone, z, diff);
         esmat_scalar_mult (alpha, diff);
         esmat_add (temp, diff, yone);
 
-        esmat_copy (ytwo, temp)
+        esmat_copy (ytwo, temp);
         esmat_sub (wtwo, z, diff);
         esmat_scalar_mult (alpha, diff);
         esmat_add (temp, diff, ytwo);
@@ -432,25 +433,26 @@ void cvx_clustering (Esmat* dist_mat, int fw_max_iter, int D, int N, double lamb
         // STEP ONE: reduce number of elements considered in next iteration
         esmat_trim (z, ADMM_EPS);
         esmat_trim (wtwo, ADMM_EPS);
-        Esmat* temp = esmat_init (wone);
+        Esmat* temp1 = esmat_init (wone);
         Esmat* temp2 = esmat_init (z);
-        esmat_add (wone, wtwo, temp); 
+        esmat_add (wone, wtwo, temp1); 
         esmat_add (z, z_old, temp2); 
-        Esmat* temp3 = esmat_init (temp);
-        esmat_add (temp,temp2,temp3);
+        Esmat* temp3 = esmat_init (temp1);
+        esmat_add (temp1,temp2,temp3);
         esmat_free (temp2);
-        esmat_count_over_col (temp3, temp);
-        int temp_size = temp->val.size();
+        esmat_count_over_col (temp3, temp1);
+        int temp_size = temp1->val.size();
         int map_index = 0;
         assert (temp->nRows == 1);
         // TODO: can improve
-        for (i = 0; i < N; i ++) 
+        for (int i = 0; i < N; i ++) 
             col_active_map[i] = -1;
-        for (i = 0; i < temp_size; i ++) {
-            int temp_index = temp->val[i].first;
+        for (int i = 0; i < temp_size; i ++) {
+            int temp_index = temp1->val[i].first;
             col_active_map[temp_index] = map_index;
             ++ map_index;
         }
+        esmat_free (temp1);
         // STEP TWO: consider to open all elements to check optimality
         /*
         if (num_active_elements == 0 && !no_active_element) {
@@ -524,7 +526,7 @@ int main (int argc, char ** argv) {
     int D = dimensions;
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
-    cerr << "lambda = " << lambda_base << endl;
+    cerr << "lambda = " << lambda << endl;
     cerr << "r = " << r << endl;
     cerr << "Screenshot period = " << screenshot_period << endl;
     int seed = time(NULL);
@@ -533,7 +535,7 @@ int main (int argc, char ** argv) {
 
     // pre-compute distance matrix
     dist_func df = L2norm;
-    double** dist_mat = esmat_init (N, N);
+    double** dist_mat = mat_init (N, N);
     //  Esmat* dist_mat = esmat_read (dmatFile, N, N);
     mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
@@ -551,7 +553,7 @@ int main (int argc, char ** argv) {
     output_assignment (W, data, N);
 
     /* reallocation */
-    esmat_free (dist_mat, N, N);
+    mat_free (dist_mat, N, N);
     esmat_free (esmatW);
     mat_free (W, N, N);
 }
