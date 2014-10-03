@@ -98,6 +98,7 @@ void esmat_scalar_mult (double scalar, Esmat* A, Esmat* dest);
 
 /* Auxiliary functions */
 bool esmat_isValid (Esmat* A, Esmat* B, int mode);
+bool esmat_isAligned (Esmat* A);
 string esmat_toString (Esmat* A);
 string esmat_toInfo (Esmat* A);
 void esmat_print (Esmat* A, string str);
@@ -380,7 +381,7 @@ void esmat_abs (Esmat* A, Esmat* dest) {
 void esmat_scalar_mult (double scalar, Esmat* A) {
     int sizeA = A->val.size();
     int capacity = A->nRows * A->nCols;
-    /* TODO: debugs
+    /* 
     cout << "capacity: " << capacity << " sizeA: " << sizeA << endl;
     cout << A->nRows << "," << A->nCols << endl;
     */
@@ -417,6 +418,24 @@ bool esmat_isValid (Esmat* A, Esmat* B, int mode) {
             success = true;
     }
     return success;
+}
+bool esmat_isAligned (Esmat* A) {
+    int sizeA = A->val.size();    
+    int last_index = -1;
+    for (int i = 0; i < sizeA; i ++) {
+        int index = A->val[i].first;
+        if (index <= last_index) { 
+            /*
+            cout << "i: " << i << ", size: " << sizeA << endl;
+            cout << "index: " << index << ", last_index: " << last_index << endl;
+            cout << "[A]" << endl;
+            cout << esmat_toString(A);
+            */
+            return false;
+        } 
+        last_index = index;
+    }
+    return true;
 }
 
 string esmat_toString (Esmat* A) {
@@ -588,8 +607,7 @@ void esmat_operate_row (Esmat* A, Esmat* dest, Operator opt, double init_value) 
 
     for (int j = 0; j < A->nRows; j ++) {
         // trim very small term
-        if (fabs(temp[j]) > TRIM_THRESHOLD) 
-            dest->val.push_back(make_pair(j, temp[j]));
+        dest->val.push_back(make_pair(j, temp[j]));
     }
 }
 /* Framework for operating over each column of esmat A */
@@ -613,8 +631,7 @@ void esmat_operate_col (Esmat* A, Esmat* dest, Operator opt, double init_value) 
             temp[j] = opt(0, temp[j]);
         }
         // trim very small term
-        if (fabs(temp[j]) > TRIM_THRESHOLD)
-            dest->val.push_back(make_pair(j, temp[j]));
+        dest->val.push_back(make_pair(j, temp[j]));
     }
 }
 void esmat_compare_col (Esmat* A, Esmat* dest, Comparator cmp) {
@@ -770,12 +787,10 @@ double esmat_compute_dummy (Esmat* A, double r) {
 void esmat_add (Esmat* A, Esmat* B, Esmat* dest) 
 { 
     esmat_bin_operate (A, B, dest, sum);
-    esmat_trim (dest);
 }
 void esmat_sub (Esmat* A, Esmat* B, Esmat* dest) 
 { 
     esmat_bin_operate (A, B, dest, diff);
-    esmat_trim (dest);
 }
 
 /* sum over column or row elements */

@@ -56,17 +56,43 @@ double** esmat2mat (Esmat* esmat) {
     mat_zeros (mat, R, C);
     int numElem = esmat->val.size();
     for (int i = 0; i < numElem; i ++) {
-        int row_index = esmat->val[i].first % C;
-        int col_index = esmat->val[i].first / C;
+        int row_index = esmat->val[i].first % R;
+        int col_index = esmat->val[i].first / R;
         mat[row_index][col_index] = esmat->val[i].second;
     }
     return mat;
 }
+Esmat* mat2esmat (double** mat, int R, int C) {
+    Esmat* esmat = esmat_init(R, C);
+    for (int j = 0; j < C; j ++) {
+        for (int i = 0; i < R; i ++) {
+            int ei = i + j * R;
+            double value = mat[i][j];
+            esmat->val.push_back (make_pair(ei, value));
+        }
+    }
+    return esmat;
+}
+
+/*
+class Compare
+{
+    public:
+        bool operator() (pair<int, double> obj1, pair<int, double> obj2)
+        {
+            return pairComparator(obj1, obj2);
+        }
+};
+*/
  
 double sign (int input) {
     if (input > 0) return 1.0;
     else if ( input < 0 ) return -1.0;
     else return 0.0;
+}
+bool pair_First_Elem_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
+    // sort pairs by second element with *decreasing order*
+    return firstElem.first < secondElem.first;
 }
 bool pair_Second_Elem_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
     // sort pairs by second element with *decreasing order*

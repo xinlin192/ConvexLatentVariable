@@ -25,24 +25,19 @@ double ** mat_init (int nRows, int nCols) {
     }
     return res;
 }
-/*
-double ** mat_read (string fname, int* R, int* C) {
+double ** mat_read (char* fname, int R, int C) {
    	ifstream fin(fname);
-    int nRows, nCols;
-    fin >> nRows >> nCols;
-    double ** result = mat_init (nRows, nCols);
+    double ** result = mat_init (R, C);
     double val;
-    for (int i = 0; i < nRows; i ++) {
-        for (int j = 0; j < nCols; j ++) {
+    for (int i = 0; i < R; i ++) {
+        for (int j = 0; j < C; j ++) {
             fin >> val;
             result[i][j] = val;
         }
     }
-    *R = nRows; *C = nCols;
     fin.close();
     return result;
 }
-*/
 void mat_zeros (double ** src, int nRows, int nCols) {
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
