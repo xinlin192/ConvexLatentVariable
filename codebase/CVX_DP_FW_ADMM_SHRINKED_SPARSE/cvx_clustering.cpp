@@ -316,6 +316,9 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
      cout << "[Blockwise]";
      subproblem_objective (dist_mat, ytwo, z, wtwo, rho, N, lambda);
 #endif
+
+     esmat_trim (wone, ADMM_EPS);
+     esmat_trim (wtwo, ADMM_EPS);
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         Esmat* temp = esmat_init (N, N);
@@ -339,6 +342,10 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         esmat_free (diff);
         esmat_free (temp);
 
+        esmat_trim (z, ADMM_EPS);
+        esmat_trim (yone, ADMM_EPS);
+        esmat_trim (ytwo, ADMM_EPS);
+
         /*
         assert (esmat_isAligned(z));
         assert (esmat_isAligned(yone));
@@ -348,24 +355,7 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         // STEP FOUR: trace the objective function
         if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
             cputime += clock() - prev;
-            /*
-        cout << wone->val.size() << ","
-            << wtwo->val.size() << "," 
-            << z->val.size() << endl;
-            */
             error = overall_objective (dist_mat, lambda, N, z);
-            /*
-            cout << "============================================";
-            cout << "[z]";
-            cout << "[wone]";
-            overall_objective (dist_mat, lambda, N, wone);
-            cout << "[wtwo]";
-            overall_objective (dist_mat, lambda, N, wtwo);
-            cout << "[yone]";
-            overall_objective (dist_mat, lambda, N, yone);
-            cout << "[ytwo]";
-            overall_objective (dist_mat, lambda, N, ytwo);
-            */
             cout << "[Overall] iter = " << iter 
                 << ", Loss Error: " << error << endl;
             ss_out << cputime << " " << error << endl;
@@ -374,21 +364,13 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         // Shrinking Method:
         // STEP ONE: reduce number of elements considered in next iteration
         /*
-        esmat_trim (z, ADMM_EPS);
-        esmat_trim (wone, ADMM_EPS);
-        esmat_trim (wtwo, ADMM_EPS);
-        esmat_trim (yone, ADMM_EPS);
-        esmat_trim (ytwo, ADMM_EPS);
-        */
-
-        /*
-        Esmat* temp1 = esmat_init (wone);
+        Esmat* temp1 = esmat_init (z);
         Esmat* temp2 = esmat_init (z);
+        Esmat* temp3 = esmat_init (z);
         esmat_add (wone, wtwo, temp1); 
         esmat_add (z, z_old, temp2); 
-        Esmat* temp3 = esmat_init (temp1);
         esmat_add (temp1,temp2,temp3);
-        esmat_free (temp2);
+        esmat_trim (temp3, ADMM_EPS);
         esmat_count_over_col (temp3, temp1);
         int temp_size = temp1->val.size();
         int map_index = 0;
@@ -403,6 +385,7 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
             ++ map_index;
         }
         esmat_free (temp1);
+        esmat_free (temp2);
         */
         // STEP TWO: consider to open all elements to check optimality
         /*
