@@ -53,6 +53,7 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
     esmat_sub (wone, zone, temp);
     esmat_scalar_mult (rho, temp);
     esmat_add (temp, yone, assist);
+    esmat_trim (assist);
     esmat_free (temp);
     int assist_size = assist->val.size();
     for (int i = 0; i < assist_size; i++) {
@@ -317,11 +318,10 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
 #endif
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
-        set<int>::iterator it;
         Esmat* temp = esmat_init (N, N);
         Esmat* diff = esmat_init (N, N);
-        esmat_add (wone, wtwo, temp);
-        esmat_scalar_mult (0.5, temp, z);
+        esmat_add (wone, wtwo, z);
+        esmat_scalar_mult (0.5, z);
         
        //  cout << "[z]" << endl;
        // cout << esmat_toString (z) << endl;
@@ -335,6 +335,7 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         esmat_sub (wtwo, z, diff);
         esmat_scalar_mult (alpha, diff);
         esmat_add (temp, diff, ytwo);
+
         esmat_free (diff);
         esmat_free (temp);
 
@@ -347,10 +348,24 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         // STEP FOUR: trace the objective function
         if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
             cputime += clock() - prev;
+            /*
         cout << wone->val.size() << ","
             << wtwo->val.size() << "," 
             << z->val.size() << endl;
+            */
             error = overall_objective (dist_mat, lambda, N, z);
+            /*
+            cout << "============================================";
+            cout << "[z]";
+            cout << "[wone]";
+            overall_objective (dist_mat, lambda, N, wone);
+            cout << "[wtwo]";
+            overall_objective (dist_mat, lambda, N, wtwo);
+            cout << "[yone]";
+            overall_objective (dist_mat, lambda, N, yone);
+            cout << "[ytwo]";
+            overall_objective (dist_mat, lambda, N, ytwo);
+            */
             cout << "[Overall] iter = " << iter 
                 << ", Loss Error: " << error << endl;
             ss_out << cputime << " " << error << endl;
@@ -358,11 +373,13 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         }
         // Shrinking Method:
         // STEP ONE: reduce number of elements considered in next iteration
+        /*
         esmat_trim (z, ADMM_EPS);
         esmat_trim (wone, ADMM_EPS);
         esmat_trim (wtwo, ADMM_EPS);
         esmat_trim (yone, ADMM_EPS);
         esmat_trim (ytwo, ADMM_EPS);
+        */
 
         /*
         Esmat* temp1 = esmat_init (wone);
