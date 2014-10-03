@@ -4,7 +4,7 @@ all:
 	g++ -O3 cvx_clustering.cpp -o cvx_clustering 
 
 push:
-	git add cvx_clustering.cpp Makefile 
+	git add cvx_clustering.cpp Makefile  cvx_clustering.h
 	git commit -m "upgrade"
 	git push
 

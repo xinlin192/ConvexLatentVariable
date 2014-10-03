@@ -93,7 +93,7 @@ void subproblem_objective (double** dist_mat, Esmat* y, Esmat* z, Esmat* w, doub
         << loss << ", " << lasso << ", " << linear << ", " <<
         quadratic << ", " << dummy_penalty << ")" << endl;
     /*
-    if (dummy_penalty < -4000) {
+    if (dummy_penalty < -100000) {
         cout << "----------------------" << endl;
         cout << "[dummy_w < 0]" << endl;
         cout << esmat_toString (w);
@@ -179,7 +179,7 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
         int wbar_row_index = wbar_esmat_index % R;
         int wbar_col_index = wbar_esmat_index / R;
         double value = wbar->val[i].second;
-        alpha_vec[wbar_col_index].push_back (make_pair(i,fabs(value)));
+        alpha_vec[wbar_col_index].push_back (make_pair(wbar_esmat_index,fabs(value)));
         ++ nValidAlpha[wbar_col_index];
     }
 
@@ -213,7 +213,6 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
             ;
         } else {
             for (int i = 0; i < nValidAlpha[j]; i ++) {
-                int pos = alpha_vec[j][i].first;
                 double value = alpha_vec[j][i].second;
                 if (fabs(value) >= separator) 
                     alpha_vec[j][i].second = max_avg_term;
@@ -222,7 +221,6 @@ void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda
                 }
             }
             std::sort (alpha_vec[j].begin(), alpha_vec[j].end(), pair_First_Elem_Comparator);
-            // std::copy (alpha_vec[j].begin(), alpha_vec[j].end(), w->val.end());
             for (int i = 0; i < nValidAlpha[j]; i++) 
                 w->val.push_back(alpha_vec[j][i]); 
         }
