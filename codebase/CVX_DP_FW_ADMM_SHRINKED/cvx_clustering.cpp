@@ -26,11 +26,19 @@
 // #define EXACT_LINE_SEARCH_DUMP
 // #define BLOCKWISE_DUMP
 
+
 const double FRANK_WOLFE_TOL = 1e-20;
 const double ADMM_EPS = 1e-2;
 typedef double (* dist_func) (Instance*, Instance*, int); 
-const double r = 10000.0;
-
+const double r = 1000000.0;
+class Compare
+{
+    public:
+        bool operator() (pair<int, double> obj1, pair<int, double> obj2)
+        {
+            return obj1.second > obj2.second;
+        }
+};
 double first_subproblm_obj (double** dist_mat, double** yone, double** zone, double** wone, double rho, int N) {
     double ** temp = mat_init (N, N);
     double ** diffone = mat_init (N, N);
@@ -244,7 +252,7 @@ void group_lasso_solver (double ** ytwo, double ** ztwo, double ** wtwo, double 
             alpha_vec.push_back (make_pair(i, abs(value)));
         }
         // 2. sorting
-        std::sort (alpha_vec.begin(), alpha_vec.end(), pairComparator);
+        std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
         // 3. find mstar
         int mstar = 0; // number of elements support the sky
         double separator;
@@ -347,7 +355,7 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
 
 void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* lambda, double ** W, int ADMM_max_iter, int SS_PERIOD) {
     // parameters 
-    double alpha = 0.1;
+    double alpha = 0.2;
     double rho = 1;
     ofstream ss_out ("plot_cputime_objective");
     ss_out << "Time Objective" << endl;
@@ -391,6 +399,9 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* 
         // STEP ONE: resolve w_1 and w_2
         frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_sets);
         group_lasso_solver (ytwo, z, wtwo, rho, lambda, N, col_active_sets);
+
+     // cout << "[wone]" << endl;
+     //cout << mat_toString (wone, N, N);
 
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
@@ -452,8 +463,11 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double* 
         // count number of active elements
         int num_active_cols = col_active_sets.size();
         if ((iter+1) % SS_PERIOD == 0) {
+            ;
+            /*
             cout << "iter: " << iter;
             cout << ", num_active_cols: " << num_active_cols <<endl;
+            */
         }
         int num_active_elements=N*num_active_cols;
         // STEP TWO: consider to open all elements to check optimality
