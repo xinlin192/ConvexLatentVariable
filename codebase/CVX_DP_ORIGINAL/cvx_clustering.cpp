@@ -24,8 +24,8 @@
 // #define BLOCKWISE_DUMP
 // #define NCENTROID_DUMP
 // #define SPARSE_CLUSTERING_DUMP
-// #define GROUP_LASSO_CHECK
-const int GROUP_LASSO_CHECK_ITER = 2000;
+#define GROUP_LASSO_CHECK
+const int GROUP_LASSO_CHECK_ITER = 800;
 
 const double FRANK_WOLFE_TOL = 1e-20;
 typedef double (* dist_func) (Instance*, Instance*, int); 
