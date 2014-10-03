@@ -145,11 +145,6 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
         }
         ++ grad_esmat_index;
     }
-    /*
-    for (int i = 0;i < N; i ++) {
-        cout << "size: " << pqueues[i].size() << endl;
-    }
-    */
     // STEP TWO: iteration solve each row 
     int k = 0;  // iteration number
     vector<bool> is_fw_opt_reached (N, false);
@@ -172,7 +167,6 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
                 if (it->grad < s[i]->grad) {
                     isInActives[i] = true;
                     s[i] = &(*it);
-                    // s[i].copy_from(*it);
                 }
             }
             /*
@@ -261,151 +255,11 @@ void frank_wolfe_solver (double** dist_mat, Esmat* yone, Esmat* zone, Esmat* won
         int num_active_elem = actives[i].size();
         for (int j = 0; j < num_active_elem; j++) {
             int esmat_index = i + actives[i][j].index * N;
-            /*
-            cout << "esmat_index: " << esmat_index
-                << ", r="<< esmat_index % N
-                << ", c="<< esmat_index / N  << endl;
-                */
             double value = actives[i][j].w;
-            if (value > ADMM_EPS)
-                wone->val.push_back(make_pair(esmat_index, value));
+            wone->val.push_back(make_pair(esmat_index, value));
         }
     }
     esmat_align (wone); // Elog(E)
-}
-void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
-    // STEP ONE: compute the optimal solution for truncated problem
-    Esmat* wbar = esmat_init (Z);
-    Esmat* temp = esmat_init (Z);
-    esmat_scalar_mult (RHO, Z, temp); // wbar = RHO * z
-    // cout << wbar->nRows << "," << wbar->nCols << endl;
-    // cout << Y->nRows << "," << Y->nCols << endl;
-    esmat_sub (temp, Y, wbar); // wbar = RHO * z - y
-    esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z - y) / RHO
-    esmat_free (temp);
-#ifdef GROUP_LASSO_DEBUG
-    cout << "[wbar]" << endl;
-    cout << esmat_toString(wbar);
-    cout << "lambda: " << lambda << endl;
-#endif
-    // STEP TWO: find the closed-form solution for second subproblem
-    int SIZE = wbar->val.size();
-    int R = wbar->nRows; int C = wbar->nCols;
-
-    if (wbar->val.size() == 0) {
-        // no need to solve all-zero matrix w
-        return ;
-    }
-    // i is index of element in esmat->val, j is column index
-    int i = 0; int j = 0;
-    int begin_idx, end_idx;
-    int col_es_begin = 0;
-    vector< pair<int,double> > alpha_vec;
-    while ((i < SIZE && j < C)) {
-        begin_idx = j * R;
-        end_idx = (j+1) * R;
-        int esWBAR_index = wbar->val[i].first;
-        // cout << "i: " << i << " , j: " << j << endl;
-        if (esWBAR_index >= end_idx) {
-            int nValidAlpha = alpha_vec.size();
-            // cout << "nValidAlpha: " << nValidAlpha << endl;
-            if (nValidAlpha == 0) {
-                j ++;
-                continue;
-            }
-            // a) sort existing temp_vec
-            std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
-            // b) find mstar
-            int mstar = 0; // number of elements supporting the sky
-            double separator; 
-            double max_term = -INF, new_term;
-            double sum_alpha = 0.0;
-            for (int v = 0; v < nValidAlpha; v ++) {
-                sum_alpha += alpha_vec[v].second;
-                new_term = (sum_alpha - lambda) / (v + 1.0);
-                // cout << "new_term: " << new_term << endl;
-                if ( new_term > max_term ) {
-                    separator = alpha_vec[v].second;
-                    max_term = new_term;
-                    ++ mstar;
-                }
-            }
-            // cout << "mstar: " << mstar << ", max_term: " << max_term << endl;
-            // c) assign closed-form solution of current column to w
-            if (mstar <= 0) {
-                ; // this column of w is all-zero, hence we do nothing for that 
-            } else {
-                for (int esi = col_es_begin; wbar->val[esi].first < end_idx; esi ++) {
-                    double pos = wbar->val[esi].first;
-                    double value = wbar->val[esi].second;
-                    if (fabs(value) >= separator) 
-                        w->val.push_back(make_pair(pos, max(max_term, 0.0)));
-                    else 
-                        // w->val.push_back(make_pair(pos, max(value, 0.0)));
-                        w->val.push_back(make_pair(pos, value));
-                }
-            }
-            // d) clear all elements in alpha_vec 
-            alpha_vec.clear();
-            // e) push current element to the cleared alpha_vec
-            double value = wbar->val[i].second;
-            alpha_vec.push_back (make_pair(esWBAR_index % R, fabs(value)));
-            // f) go to operate next element and next column
-            col_es_begin = i;
-            ++ i; ++ j;
-        } else if (esWBAR_index >= begin_idx) {
-            // a) push current element to the cleared temp_vec
-            double value = wbar->val[i].second;
-            alpha_vec.push_back (make_pair(esWBAR_index % R, fabs(value)));
-            // b) go to operate next element with fixed column index (j)
-            ++ i; 
-        } else { // impossible to occur
-            assert (false);
-        }
-    }
-    if (alpha_vec.size() > 0) {
-        // a) sort existing temp_vec
-        std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
-        // b) find mstar
-        int mstar = 0; // number of elements supporting the sky
-        double separator;
-        double max_term = -INF, new_term;
-        double sum_alpha = 0.0;
-        int nValidAlpha = alpha_vec.size();
-        for (int v = 0; v < nValidAlpha; v ++) {
-            sum_alpha += alpha_vec[v].second;
-            new_term = (sum_alpha - lambda) / (v + 1.0);
-            if ( new_term > max_term ) {
-                separator = alpha_vec[v].second;
-                max_term = new_term;
-                ++ mstar;
-            }
-        }
-        // cout << "mstar: " << mstar << ", max_term: " << max_term << endl;
-        // c) assign closed-form solution of current column to w
-        if (nValidAlpha == 0 || mstar <= 0) {
-            ; // this column of w is all-zero, hence we do nothing for that 
-        } else {
-            for (int esi = col_es_begin; esi < SIZE; esi ++) {
-                double pos = wbar->val[esi].first;
-                double value = wbar->val[esi].second;
-                if (fabs(value) >= separator) 
-                    w->val.push_back(make_pair(pos, max(max_term, 0.0)));
-                else 
-                    // w->val.push_back(make_pair(pos, max(value, 0.0)));
-                    w->val.push_back(make_pair(pos, value));
-            }
-        }
-    }
-#ifdef GROUP_LASSO_DEBUG
-    esmat_print (w, "[solved w]");
-#endif
-    esmat_trim (w);
-#ifdef GROUP_LASSO_DEBUG
-    esmat_print (w, "[w after trimming]");
-#endif
-    // STEP THREE: recollect temporary variable - wbar
-    esmat_free (wbar);
 }
 
 void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double lambda, Esmat* W, int ADMM_max_iter, int SS_PERIOD) {
@@ -448,20 +302,19 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
     int iter = 0; // Ian: usually we count up (instead of count down)
     bool no_active_element = false, admm_opt_reached = false;
     while ( iter < ADMM_max_iter ) { // stopping criteria
-
         // STEP ONE: resolve w_1 and w_2
         frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, fw_max_iter, col_active_map);
+        // assert (esmat_isAligned(wone));
         // cout << "[wone]" << endl;
         // cout << esmat_toString(wone);
         group_lasso_solver (ytwo, z, wtwo, rho, lambda);
-
+        // assert (esmat_isAligned(wtwo));
 #ifdef SUBPROBLEM_DUMP
      cout << "[Frank_wolfe]";
-     subproblem_objective (dist_mat, yone, zone, wone, rho, N, lambda);
+     subproblem_objective (dist_mat, yone, z, wone, rho, N, lambda);
      cout << "[Blockwise]";
-     subproblem_objective (dist_mat, ytwo, ztwo, wtwo, rho, N, lambda);
+     subproblem_objective (dist_mat, ytwo, z, wtwo, rho, N, lambda);
 #endif
-
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         set<int>::iterator it;
@@ -485,9 +338,18 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         esmat_free (diff);
         esmat_free (temp);
 
+        /*
+        assert (esmat_isAligned(z));
+        assert (esmat_isAligned(yone));
+        assert (esmat_isAligned(ytwo));
+        */
+
         // STEP FOUR: trace the objective function
         if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
             cputime += clock() - prev;
+        cout << wone->val.size() << ","
+            << wtwo->val.size() << "," 
+            << z->val.size() << endl;
             error = overall_objective (dist_mat, lambda, N, z);
             cout << "[Overall] iter = " << iter 
                 << ", Loss Error: " << error << endl;
@@ -497,7 +359,12 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         // Shrinking Method:
         // STEP ONE: reduce number of elements considered in next iteration
         esmat_trim (z, ADMM_EPS);
+        esmat_trim (wone, ADMM_EPS);
         esmat_trim (wtwo, ADMM_EPS);
+        esmat_trim (yone, ADMM_EPS);
+        esmat_trim (ytwo, ADMM_EPS);
+
+        /*
         Esmat* temp1 = esmat_init (wone);
         Esmat* temp2 = esmat_init (z);
         esmat_add (wone, wtwo, temp1); 
@@ -512,12 +379,14 @@ void cvx_clustering (double** dist_mat, int fw_max_iter, int D, int N, double la
         // TODO: can improve
         for (int i = 0; i < N; i ++) 
             col_active_map[i] = -1;
+        cout << "active_cols: " << temp_size << endl;
         for (int i = 0; i < temp_size; i ++) {
             int temp_index = temp1->val[i].first;
             col_active_map[temp_index] = map_index;
             ++ map_index;
         }
         esmat_free (temp1);
+        */
         // STEP TWO: consider to open all elements to check optimality
         /*
         if (num_active_elements == 0 && !no_active_element) {

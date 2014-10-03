@@ -17,7 +17,7 @@
 #include "../util.h"
 
 const double FRANK_WOLFE_TOL = 1e-20;
-const double ADMM_EPS = 1e-4;
+const double ADMM_EPS = 1e-5;
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 10000.0;
 
@@ -87,10 +87,35 @@ void subproblem_objective (double** dist_mat, Esmat* y, Esmat* z, Esmat* w, doub
     double quadratic = 0.5 * rho * esmat_frob_norm (diff);
     // dummy = r dot (1 - sum_k w_nk) -> dummy
     double dummy_penalty = esmat_compute_dummy (w, r);
+
     // double total = loss+linear+quadratic+dummy_penalty;
     cout << "(loss, lasso, linear, quadratic, dummy, total) = (" 
         << loss << ", " << lasso << ", " << linear << ", " <<
         quadratic << ", " << dummy_penalty << ")" << endl;
+    /*
+    if (dummy_penalty < -4000) {
+        cout << "----------------------" << endl;
+        cout << "[dummy_w < 0]" << endl;
+        cout << esmat_toString (w);
+        cout << "----------------------" << endl;
+        int R = w->nRows;
+        vector<double> temp_vec (R, 0.0);
+        int size = w->val.size();
+        for (int i = 0; i < size; i ++) {
+            int esmat_index = w->val[i].first;
+            int row_index = esmat_index % w->nRows;
+            int col_index = esmat_index / w->nRows;
+            double value = w->val[i].second;
+            temp_vec[row_index] += value;
+        }
+        double dummy= 0.0;
+        for (int i = 0; i < R; i ++) {
+            dummy += r * (1.0 - temp_vec[i]);
+            cout << "i=" << i << ", sum=" << temp_vec[i] << endl;
+        }
+        exit(0);
+    }
+    */
     esmat_free (diff);
     // return total;
 }
@@ -134,3 +159,169 @@ void compute_dist_mat (vector<Instance*>& data, double** dist_mat, int N, int D,
         }
     }
 }
+void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
+    // STEP ONE: compute the optimal solution for truncated problem
+    Esmat* wbar = esmat_init (w);
+    Esmat* temp = esmat_init (w);
+    esmat_scalar_mult (RHO, Z, temp); // temp = RHO * z
+    esmat_sub (temp, Y, wbar); // wbar = RHO * z - y
+    esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z - y) / RHO
+    esmat_free (temp);
+    esmat_zeros (w);
+    // STEP TWO: find the closed-form solution for second subproblem
+    int SIZE = wbar->val.size();
+    if (SIZE == 0)  return ;
+    int R = wbar->nRows; int C = wbar->nCols;
+    vector< vector< pair<int,double> > > alpha_vec (C, vector< pair<int,double> > ());
+    vector<int> nValidAlpha (C, 0);
+    for (int i = 0; i < SIZE; i ++) {
+        int wbar_esmat_index = wbar->val[i].first;
+        int wbar_row_index = wbar_esmat_index % R;
+        int wbar_col_index = wbar_esmat_index / R;
+        double value = wbar->val[i].second;
+        alpha_vec[wbar_col_index].push_back (make_pair(i,fabs(value)));
+        ++ nValidAlpha[wbar_col_index];
+    }
+
+    for (int j = 0; j < C; j ++) {
+        if (nValidAlpha[j] <= 0) continue;
+        // a) sort existing temp_vec
+        std::sort (alpha_vec[j].begin(), alpha_vec[j].end(), pair_Second_Elem_Comparator);
+        // b) find mstar
+        int mstar = 0; // number of elements supporting the sky
+        double separator; 
+        double max_avg_term = -INF, tmp_avg_term;
+        double sum_alpha = 0.0;
+        for (int v = 0; v < nValidAlpha[j]; v ++) {
+            sum_alpha += alpha_vec[j][v].second;
+            tmp_avg_term = (sum_alpha - lambda) / (v + 1.0);
+            if ( tmp_avg_term > max_avg_term ) {
+                separator = alpha_vec[j][v].second;
+                max_avg_term = tmp_avg_term;
+                ++ mstar;
+            }
+        }
+        if (max_avg_term < 0) { // include all elements 
+            mstar = R;
+            max_avg_term = (sum_alpha - lambda) / R;
+        }
+        if (mstar <= 0 ) {
+            cout << "mstar <= 0" << endl;
+        } else if ( max_avg_term < 0.0) {
+            // here we set the whole column of output w to zeros
+            // that is to do nothing for esmat for this column
+            ;
+        } else {
+            for (int i = 0; i < nValidAlpha[j]; i ++) {
+                int pos = alpha_vec[j][i].first;
+                double value = alpha_vec[j][i].second;
+                if (fabs(value) >= separator) 
+                    alpha_vec[j][i].second = max_avg_term;
+                else {
+                    alpha_vec[j][i].second = max(value, 0.0);
+                }
+            }
+            std::sort (alpha_vec[j].begin(), alpha_vec[j].end(), pair_First_Elem_Comparator);
+            // std::copy (alpha_vec[j].begin(), alpha_vec[j].end(), w->val.end());
+            for (int i = 0; i < nValidAlpha[j]; i++) 
+                w->val.push_back(alpha_vec[j][i]); 
+        }
+    }
+    // STEP THREE: recollect temporary variable - wbar
+    esmat_free (wbar);
+}
+/*
+void group_lasso_solver (Esmat* Y, Esmat* Z, Esmat* w, double RHO, double lambda) {
+    // STEP ONE: compute the optimal solution for truncated problem
+    Esmat* wbar = esmat_init (w);
+    Esmat* temp = esmat_init (w);
+    esmat_scalar_mult (RHO, Z, temp); // temp = RHO * z
+    esmat_sub (temp, Y, wbar); // wbar = RHO * z - y
+    esmat_scalar_mult (1.0/RHO, wbar); // wbar = (RHO * z - y) / RHO
+    esmat_free (temp);
+    esmat_zeros (w);
+    // STEP TWO: find the closed-form solution for second subproblem
+    int SIZE = wbar->val.size();
+    int R = wbar->nRows; int C = wbar->nCols;
+    if (SIZE == 0)  return ;
+    // i is index of element in esmat->val, j is column index
+    int i = 0; int j = 0;
+    int begin_idx, end_idx;
+    int col_es_begin = 0;
+    vector< pair<int,double> >  alpha_vec;
+    bool last_go = false;
+    while ((i < SIZE && j < C) || last_go) {
+        begin_idx = j * R;  // begin index of current column
+        end_idx = (j+1) * R; // end index of current column 
+        int esWBAR_index = -1;
+        if (!last_go) esWBAR_index = wbar->val[i].first;
+        // cout << "i: " << i << " , j: " << j << endl;
+        if (last_go || esWBAR_index >= end_idx ) {
+            int nValidAlpha = alpha_vec.size();
+            // cout << "nValidAlpha: " << nValidAlpha << endl;
+            if (nValidAlpha == 0) {
+                ++ j; 
+                continue;
+            }
+            // a) sort existing temp_vec
+            std::sort (alpha_vec.begin(), alpha_vec.end(), pair_Second_Elem_Comparator);
+            // b) find mstar
+            int mstar = 0; // number of elements supporting the sky
+            double separator; 
+            double max_avg_term = -INF, tmp_avg_term;
+            double sum_alpha = 0.0;
+            for (int v = 0; v < nValidAlpha; v ++) {
+                sum_alpha += alpha_vec[v].second;
+                tmp_avg_term = (sum_alpha - lambda) / (v + 1.0);
+                // cout << "tmp_avg_term: " << tmp_avg_term << endl;
+                if ( tmp_avg_term > max_avg_term ) {
+                    separator = alpha_vec[v].second;
+                    max_avg_term = tmp_avg_term;
+                    ++ mstar;
+                }
+            }
+            if (max_avg_term < 0) { // include all elements 
+                mstar = R;
+                max_avg_term = (sum_alpha - lambda) / R;
+            }
+            // cout << "mstar: " << mstar << ", max_term: " << max_avg_term << endl;
+            // c) assign closed-form solution of current column to w
+            if (mstar <= 0 || max_avg_term < 0.0) {
+                ; // this column of w is all-zero, hence we do nothing for that 
+            } else {
+                for (int esi = col_es_begin; wbar->val[esi].first < end_idx; esi ++) {
+                    if (last_go && esi == SIZE) break;
+                    double pos = wbar->val[esi].first;
+                    double value = wbar->val[esi].second;
+                    if (fabs(value) >= separator) 
+                        w->val.push_back(make_pair(pos, max_avg_term));
+                    else {
+                        w->val.push_back(make_pair(pos, max(value, 0.0)));
+                    }
+                }
+            }
+            // d) clear all elements in alpha_vec 
+            alpha_vec.clear();
+           //  cout << "old_j: " << j << endl;
+            if (last_go) break;
+            // e) push current element to the cleared alpha_vec
+            double value = wbar->val[i].second;
+            alpha_vec.push_back (make_pair(esWBAR_index % R, fabs(value)));
+            // f) go to operate next element and next column
+            col_es_begin = i;
+            ++ i; ++ j;
+        } else if (esWBAR_index >= begin_idx) {
+            // a) push current element to the cleared temp_vec
+            double value = wbar->val[i].second;
+            alpha_vec.push_back (make_pair(esWBAR_index % R, fabs(value)));
+            // b) go to operate next element with fixed column index (j)
+            ++ i; 
+        } else { // impossible to occur
+            assert (false);
+        }
+        if (i == SIZE) {last_go = true; }
+    }
+    // STEP THREE: recollect temporary variable - wbar
+    esmat_free (wbar);
+}
+*/
