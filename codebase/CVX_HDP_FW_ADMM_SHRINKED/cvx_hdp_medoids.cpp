@@ -202,12 +202,11 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
             gamma = 2.0 / (k+2.0);
 #endif
             // update w
-            for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
+            for (it=actives[i].begin(); it!=actives[i].end(); ++it) 
                 w[i][it->first] *= (1-gamma);
-            }
             w[i][s[i].first] += gamma;
             // update new actives 
-            set<pair<int, double> > temp;
+            set< pair<int, double> > temp;
             if (!isInActives[i]) {
                 actives[i].insert(pqueues[i].top());
                 pqueues[i].pop();
@@ -219,9 +218,7 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
                 temp.insert (make_pair(it->first, new_grad));
             }
             actives[i].swap(temp);
-            // cout << "actives[" << i << "]: " << actives[i].size() << endl;
         }
-        // cout << "within frank_wolfe_solver: next iteration" << endl;
         k ++;
     }
 #ifdef FRANK_WOLFE_DUMP
@@ -244,9 +241,11 @@ void skyline (double** wout, double**wbar, int R, int C, double lambda, set<int>
             }
         }
     }
-    vector<double> max_term (C, -INF);
-    vector<double> separator (C);
+    cerr << "pre-push done" << endl;
+    vector<double> max_term (C, -1e50);
+    vector<double> separator (C, 0.0);
     for (int j = 0; j < C; j ++) {
+        if (num_alpha_elem[j] == 0) continue;
         // 2. sorting
         std::sort (alpha_vec[j].begin(), alpha_vec[j].end(), double_dec_comp);
         // 3. find mstar
@@ -264,11 +263,16 @@ void skyline (double** wout, double**wbar, int R, int C, double lambda, set<int>
         if (max_term[j] < 0) 
             max_term[j] = (sum_alpha - lambda) / R;
     }
+    cerr << "max_term count" << endl;
     for (int i = 0; i < R; i ++) {
         // 4. assign closed-form solution to wout
-        for (int j = 0; j < C; j ++) {
-            if( max_term[j] < 0 ) {
+        set<int>::iterator it;
+        for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
+            int j = *it;
+            cout << "i=" << i << ",j=" << j << endl;
+            if ( max_term[j] < 0 ) {
                 wout[i][j] = 0.0;
+                cout << "max_term: " << max_term[j] << endl;
                 continue;
             }
             double wbar_val = wbar[i][j];
@@ -277,8 +281,10 @@ void skyline (double** wout, double**wbar, int R, int C, double lambda, set<int>
             else 
                 // its ranking is above m*, directly inherit the wbar
                 wout[i][j] = max(wbar_val,0.0);
+            cout << "wout[i][j] = " << wout[i][j] << endl;
         }
     }
+    cerr << "wout assigned" << endl;
 }
 void group_lasso_solver (double** y, double** z, double** w, double rho, vector<double>& lambda, Lookups *tables, set<int> col_active_sets) {
     int R = tables->nWords;
@@ -288,8 +294,8 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
     int global_lambda = lambda[0];
     int local_lambda = lambda[1];
 
-    double** wlocal = mat_init (R, C); 
-    mat_zeros (wlocal, R, C);
+    // double** wlocal = mat_init (R, C); 
+    // mat_zeros (wlocal, R, C);
     double** wbar = mat_init (R, C);
     mat_zeros (wbar, R, C);
     for (int i = 0; i < R; i ++) {
@@ -298,17 +304,19 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
         }
     }
     // TODO: extend the group lasso solver to both local and global
+    /*
     for (int d = 0; d < tables->nDocs; d++ ) {
-        skyline (wlocal, wbar, R, C, lambda[0], col_active_sets);
+        skyline (wlocal, wbar, R, C, local_lambda, col_active_sets);
     }
-    skyline (w, wlocal, R, C, lambda[0], col_active_sets);
+    */
+    skyline (w, wbar, R, C, global_lambda, col_active_sets);
 
 #ifdef BLOCKWISE_DUMP
     double penalty = second_subproblem_obj (y, z, w, rho, N, lambda);
     cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
 #endif
 
-    mat_free (wlocal, R, C);
+    // mat_free (wlocal, R, C);
     mat_free (wbar, R, C);
 }
 
@@ -403,8 +411,8 @@ void compute_dist_mat (double** dist_mat, Lookups* tables, int R, int C) {
     }
 }
 void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambda, double ** W, int ADMM_max_iter, int SS_PERIOD, Lookups * tables) {
-    int D = tables->nDocs;
     int N = tables->nWords;
+    int D = tables->nDocs;
     vector< pair<int,int> >* word_lookup = tables->word_lookup;
     vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
     // parameters 
@@ -438,9 +446,8 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
     // variables for shriking method
     set<int> col_active_sets;
     // set initial active_set as all elements
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < D; i++) 
         col_active_sets.insert(i);
-    }
 
     cputime += clock() - prev;
     ss_out << cputime << " " << 0 << endl;
@@ -614,6 +621,7 @@ int main (int argc, char ** argv) {
 
     ofstream dmat_out ("dist_mat");
     dmat_out << mat_toString (dist_mat, N, D);
+    dmat_out.close();
     cerr << "dist_mat output finished.." << endl;
     cvx_hdp_medoids (dist_mat, FW_MAX_ITER, LAMBDAs, W, ADMM_MAX_ITER, SS_PERIOD, &lookup_tables);
 
