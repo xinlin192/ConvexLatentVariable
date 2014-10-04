@@ -90,6 +90,10 @@ double sign (int input) {
     else if ( input < 0 ) return -1.0;
     else return 0.0;
 }
+bool double_dec_comp (double firstElem, double secondElem) {
+    // sort pairs by second element with *decreasing order*
+    return firstElem > secondElem;
+}
 bool pair_First_Elem_Comparator (const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
     // sort pairs by second element with *decreasing order*
     return firstElem.first < secondElem.first;
@@ -384,18 +388,21 @@ int flip (int a) {
 	return (a==0)?1:0;
 }
 
-double clustering_objective (double ** dist_mat, double ** z, int N) {
+double clustering_objective (double ** dist_mat, double ** z, int R, int C) {
     // N is number of entities in "data", and z is N by N.
     // z is current valid solution (average of w_1 and w_2)
     // STEP ONE: compute 
     //     loss = sum_i sum_j z[i][j] * dist_mat[i][j]
     double clustering_loss = 0.0;
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
+    for (int i = 0; i < R; i ++) {
+        for (int j = 0; j < C; j ++) {
             clustering_loss += 0.5 * z[i][j] * dist_mat[i][j];
         }
     }
     return clustering_loss;
+}
+double clustering_objective (double ** dist_mat, double ** z, int N) {
+    return clustering_objective(dist_mat, z, N, N);
 }
 double clustering_objective (Esmat* dist_mat, Esmat* z) {
     // z is current valid solution (average of w_1 and w_2)
@@ -408,8 +415,8 @@ void get_all_centroids(double ** W, vector<int>* centroids, int nRows, int nCols
     }
     mat_max_col (W, max_belonging, nRows, nCols);
     for (int i = 0; i < nCols; i ++ ) {
-        if (fabs(max_belonging[i]) > 0.3) {
-            centroids->push_back(i+1);
+        if (fabs(max_belonging[i]) > 1e-2) {
+            centroids->push_back(i);
         }
     }
     delete[] max_belonging;
@@ -436,10 +443,10 @@ void output_assignment (double ** W, vector<Instance*>& data, int N) {
     // get all centroids
     for (int i = 0; i < N; i ++) {
         // output identification and its belonging
-        asgn_out << "id=" << i+1 << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
+        asgn_out << "id=" << i << ", fea[0]=" << data[i]->fea[0].second << ", ";  // sample id
         for (int j = 0; j < N; j ++) {
             if( fabs(W[i][j]) > 1e-1 ) {
-                asgn_out << j+1 << "(" << W[i][j] << "),\t";
+                asgn_out << j << "(" << W[i][j] << "),\t";
             }
         }
         asgn_out << endl;
