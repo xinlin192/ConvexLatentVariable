@@ -70,6 +70,48 @@ double first_subproblm_obj (double** dist_mat, double** yone, double** zone, dou
 
     return total;
 }
+
+double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double* lambda) {
+    double ** temp = mat_init (N, N);
+    double ** difftwo = mat_init (N, N);
+    mat_zeros (difftwo, N, N);
+
+    // reg = 0.5 * sum_k max_n | w_nk |  -> group-lasso
+    mat_zeros (temp, N, N);
+    double * maxn = new double [N]; 
+    for (int i = 0; i < N; i ++) { // Ian: need initial 
+        maxn[i] = -INF;
+    }
+
+    for (int i = 0; i < N; i ++) {
+        for (int j = 0; j < N; j ++) {
+            if (wtwo[i][j] > maxn[j])
+                maxn[j] = wtwo[i][j];
+        }
+    }
+    double sumk = 0.0;
+    for (int i = 0; i < N; i ++) {
+        sumk += lambda[i]*maxn[i];
+    }
+    double group_lasso = sumk; 
+
+    // sum2 = y_2^T dot (w_2 - z) -> linear
+    mat_zeros (temp, N, N);
+    mat_sub (wtwo, z, difftwo, N, N);
+    mat_tdot (ytwo, difftwo, temp, N, N);
+    double sum2 = mat_sum (temp, N, N);
+
+    // sum3 = 0.5 * rho * || w_2 - z_2 ||^2 -> quadratic mat_zeros (temp, N, N);
+    mat_sub (wtwo, z, temp, N, N);
+    double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
+
+    mat_free (temp, N, N);
+    // ouput values of each components
+    cout << "[Blockwise] (group_lasso, linear, quadratic) = ("
+        << group_lasso << ", " << sum2 << ", " << sum3
+        << ")" << endl;
+    return group_lasso + sum2 + sum3;
+}
 void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double ** w, double rho, int R, int C, int FW_MAX_ITER, set<int>& col_active_set) {
     // cout << "within frank_wolfe_solver" << endl;
     // STEP ONE: compute gradient mat initially
@@ -188,48 +230,6 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
 #endif
 }
 
-double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double* lambda) {
-
-    double ** temp = mat_init (N, N);
-    double ** difftwo = mat_init (N, N);
-    mat_zeros (difftwo, N, N);
-
-    // reg = 0.5 * sum_k max_n | w_nk |  -> group-lasso
-    mat_zeros (temp, N, N);
-    double * maxn = new double [N]; 
-    for (int i = 0; i < N; i ++) { // Ian: need initial 
-        maxn[i] = -INF;
-    }
-
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            if (wtwo[i][j] > maxn[j])
-                maxn[j] = wtwo[i][j];
-        }
-    }
-    double sumk = 0.0;
-    for (int i = 0; i < N; i ++) {
-        sumk += lambda[i]*maxn[i];
-    }
-    double group_lasso = sumk; 
-
-    // sum2 = y_2^T dot (w_2 - z) -> linear
-    mat_zeros (temp, N, N);
-    mat_sub (wtwo, z, difftwo, N, N);
-    mat_tdot (ytwo, difftwo, temp, N, N);
-    double sum2 = mat_sum (temp, N, N);
-
-    // sum3 = 0.5 * rho * || w_2 - z_2 ||^2 -> quadratic mat_zeros (temp, N, N);
-    mat_sub (wtwo, z, temp, N, N);
-    double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
-
-    mat_free (temp, N, N);
-    // ouput values of each components
-    cout << "[Blockwise] (group_lasso, linear, quadratic) = ("
-        << group_lasso << ", " << sum2 << ", " << sum3
-        << ")" << endl;
-    return group_lasso + sum2 + sum3;
-}
 
 void skyline (double** wout, double**wbar, int R, int C, double lambda, set<int> col_active_sets) {
     vector< vector< double > > alpha_vec (C, vector<double>());
@@ -451,7 +451,7 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
 
         // STEP ONE: resolve w_1 and w_2
         frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, D, fw_max_iter, col_active_sets);
-        group_lasso_solver (ytwo, z, wtwo, rho, lambda, N, D, col_active_sets);
+        group_lasso_solver (ytwo, z, wtwo, rho, lambda, tables, col_active_sets);
 
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
@@ -615,7 +615,7 @@ int main (int argc, char ** argv) {
     ofstream dmat_out ("dist_mat");
     dmat_out << mat_toString (dist_mat, N, D);
     cerr << "dist_mat output finished.." << endl;
-    cvx_hdp_medoids (dist_mat, FW_MAX_ITER, LAMBDAs, W, ADMM_MAX_ITER, SS_PERIOD, &Lookups);
+    cvx_hdp_medoids (dist_mat, FW_MAX_ITER, LAMBDAs, W, ADMM_MAX_ITER, SS_PERIOD, &lookup_tables);
 
     /* Output objective */
     output_objective (clustering_objective (dist_mat, W, N, D));
