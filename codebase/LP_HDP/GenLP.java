@@ -25,22 +25,14 @@ public class GenLP{
 		lambda = Double.valueOf(args[3]);
 		
 		List<double[]> distMat = readDistMat(dist_fname);
-		List<Integer> d_assign = readVect(d_assign_fname);
-		List<List<Integer> > dataset = new ArrayList();
-		int D = max_element(d_assign);
-		for(int i=0;i<D;i++){
-			dataset.add(new ArrayList());
-		}
-		for(Integer i=0;i<d_assign.size();i++){
-			int did = d_assign.get(i);
-			dataset.get(did).add(i);
-		}
+		List<Pair<Integer,Integer>> d_assign = readVect(d_assign_fname);
+		int D = max_key(d_assign)+1;
 		
 		System.out.println("N="+distMat.size()+", K="+distMat.get(0).length);
 		System.out.println("lambda="+lambda);
 		
 		Map<Integer,Double> c_map = new HashMap(); 
-		generate_c(distMat, dataset, c_map);
+		generate_c(distMat, d_assign, D, c_map);
 		System.out.println("num_var="+c_map.size());
 		
 		List<Double> c = new ArrayList();
@@ -67,12 +59,12 @@ public class GenLP{
 		writeVarName("varName",varNameList);
 	}
 	
-	static Integer max_element(List<Integer> arr){
+	static Integer max_key(List<Pair<Integer,Integer>> arr){
 		
 		Integer m = -1;
-		for(Integer e: arr){
-			if( e > m )
-				m = e;
+		for(Pair<Integer,Integer> p: arr){
+			if( p.key > m )
+				m = p.key;
 		}
 		return m;
 	}
@@ -84,15 +76,17 @@ public class GenLP{
 		}
 	}
 
-	static List<Integer> readVect(String fname){
+	static List<Pair<Integer,Integer>> readVect(String fname){
 		
-		List<Integer> list = new ArrayList();
+		List<Pair<Integer,Integer>> list = new ArrayList();
 		try{
 			BufferedReader bufr = new BufferedReader(new FileReader(fname));
 			String line;
+			String[] tokens;
 			while( (line=bufr.readLine()) != null ){
 				
-				list.add(Integer.valueOf(line));
+				tokens = line.split(" ");
+				list.add( new Pair(Integer.valueOf(tokens[0]), Integer.valueOf(tokens[1])) );
 			}
 			
 		}catch(Exception e){
@@ -183,7 +177,7 @@ public class GenLP{
 		}
 	}
 	
-	static void generate_A_b(List<double[]> distMat, List<Integer> d_assign, 
+	static void generate_A_b(List<double[]> distMat, List<Pair<Integer,Integer> > d_assign, 
 					List<List<Pair<Integer,Double>>> A, List<Double> b){
 		
 		int N = distMat.size();
@@ -191,7 +185,7 @@ public class GenLP{
 		
 		// w_{i,j} \leq \zeta_{d,j}, for all i\in d, j
 		for(int i=0;i<N;i++){
-			int d = d_assign.get(i);
+			int d = d_assign.get(i).key;
 			for(int j=0;j<K;j++){
 				List<Pair<Integer,Double>> a = new ArrayList();
 				a.add( new Pair(varIndex("w["+i+","+j+"]"), 1.0) );
@@ -229,7 +223,7 @@ public class GenLP{
 		}
 	}
 
-	static void generate_c(List<double[]> distMat, List<List<Integer> > dataset, Map<Integer,Double> c){
+	static void generate_c(List<double[]> distMat, List<Pair<Integer,Integer> > d_assign, int D, Map<Integer,Double> c){
 		
 		int index;
 		//c_{i,j}: \sum_{i} \sum_{j} w_{ij} d_{ij}
@@ -237,12 +231,12 @@ public class GenLP{
 		for(int i=0;i<distMat.size();i++){
 			dist_arr = distMat.get(i);
 			for(int j=0;j<dist_arr.length;j++){
-				c.put( varIndex("w["+i+","+j+"]"), dist_arr[j] );
+				c.put( varIndex("w["+i+","+j+"]"), dist_arr[j]*d_assign.get(i).value );
 			}
 		}
 		
 		//c_{zeta_{d,j}}: \lambda_d
-		for(int d=0;d<dataset.size();d++){
+		for(int d=0;d<D;d++){
 			for(int j=0;j<distMat.get(0).length;j++){
 				c.put( varIndex("zeta["+d+","+j+"]"), theta );
 			}
