@@ -206,25 +206,20 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
     int global_lambda = lambda[0];
     int local_lambda = lambda[1];
 
-    double** wlocal = mat_init (R, C); 
-    mat_zeros (wlocal, R, C);
-    double** wbar = mat_init (R, C);
-    mat_zeros (wbar, R, C);
+    double** wlocal = mat_init (R, C); mat_zeros (wlocal, R, C);
+    double** wbar = mat_init (R, C); mat_zeros (wbar, R, C);
     for (int i = 0; i < R; i ++) {
         for (int j = 0; j < C; j ++) {
             wbar[i][j] = (rho * z[i][j] - y[i][j]) / rho;
         }
     }
     // extend the group lasso solver to both local and global
-    int R_start, R_end;
     for (int d = 0; d < tables->nDocs; d++) {
-        R_start = doc_lookup[d].first;
-        R_end = doc_lookup[d].second;
+        int R_start = doc_lookup[d].first;
+        int R_end = doc_lookup[d].second;
         skyline (wlocal, wbar, R_start, R_end, C, local_lambda, col_active_sets);
     }
-    R_start = 0; 
-    R_end = R;
-    skyline (w, wlocal, R_start, R_end, C, global_lambda, col_active_sets);
+    skyline (w, wlocal, 0, R, C, global_lambda, col_active_sets);
 
     mat_free (wlocal, R, C);
     mat_free (wbar, R, C);
@@ -292,9 +287,8 @@ void compute_dist_mat (double** dist_mat, Lookups* tables, int R, int C) {
     for (int d = 0; d < D; d ++) {
         // a. compute sum of word frequency
         int sumFreq = 0;
-        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
+        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) 
             sumFreq += word_lookup[w].second;
-        }
         // b. compute distribution
         for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
             int voc_index = word_lookup[w].first;
