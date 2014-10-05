@@ -18,9 +18,7 @@
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
-// #define FRANK_WOLFE_DUMP
 // #define EXACT_LINE_SEARCH_DUMP
-// #define BLOCKWISE_DUMP
 
 const double SPARSITY_TOL = 1e-4;
 const double FRANK_WOLFE_TOL = 1e-20;
@@ -36,79 +34,7 @@ class Compare
             return obj1.second > obj2.second;
         }
 };
-double first_subproblm_obj (double** dist_mat, double** yone, double** zone, double** wone, double rho, int N) {
-    double ** temp = mat_init (N, N);
-    double ** diffone = mat_init (N, N);
-    mat_zeros (diffone, N, N);
-    // sum1 = 0.5 * sum_n sum_k (w_nk * d^2_nk) -> loss
-    mat_zeros (temp, N, N);
-    mat_times (wone, dist_mat, temp, N, N);
-    double sum1 = 0.5 * mat_sum (temp, N, N);
-    // sum2 = y_1^T dot (w_1 - z) -> linear
-    mat_zeros (temp, N, N);
-    mat_sub (wone, zone, diffone, N, N); // temp = w_1 - z_1
-    mat_tdot (yone, diffone, temp, N, N);
-    double sum2 = mat_sum (temp, N, N);
-    // sum3 = 0.5 * rho * || w_1 - z_1 ||^2 -> quadratic
-    mat_zeros (temp, N, N);
-    mat_sub (wone, zone, temp, N, N);
-    double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
-    // sum4 = r dot (1 - sum_k w_nk) -> dummy
-    double * temp_vec = new double [N];
-    mat_sum_row (wone, temp_vec, N, N);
-    double dummy_penalty = 0.0;
-    for (int i = 0; i < N; i ++) {
-        dummy_penalty += r*(1 - temp_vec[i]);
-    }
-    double total = sum1+sum2+sum3+dummy_penalty;
-    cout << "[Frank_wolfe] (loss, linear, quadratic, dummy, total) = (" 
-        << sum1 << ", " << sum2 << ", " << sum3 << ", " << dummy_penalty << ", " << total
-        <<  ")" << endl;
-    mat_free (temp, N, N);
-    mat_free (diffone, N, N);
-    delete [] temp_vec;
 
-    return total;
-}
-
-double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, double rho, int N, double* lambda) {
-    double ** temp = mat_init (N, N);
-    double ** difftwo = mat_init (N, N);
-    mat_zeros (difftwo, N, N);
-
-    // reg = 0.5 * sum_k max_n | w_nk |  -> group-lasso
-    mat_zeros (temp, N, N);
-    double * maxn = new double [N]; 
-    for (int i = 0; i < N; i ++) 
-        maxn[i] = -INF;
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            if (wtwo[i][j] > maxn[j])
-                maxn[j] = wtwo[i][j];
-        }
-    }
-    double sumk = 0.0;
-    for (int i = 0; i < N; i ++) {
-        sumk += lambda[i]*maxn[i];
-    }
-    double group_lasso = sumk; 
-    // sum2 = y_2^T dot (w_2 - z) -> linear
-    mat_zeros (temp, N, N);
-    mat_sub (wtwo, z, difftwo, N, N);
-    mat_tdot (ytwo, difftwo, temp, N, N);
-    double sum2 = mat_sum (temp, N, N);
-
-    // sum3 = 0.5 * rho * || w_2 - z_2 ||^2 -> quadratic mat_zeros (temp, N, N);
-    mat_sub (wtwo, z, temp, N, N);
-    double sum3 = 0.5 * rho * mat_norm2 (temp, N, N);
-
-    mat_free (temp, N, N);
-    // ouput values of each components
-    cout << "[Blockwise] (group_lasso, linear, quadratic) = ("
-        << group_lasso << ", " << sum2 << ", " << sum3
-        << ")" << endl;
-    return group_lasso + sum2 + sum3;
-}
 void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double ** w, double rho, int R, int C, int FW_MAX_ITER, set<int>& col_active_set) {
     // cout << "within frank_wolfe_solver" << endl;
     // STEP ONE: compute gradient mat initially
@@ -218,13 +144,7 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
         }
         k ++;
     }
-#ifdef FRANK_WOLFE_DUMP
-     double penalty = first_subproblm_obj (dist_mat, y, z, w, rho, R);
-     cout << "[Frank-Wolfe] iteration: " << k << ", first_subpro_obj: " << penalty << endl;
-#endif
 }
-
-
 void skyline (double** wout, double**wbar, int R_start, int R_end, int C, double lambda, set<int> col_active_sets) {
     vector< vector< double > > alpha_vec (C, vector<double>());
     vector< int > num_alpha_elem (C, 0);
@@ -295,26 +215,36 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
             wbar[i][j] = (rho * z[i][j] - y[i][j]) / rho;
         }
     }
-    // TODO: extend the group lasso solver to both local and global
+    // extend the group lasso solver to both local and global
     int R_start, R_end;
-    for (int d = 0; d < tables->nDocs; d++ ) {
+    for (int d = 0; d < tables->nDocs; d++) {
         R_start = doc_lookup[d].first;
         R_end = doc_lookup[d].second;
         skyline (wlocal, wbar, R_start, R_end, C, local_lambda, col_active_sets);
     }
-    R_start = 0; R_end = R;
+    R_start = 0; 
+    R_end = R;
     skyline (w, wlocal, R_start, R_end, C, global_lambda, col_active_sets);
 
-#ifdef BLOCKWISE_DUMP
-    double penalty = second_subproblem_obj (y, z, w, rho, N, lambda);
-    cout << "[Blockwise] second_subproblem_obj: " << penalty << endl;
-#endif
-
-    // mat_free (wlocal, R, C);
+    mat_free (wlocal, R, C);
     mat_free (wbar, R, C);
 }
 
-double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int C, double ** z) {
+double lasso_objective (double** z, double lambda, int R_start, int R_end, int C) {
+    double lasso = 0.0;
+    vector<double> maxn(C, -INF); 
+    for (int i = R_start; i < R_end; i ++)
+        for (int j = 0; j < C; j ++)
+            if ( fabs(z[i][j]) > maxn[j])
+                maxn[j] = fabs(z[i][j]);
+    for (int j = 0; j < C; j ++) 
+        lasso += lambda * maxn[j];
+    return lasso;
+}
+
+double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int C, double ** z, Lookups* tables) {
+    int D = tables->nDocs;
+    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
     // STEP ONE: compute 
     //     loss = sum_i sum_j z[i][j] * dist_mat[i][j]
     double normSum = 0.0;
@@ -326,24 +256,25 @@ double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
     double * temp_vec = new double [R];
     mat_sum_row (z, temp_vec, R, C);
-    double dummy_penalty=0.0;
+    double dummy_penalty = 0.0;
     for (int i = 0; i < R; i ++) 
-        dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
+        dummy_penalty += r * max(1 - temp_vec[i], 0.0);
     delete[] temp_vec;
     // STEP THREE: compute group-lasso regularization
-    double * maxn = new double [C]; 
-    for (int j = 0; j < C; j ++) 
-        maxn[j] = -INF;
-    for (int i = 0; i < R; i ++) 
-        for (int j = 0; j < C; j ++) 
-            if ( fabs(z[i][j]) > maxn[j])
-                maxn[j] = fabs(z[i][j]);
-    delete[] maxn;
-    double lasso = 0.0;
-    for (int j = 0; j < C; j ++) 
-        lasso += lambda[0]*maxn[j];
-    double overall = loss + lasso + dummy_penalty;
-    return loss + lasso;
+    double global_lasso = lasso_objective(z, lambda[0], 0, R, C);
+    double sum_local_lasso = 0.0;
+    vector<double> local_lasso (D, 0.0);
+    for (int d = 0; d < D; d++) {
+        local_lasso[d] = lasso_objective(z, lambda[1], doc_lookup[d].first, doc_lookup[d].second, C); 
+        sum_local_lasso += local_lasso[d];
+    }
+    double overall = loss + global_lasso + sum_local_lasso + dummy_penalty;
+    cout << "loss: " << loss << ", dummy=" << dummy_penalty
+        << ", global_lasso=" << global_lasso 
+        << ", sum_local_lasso=" << sum_local_lasso 
+        << ", overall=" << overall
+        << endl;
+    return loss + global_lasso + sum_local_lasso;
 }
 
 /* Compute the mutual distance of input instances contained within "data" */
@@ -458,15 +389,6 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
             }
         }
 
-        // STEP FOUR: trace the objective function
-        if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
-            cputime += clock() - prev;
-            error = overall_objective (dist_mat, lambda, N, D, z);
-            cout << "[Overall] iter = " << iter 
-                << ", Loss Error: " << error << endl;
-            ss_out << cputime << " " << error << endl;
-            prev = clock();
-        }
         // Shrinking Method:
         // STEP ONE: reduce number of elements considered in next iteration
         vector<int> col_to_shrink;
@@ -499,18 +421,20 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
         // update z_old
         for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
             int j = *it;
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++) 
                 z_old[i][j] = z[i][j];
-            }
         }
         // count number of active elements
         int num_active_cols = col_active_sets.size();
-        if ((iter+1) % SS_PERIOD == 0) {
-            ;
-            /*
-            cout << "iter: " << iter;
-            cout << ", num_active_cols: " << num_active_cols <<endl;
-            */
+        // STEP FOUR: trace the objective function
+        if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
+            cputime += clock() - prev;
+            error = overall_objective (dist_mat, lambda, N, D, z, tables);
+            cout << "[Overall] iter = " << iter 
+                << ", num_active_cols: " << num_active_cols
+                << ", Loss Error: " << error << endl;
+            ss_out << cputime << " " << error << endl;
+            prev = clock();
         }
         int num_active_elements=N*num_active_cols;
         // STEP TWO: consider to open all elements to check optimality
