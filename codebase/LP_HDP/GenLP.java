@@ -9,7 +9,7 @@ public class GenLP{
 	static double lambda;
 	static double theta;
 	
-	static double eps = 0.0;
+	static double eps = 1e-2;
 	static Random ran = new Random();
 	
 	public static void main(String[] args){
@@ -39,6 +39,7 @@ public class GenLP{
 		for(int i=0;i<c_map.size();i++){
 			c.add(c_map.get(i));
 		}
+		purturbate(c);
 		
 		List<List<Pair<Integer,Double>>> Aeq = new ArrayList();
 		List<Double> beq = new ArrayList();
@@ -249,7 +250,7 @@ public class GenLP{
 	}
 
 	static double noise(){
-		return eps * ran.nextGaussian();
+		return eps * ran.nextDouble();
 	}
 
 	static Integer varIndex(String varName){
