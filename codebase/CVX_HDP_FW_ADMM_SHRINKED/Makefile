@@ -9,4 +9,4 @@ push:
 	git push
 
 clean:
-	rm cvx_hdp_medoids opt* dist_mat w_out plot*
+	rm -rf cvx_hdp_medoids opt* dist_mat w_out plot* word2doc 

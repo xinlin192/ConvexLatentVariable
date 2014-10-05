@@ -12,11 +12,8 @@
 ################################################################*/
 
 #include "cvx_hdp_medoids.h"
-
-
 /* algorithmic options */ 
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
-
 /* dumping options */
 // #define EXACT_LINE_SEARCH_DUMP
 
@@ -26,20 +23,61 @@ const double ADMM_EPS = 1e-2;
 typedef double (* dist_func) (Instance*, Instance*, int); 
 const double r = 1000000.0;
 
-class Compare
-{
-    public:
-        bool operator() (pair<int, double> obj1, pair<int, double> obj2)
-        {
-            return obj1.second > obj2.second;
+/* Compute the mutual distance of input instances contained within "data" */
+void compute_dist_mat (double** dist_mat, Lookups* tables, int R, int C) {
+    int N = tables->nWords;
+    int D = tables->nDocs;
+    assert (R == N);
+    assert (C == D);
+    // STEP ZERO: parse input
+    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
+    vector< pair<int,int> > word_lookup = *(tables->word_lookup); 
+
+    // STEP ONE: compute distribution for each document
+    vector< map<int, double> > distributions (D, map<int, double>());
+    for (int d = 0; d < D; d ++) {
+        // a. compute sum of word frequency
+        int sumFreq = 0;
+        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) 
+            sumFreq += word_lookup[w].second;
+        // b. compute distribution
+        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
+            int voc_index = word_lookup[w].first;
+            double prob = 1.0 * word_lookup[w].second / sumFreq;
+            distributions[d].insert(pair<int, double> (voc_index, prob));
         }
-};
+    }
+    // STEP TWO: compute weight of word within one document
+    mat_zeros(dist_mat, R, C);
+    for (int d = 0; d < D; d ++) {
+        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
+            for (int j = 0; j < C; j ++) {
+                int voc_index = word_lookup[w].first;
+                int count_w_d1 = word_lookup[w].second;    
+                double prob_w_d2;
+                double dist;
+                map<int, double>::const_iterator iter;
+                iter = distributions[j].find(voc_index);
+                if (iter == distributions[j].end()) {
+                    prob_w_d2 = 0.0;
+                    dist = INF;
+                } else {
+                    prob_w_d2 = iter->second;
+                    //   dist(w, d2) =  - count_w_d1 * log( prob_d2(w) )
+                    dist = - count_w_d1 * log(prob_w_d2);
+                }
+                int esmat_index = w + N * j;
+                dist_mat[w][j] = dist;
+            }
+        }
+    }
+}
 
 void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double ** w, double rho, int R, int C, int FW_MAX_ITER, set<int>& col_active_set) {
     // cout << "within frank_wolfe_solver" << endl;
     // STEP ONE: compute gradient mat initially
     vector< set< pair<int, double> > > actives (R, set<pair<int,double> >());
-    vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> > pqueues (R, priority_queue< pair<int,double>, vector< pair<int,double> >, Compare> ());
+    vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Int_Double_Pair_Dec> > pqueues (R, priority_queue< pair<int,double>, vector< pair<int,double> >, Int_Double_Pair_Dec> ());
     for (int i = 0; i < R; i++) {
         for (set<int>::iterator it=col_active_set.begin();it != col_active_set.end(); ++it) {
             int j = *it;
@@ -272,55 +310,7 @@ double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int
     return loss + global_lasso + sum_local_lasso;
 }
 
-/* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (double** dist_mat, Lookups* tables, int R, int C) {
-    int N = tables->nWords;
-    int D = tables->nDocs;
-    assert (R == N);
-    assert (C == D);
-    // STEP ZERO: parse input
-    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
-    vector< pair<int,int> > word_lookup = *(tables->word_lookup); 
 
-    // STEP ONE: compute distribution for each document
-    vector< map<int, double> > distributions (D, map<int, double>());
-    for (int d = 0; d < D; d ++) {
-        // a. compute sum of word frequency
-        int sumFreq = 0;
-        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) 
-            sumFreq += word_lookup[w].second;
-        // b. compute distribution
-        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
-            int voc_index = word_lookup[w].first;
-            double prob = 1.0 * word_lookup[w].second / sumFreq;
-            distributions[d].insert(pair<int, double> (voc_index, prob));
-        }
-    }
-    // STEP TWO: compute weight of word within one document
-    mat_zeros(dist_mat, R, C);
-    for (int d = 0; d < D; d ++) {
-        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
-            for (int j = 0; j < C; j ++) {
-                int voc_index = word_lookup[w].first;
-                int count_w_d1 = word_lookup[w].second;    
-                double prob_w_d2;
-                double dist;
-                map<int, double>::const_iterator iter;
-                iter = distributions[j].find(voc_index);
-                if (iter == distributions[j].end()) {
-                    prob_w_d2 = 0.0;
-                    dist = INF;
-                } else {
-                    prob_w_d2 = iter->second;
-                    //   dist(w, d2) =  - count_w_d1 * log( prob_d2(w) )
-                    dist = - count_w_d1 * log(prob_w_d2);
-                }
-                int esmat_index = w + N * j;
-                dist_mat[w][j] = dist;
-            }
-        }
-    }
-}
 void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambda, double ** W, int ADMM_max_iter, int SS_PERIOD, Lookups * tables) {
     int N = tables->nWords;
     int D = tables->nDocs;
@@ -494,10 +484,12 @@ int main (int argc, char ** argv) {
     vector< pair<int,int> > doc_lookup;
     vector< pair<int,int> > word_lookup;
     vector< vector<int> > voc_lookup (nVocs, vector<int>());
+    vector<int> word_in_doc;
     Lookups lookup_tables;
     lookup_tables.doc_lookup = &doc_lookup;
     lookup_tables.word_lookup = &word_lookup;
     lookup_tables.voc_lookup = &voc_lookup;
+    lookup_tables.word_in_doc = &word_in_doc;
     document_list_read (doc_file, &lookup_tables);
     cerr << "docs read done" << endl;
 
@@ -527,6 +519,11 @@ int main (int argc, char ** argv) {
     dmat_out << mat_toString (dist_mat, N, D);
     dmat_out.close();
     cerr << "dist_mat output finished.." << endl;
+    ofstream w2dvec_out ("word2doc");
+    for (int i = 0; i < N; i ++)
+        w2dvec_out << word_in_doc[i] << endl;
+    w2dvec_out.close();
+    cerr << "w2dvec output finished.." << endl;
     cvx_hdp_medoids (dist_mat, FW_MAX_ITER, LAMBDAs, W, ADMM_MAX_ITER, SS_PERIOD, &lookup_tables);
 
     /* Output objective */

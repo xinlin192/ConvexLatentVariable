@@ -20,10 +20,20 @@ typedef struct {
     int nWords;
     int nVocs;
     int nDocs;
-    vector< pair<int,int> >* doc_lookup;
-    vector< pair<int,int> >* word_lookup;
-    vector< vector<int> >* voc_lookup;
+    vector< pair<int,int> >* doc_lookup; // document start,end word id pair
+    vector< pair<int,int> >* word_lookup;  // word id to voc id
+    vector< vector<int> >* voc_lookup;  // voc id to word id set
+    vector<int>* word_in_doc;
 } Lookups ;
+
+class Int_Double_Pair_Dec
+{
+    public:
+        bool operator() (pair<int, double> obj1, pair<int, double> obj2)
+        {
+            return obj1.second > obj2.second;
+        }
+};
 
 void output_model (double** W, int R, int C) {
     ofstream model_out ("opt_model");
@@ -97,9 +107,13 @@ void voc_list_print (vector<string>* vocList) {
 
 /* word_lookup table restore the index in voc_list of vocabulary to which a word coresponds */
 void document_list_read (string fname, Lookups* tables) {
+    // document was zero-based 
+    // word was zero-based
+    // vocabulary was zero-based
     vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
     vector< pair<int,int> >* word_lookup = tables->word_lookup; 
     vector< vector<int> >* voc_lookup = tables->voc_lookup;
+    vector<int>* word_in_doc = tables->word_in_doc; 
 
    	ifstream fin(fname.c_str());
 	string line = "";
@@ -122,6 +136,7 @@ void document_list_read (string fname, Lookups* tables) {
             int freq = atoi(voc_freq_pair[1].c_str());
             // push to word_lookup table
             word_lookup->push_back(make_pair(voc_index, freq));
+            word_in_doc->push_back(d);
             ++ w;
         }
         doc_index_end = w;
@@ -130,7 +145,6 @@ void document_list_read (string fname, Lookups* tables) {
 	}
 	fin.close(); 
     int nWords = w;
-    for (int i = 0; i < nWords; i ++) {
-        (*voc_lookup)[ (*word_lookup)[i].first-1].push_back(i);
-    }
+    for (int i = 0; i < nWords; i ++)  // 1-based index
+        (*voc_lookup)[ (*word_lookup)[i].first ].push_back(i);
 }
