@@ -9,4 +9,4 @@ push:
 	git push
 
 clean:
-	rm cvx_clustering opt* dist_mat w_out plot*
+	rm -rf cvx_clustering opt* dist_mat w_out plot*

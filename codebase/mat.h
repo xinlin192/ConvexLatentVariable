@@ -61,13 +61,11 @@ void mat_add (double ** src1, double ** src2, double ** dest, int nRows, int nCo
 }
 
 void mat_sub (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
-    
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
             dest[i][j] = src1[i][j] - src2[i][j];
         }
     }
-
 }
 
 void mat_times (double ** src1, double ** src2, double ** dest, int nRows, int nCols) {
@@ -87,13 +85,11 @@ double mat_frob_dot (double ** src1, double ** src2, int nRows, int nCols) {
     return frob_prod;
 }
 void mat_dot (double scalar, double ** src, double ** dest, int nRows, int nCols) {
-
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
             dest[i][j] = scalar * src[i][j];
         }
     }
-
 }
 
 // tranpose first matrix and then compute dot product 
@@ -273,14 +269,11 @@ void mat_set(double ** mat, double ** z, int R, int C) {
 }
 
 // TODO: mat_write and mat_read
-
 void trim (double** mat, int R, int C) {
-	
 	for (int i = 0; i < R; i++) {
 		for (int j = 0; j < C; j++) {
 			if( fabs(mat[i][j]) < 1e-5 )
 				mat[i][j] = 0.0;
 		}
 	}
-
 }
