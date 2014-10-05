@@ -79,10 +79,8 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
     // reg = 0.5 * sum_k max_n | w_nk |  -> group-lasso
     mat_zeros (temp, N, N);
     double * maxn = new double [N]; 
-    for (int i = 0; i < N; i ++) { // Ian: need initial 
+    for (int i = 0; i < N; i ++) 
         maxn[i] = -INF;
-    }
-
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < N; j ++) {
             if (wtwo[i][j] > maxn[j])
@@ -94,7 +92,6 @@ double second_subproblem_obj (double ** ytwo, double ** z, double ** wtwo, doubl
         sumk += lambda[i]*maxn[i];
     }
     double group_lasso = sumk; 
-
     // sum2 = y_2^T dot (w_2 - z) -> linear
     mat_zeros (temp, N, N);
     mat_sub (wtwo, z, difftwo, N, N);
@@ -228,10 +225,10 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
 }
 
 
-void skyline (double** wout, double**wbar, int R, int C, double lambda, set<int> col_active_sets) {
+void skyline (double** wout, double**wbar, int R_start, int R_end, int C, double lambda, set<int> col_active_sets) {
     vector< vector< double > > alpha_vec (C, vector<double>());
     vector< int > num_alpha_elem (C, 0);
-    for (int i = 0; i < R; i ++) {
+    for (int i = R_start; i < R_end; i ++) {
         set<int>::iterator it;
         for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
             int j = *it;
@@ -241,9 +238,9 @@ void skyline (double** wout, double**wbar, int R, int C, double lambda, set<int>
             }
         }
     }
-    cerr << "pre-push done" << endl;
     vector<double> max_term (C, -1e50);
     vector<double> separator (C, 0.0);
+    int R = R_end - R_start;
     for (int j = 0; j < C; j ++) {
         if (num_alpha_elem[j] == 0) continue;
         // 2. sorting
@@ -263,16 +260,13 @@ void skyline (double** wout, double**wbar, int R, int C, double lambda, set<int>
         if (max_term[j] < 0) 
             max_term[j] = (sum_alpha - lambda) / R;
     }
-    cerr << "max_term count" << endl;
-    for (int i = 0; i < R; i ++) {
+    for (int i = R_start; i < R_end; i ++) {
         // 4. assign closed-form solution to wout
         set<int>::iterator it;
         for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
             int j = *it;
-            cout << "i=" << i << ",j=" << j << endl;
             if ( max_term[j] < 0 ) {
                 wout[i][j] = 0.0;
-                cout << "max_term: " << max_term[j] << endl;
                 continue;
             }
             double wbar_val = wbar[i][j];
@@ -281,10 +275,8 @@ void skyline (double** wout, double**wbar, int R, int C, double lambda, set<int>
             else 
                 // its ranking is above m*, directly inherit the wbar
                 wout[i][j] = max(wbar_val,0.0);
-            cout << "wout[i][j] = " << wout[i][j] << endl;
         }
     }
-    cerr << "wout assigned" << endl;
 }
 void group_lasso_solver (double** y, double** z, double** w, double rho, vector<double>& lambda, Lookups *tables, set<int> col_active_sets) {
     int R = tables->nWords;
@@ -294,8 +286,8 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
     int global_lambda = lambda[0];
     int local_lambda = lambda[1];
 
-    // double** wlocal = mat_init (R, C); 
-    // mat_zeros (wlocal, R, C);
+    double** wlocal = mat_init (R, C); 
+    mat_zeros (wlocal, R, C);
     double** wbar = mat_init (R, C);
     mat_zeros (wbar, R, C);
     for (int i = 0; i < R; i ++) {
@@ -304,12 +296,14 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
         }
     }
     // TODO: extend the group lasso solver to both local and global
-    /*
+    int R_start, R_end;
     for (int d = 0; d < tables->nDocs; d++ ) {
-        skyline (wlocal, wbar, R, C, local_lambda, col_active_sets);
+        R_start = doc_lookup[d].first;
+        R_end = doc_lookup[d].second;
+        skyline (wlocal, wbar, R_start, R_end, C, local_lambda, col_active_sets);
     }
-    */
-    skyline (w, wbar, R, C, global_lambda, col_active_sets);
+    R_start = 0; R_end = R;
+    skyline (w, wlocal, R_start, R_end, C, global_lambda, col_active_sets);
 
 #ifdef BLOCKWISE_DUMP
     double penalty = second_subproblem_obj (y, z, w, rho, N, lambda);
@@ -328,7 +322,6 @@ double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int
         for (int j = 0; j < C; j ++) 
             normSum += z[i][j] * dist_mat[i][j];
     double loss = 0.5 * normSum;
-    cout << "loss=" << loss;
     // STEP TWO: compute dummy loss
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
     double * temp_vec = new double [R];
@@ -337,7 +330,6 @@ double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int
     for (int i = 0; i < R; i ++) 
         dummy_penalty += r * max(1 - temp_vec[i], 0.0) ;
     delete[] temp_vec;
-    cout << ", dummy= " << dummy_penalty;
     // STEP THREE: compute group-lasso regularization
     double * maxn = new double [C]; 
     for (int j = 0; j < C; j ++) 
@@ -350,16 +342,10 @@ double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int
     double lasso = 0.0;
     for (int j = 0; j < C; j ++) 
         lasso += lambda[0]*maxn[j];
-    cout << ", g_lasso=" << lasso;
     double overall = loss + lasso + dummy_penalty;
-    cout << ", overall=" <<  overall << endl;
     return loss + lasso;
 }
 
-/* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int R, int C, dist_func df, bool isSym) {
-    
-}
 /* Compute the mutual distance of input instances contained within "data" */
 void compute_dist_mat (double** dist_mat, Lookups* tables, int R, int C) {
     int N = tables->nWords;
