@@ -56,7 +56,7 @@ void compute_dist_mat (double** dist_mat, Lookups* tables, int R, int C) {
                     dist = - count_w_d1 * log(prob_w_d2);
                 }
                 int esmat_index = w + N * j;
-                dist_mat[w][j] = dist;// + 0.01 * (rand()%10000)/10000.0;
+                dist_mat[w][j] = dist + noise(0.0, 0.01);
             }
         }
     }
@@ -438,8 +438,6 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
     mat_free (wtwo, N, D);
     mat_free (yone, N, D);
     mat_free (ytwo, N, D);
-    mat_free (diffone, N, D);
-    mat_free (difftwo, N, D);
     mat_free (z_old, N, D);
     // STEP SIX: put converged solution to destination W
     mat_copy (z, W, N, D);

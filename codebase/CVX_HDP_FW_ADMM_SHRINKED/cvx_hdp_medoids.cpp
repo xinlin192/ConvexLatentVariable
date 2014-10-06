@@ -56,7 +56,7 @@ void compute_dist_mat (double** dist_mat, Lookups* tables, int R, int C) {
                     dist = - count_w_d1 * log(prob_w_d2);
                 }
                 int esmat_index = w + N * j;
-                dist_mat[w][j] = dist;// + 0.01 * (rand()%10000)/10000.0;
+                dist_mat[w][j] = dist + noise(0.0, 0.01);
             }
         }
     }
