@@ -1,0 +1,352 @@
+\documentclass[a4paper]{article}
+\usepackage{theorem}
+\usepackage{amsmath,amssymb,latexsym,xspace,float}
+%\usepackage[round,authoryear]{natbib}
+\usepackage{subfig,epsfig,url}
+\usepackage[breaklinks=true]{hyperref}
+%\usepackage{pst-pdf}
+\usepackage{paralist}
+\usepackage{tikz}
+\usepackage{cite}
+\usepackage{comment}
+\usetikzlibrary{calc}
+\usepackage{grffile}
+%\usepackage[ruled]{algorithm2e}
+\usepackage{algorithm}
+\usepackage[noend]{algorithmic}
+
+  \def\addr{\small\it}%
+  \def\email{\hfill\small\sc}%
+  \def\name{\normalsize\bf}%
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\renewcommand{\baselinestretch}{1}
+\newtheorem{assumption}{Assumption}
+\newtheorem{theorem}{Theorem}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+
+\floatstyle{ruled}
+\newfloat{Algorithm}{tb}{lox}
+\floatname{Algorithm}{Algorithm}
+
+\newcommand{\Proof}{\noindent{\bf Proof.}~}
+\newcommand{\tron}{{\sf TRON}\xspace}
+\def\rR{{\mathbb{R}}}
+\def\b0{{\boldsymbol{0}}}
+\def\bd{{\boldsymbol{d}}}
+\def\be{{\boldsymbol{e}}}
+\def\bz{{\boldsymbol{z}}}
+\def\bx{{\boldsymbol{x}}}
+\def\bs{{\boldsymbol{s}}}
+\def\bv{{\boldsymbol{v}}}
+\def\bu{{\boldsymbol{u}}}
+\def\bm{{\boldsymbol{m}}}
+\def\ba{{\boldsymbol{a}}}
+\def\bc{{\boldsymbol{c}}}
+\def\bb{{\boldsymbol{b}}}
+\def\bQ{{\boldsymbol{Q}}}
+\def\bD{{\boldsymbol{D}}}
+\def\bM{{\boldsymbol{M}}}
+\def\by{{\boldsymbol{y}}}
+\def\bff{{\boldsymbol{f}}}
+\def\bA{{\boldsymbol{A}}}
+\def\cK{{\mathcal K}}
+\def\cP{{\mathcal P}}
+\def\cT{{\mathcal T}}
+\def\cI{{\mathcal I}}
+\def\cD{{\mathcal D}}
+\def\cS{{\mathcal S}}
+\def\cM{{\mathcal M}}
+\def\cN{{\mathcal N}}
+\def\cTab{{\mathcal T_{a_kb_k}}}
+\def\cPT{{\mathcal P_T}}
+\def\cPTp{{\mathcal P_{T^\perp}}}
+\def\cR{{\mathcal R}}
+\def\dim{{\text{dim }}}
+\def\range{{\text{range}}}
+\def\rank{{\text{rank}}}
+\def\argmin{{\text{argmin}}}
+
+\newcommand{\bxi}{{\boldsymbol{\xi}}}
+\newcommand{\bbeta}{{\boldsymbol{\beta}}}
+\newcommand{\AL}{{\boldsymbol{\alpha}}}
+\newcommand{\bmu}{{\boldsymbol{\mu}}}
+\newcommand{\bw}{{\boldsymbol{w}}}
+\newcommand{\bh}{{\boldsymbol{h}}}
+\newcommand{\bphi}{{\boldsymbol{\phi}}}
+\newcommand{\bepsilon}{{\boldsymbol{\epsilon}}}
+\newcommand{\best}{\textbf}
+
+\def\bi{{\beta_{i}}}
+\def\dij{{d_{ij}}}
+\def\aij{{\alpha_{ij}}}
+\def\gij{{\gamma_{ij}}}
+\def\dtij{{\delta_{ij}}}
+\def\wij{{w_{ij}}}
+\def\xij{{\xi_{j}}}
+\def\NMi{{N_{M(i)}}}
+\def\NdM{{N_{M(i),d(i)}}}
+\def\zdj{{\zeta_{dj}}}
+\def\imit{{i,M(i,2)}}
+\def\imi{{i,M(i)}}
+%\def\
+
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+\begin{document}
+\title{Exemplar-Based Nonparametric Bayesian as \\ Convex Structural-Regularized Program}
+%\date{}
+\maketitle
+
+\abstract{
+MAD-Bayes (MAP-based Asymptotic Derivations) has been recently proposed as a general technique to cast nonparametric Bayesian inference into scalable optimization problem that has demonstrated success in applications ranging from Dirichlet Process mixture model to nonparametric Hidden Markov model. However, the asymptotic derivation yields combinatorial objective functions that till now can only be solved via hill-climbing algorithm analogous to $k$-means. In this write-up, we show the exemplar-based version of those combinatorial objectives can be relaxed to convex structural-regularized program that, under certain conditions, share the same optimal solution. A general, efficient algorithm based on Alternating Direction Method of Multiplier (ADMM) and Frank-Wolfe is proposed for solving the convex program. Our experiments on several real data set shows significant improvement on the quality of 
+}
+
+\section{Introduction}
+
+\section{Formulation}
+
+\section{Recovery Guarantees}
+
+\subsection{Notation}
+$\mathcal{N} = \{1,2,...,N\} =: [N]$ is the whole set of data points. $i,j \in \mathcal{N}$ denote points. $D$ is the number set of datasets. $\cN_d \subset \mathcal{N}$ denotes the set of points in the $d$th dataset, i.e. $\cup_{d=1}^D \cN_d = \mathcal{N}$. $N_d = |\cN_d |$ is the number of points in Dataset $d$. $d(i)\in [D]$ denotes the dataset index of Point $i$. $\cM \subset \mathcal{N}$ is the set of medoids. $k,l \in \cM$ denote clusters and themselves are medoids. $\cS_k$ is the set of points in Cluster $k$. $N_k = |\cS_k|$ is the number of points in Cluster $k$. $M(i) \in \mathcal{M}$ denotes the cluster/representative of Point $i$. Let $\cD_k \subset [D]$ denote the datasets contained or partially contained in Cluster $k$. Denote $\cS_{k,d} := \cS_k \cap \cN_d$ for $d\in \cD_k$. Thus $\cup_{d\in \cD_k} \cS_{k,d} = \cS_k$. Denote $N_{k,d} := |\cS_{k,d}|$ for $d\in \cD_k$.
+%Let $H(k,l)=1$ denote Cluster $k$ and Cluster $l$ share the same datasets i.e., $\cD_k \cap \cD_l \neq \phi$, and $H(k,l)=0$ if $\cD_k \cap \cD_l = \phi$.
+
+\subsection{Main Theorem}
+\begin{theorem} \label{DP_necessary}
+For DP, if
+\begin{equation}\label{DP_main}
+\max_{k \in \cM } \max_{i,j \in \cS_k} N_k \left( \dij - d_{ik}\right) \leq \min_{( k,l\in \cM, k\neq l)} \min_{(i\in\cS_k,j\in \cS_l) } N_k \left( \dij - d_{ik} \right)
+\end{equation}
+then the optimal solution of integer programming is also the optimal solution of linear programming.
+\end{theorem}
+\textbf{Example of DP}\\
+Assume $N_k = N/K, \forall k$, where $K$ is the number of clusters. We assume the points in every cluster $k$ are all in the ball of radius $R$ with the center at Point $k$, i.e. $d_{ik} \leq R, \forall i\in \cS_k$. Thus $\dij - d_{ik} \leq d_{jk}\leq R ,\;\forall i,j \in \cS_k, \forall k\in \cM$. Now we can satisfy Eq. \eqref{DP_main} by assuming
+\begin{equation}
+\dij \geq 2R   ,\;\forall i \in \cS_k,\forall j\in \cS_l , \forall k,l \in \cM \text{ and } k \neq l
+\end{equation}
+This equation can be interpreted as: the distance between any two clusters should be greater than the diameter of the clusters.
+
+\begin{theorem} \label{HDP_necessary}
+For HDP, if there exist some $\theta$ and $\lambda$ such that,
+\begin{align}
+\frac{\lambda}{N_k} + \frac{\theta}{N_{k,d(i)}}& \geq \dij - d_{ik}  ,\;\forall i,j \in \cS_k, \forall k\in \cM \label{inner} \\
+\lambda  &\geq \frac{N_{k}}{N_{k,d}}   \sum_{i \in \cS_{k,d}}  \dij - d_{ik}, \;  \forall d \in \cD_k, \forall j\in \cS_k,  \forall k\in \cM \label{H_part}\\
+\frac{\lambda}{N_k} + \frac{\theta}{N_{k,d(i)}} &\leq \dij - d_{ik}   ,\;\forall i \in \cS_k,\forall j\in \cS_l , \forall k,l \in \cM \text{ s.t. } \cD_{k} \cap \cD_{l} \neq \phi \text{ and } k \neq l \label{inter_share} \\
+\frac{\lambda}{N_k} + \theta \left( \frac{1}{N_{k,d(i)}} -  \frac{1}{N_{d(i)}} \right)& \leq \dij - d_{ik} ,\;\forall i \in \cS_k,\forall j\in \cS_l ,\forall k,l \in \cM\text{ s.t. } \cD_{k} \cap \cD_{l} = \phi \label{inter_no_share}
+\end{align}
+then the optimal solution of integer programming is also the optimal solution of linear programming.
+\end{theorem}
+We can always find such $\theta$ and $\lambda$ by assuming the minimal distance between different clusters greater enough than the maximal distance within the cluster. In Corollary \ref{example1}, we will give a tight bound (maybe not the tightest) for the structure of $\dij$ such that the above conditions are satisfied.\\
+\textbf{Remark.} If $\theta = 0$, this problem reduces to the DP-medoid problem and Eq. \eqref{inner} will imply Eq. \eqref{H_part}. Therefore, we don't specifically write the proof for Theorem 1.
+
+\begin{corollary}\label{example1}
+If $$\lambda = \max_{k\in \cM} \max_{j\in \cS_k} \max_{d\in \cD_k} \frac{N_{k}}{N_{k,d}}   \sum_{i \in \cS_{k,d}}  \left( \dij - d_{ik} \right)$$
+$$\theta = \max_{k\in \cM} \max_{i,j \in \cS_k} N_{k,d(i)} \left( \dij - d_{ik} - \frac{\lambda}{N_k} \right)$$
+and Eq. \eqref{inter_share} and Eq. \eqref{inter_no_share} are satisfied for the above $\lambda$ and $\theta$, then the solution of integer programming is also the solution of linear programming.
+\end{corollary}
+\Proof
+Both $\lambda$ and $\theta$ should be as small as possible. And $\lambda$ should have a higher priority to make it small because a positive $\theta$ can relax Condition \eqref{inter_no_share} to some extent compared with Condition \eqref{inter_share}. Thus we can first decide $\lambda$ by Eq. \eqref{H_part} and then $\theta$ by Eq. \eqref{inner},
+$$\lambda = \max_{k\in \cM} \max_{j\in \cS_k} \max_{d\in \cD_k} \frac{N_{k}}{N_{k,d}}   \sum_{i \in \cS_{k,d}}  \left( \dij - d_{ik} \right)$$
+$$\theta = \max_{k\in \cM} \max_{i,j \in \cS_k} N_{k,d(i)} \left( \dij - d_{ik} - \frac{\lambda}{N_k} \right)$$
+We now prove that $\theta \geq 0$, so the choice of $\theta$ is justified. Let
+$$(k^*,j^*,d^*) = \text{arg}  \max_{k\in \cM} \max_{j\in \cS_k} \max_{d\in \cD_k} \frac{N_{k}}{N_{k,d}}   \sum_{i \in \cS_{k,d}}  \left( \dij - d_{ik} \right)$$
+\begin{align*}
+\theta &\geq \max_{i\in\cS_{k^*}} N_{k^*,d(i)} \left( d_{ij^*} - d_{ik^*} - \frac{\lambda}{N_{k^*}} \right) \\
+& \geq \max_{i\in\cS_{k^*,d^*}} N_{k^*,d^*} \left( d_{ij^*} - d_{ik^*} - \frac{\lambda}{N_{k^*}} \right) \\
+& = \max_{i\in\cS_{k^*,d^*}} N_{k^*,d^*} \left( d_{ij^*} - d_{ik^*}  \right) -\sum_{i \in \cS_{k^*,d^*}}  \left( d_{i,j^*} - d_{ik^*} \right) \\
+&\geq 0
+\end{align*}
+\hfill\(\Box\)\\
+\textbf{Example of HDP}\\
+We consider a very special case. Assume $N_k = N/K, \forall k$, where $K$ is the number of clusters and $|\cD_k| =C$ is a constant for all $k$. And $N_{k,d} = N/(CK)$ for all $k$ and $d \in \cD_k$. Let
+$$\lambda =C \max_{k\in \cM} \max_{j\in \cS_k} \max_{d\in \cD_k}    \sum_{i \in \cS_{k,d}}  \left( \dij - d_{ik} \right)$$
+We assume the points in every cluster $k$ are all in the ball of radius $R$ with the center at Point $k$. Thus $\dij - d_{ik} \leq R ,\;\forall i,j \in \cS_k, \forall k\in \cM$. Now we can satisfy Eq. \eqref{inner} by setting
+$$\theta = \frac{N R}{CK}- \frac{\lambda}{C}   $$
+And Eq. \eqref{inter_share} will hold if
+\begin{equation}\label{example_inter_share}
+\dij \geq 2R   ,\;\forall i \in \cS_k,\forall j\in \cS_l , \forall k,l \in \cM \text{ s.t. } \cD_{k} \cap \cD_{l} \neq \phi \text{ and } k \neq l
+\end{equation}
+This equation can be interpreted as: the distance between any two clusters which contain a same dataset should be greater than the diameter of the clusters. \\
+To have Eq. \eqref{inter_no_share} hold, we can require
+$$\dij \geq 2R - \frac{\theta}{N_d}  ,\;\forall i \in \cS_k,\forall j\in \cS_l ,\forall d\in \cD_k\cup \cD_l ,\forall k,l \in \cM\text{ s.t. } \cD_{k} \cap \cD_{l} = \phi $$
+Compared with Eq. \eqref{example_inter_share}, the distance between any two clusters which \textbf{don't} contain a same dataset should be greater than a value less than $2R$. \\
+
+\subsection{Proof of Theorem \ref{HDP_necessary}}
+The KKT condition of the linear programming can be written as,
+\begin{align}
+& \dij - \aij -\bi + \gij + \dtij = 0  \\
+& \theta = \sum_{i\in \cN_d} \dtij \label{dataset_blocks} \\
+& \lambda = \sum_i \gij \label{lambda_sum}\\
+& \dtij (\wij-\zdj) =0 \\
+& \gij (\wij-\xij) = 0 \\
+& \aij \wij = 0 \\
+& \aij \geq 0 \\
+& \gij \geq 0 \\
+& \dtij \geq 0
+\end{align}
+Our goal is to find the structure of $\dij$ under which there exists a set of $\alpha_{ij}$, $\bi$, $\gij$, $\dtij$, $\theta$ and $\lambda$ such that the above equations hold, provided the solution of integer problem $\{\xij,\zdj,\wij \}$. We will discuss the cases entry-by-entry.
+\subsubsection{$\xij = 1, \; \zdj =1, \; \wij = 1$} \label{wij}
+$j = M(i), \alpha_{i,M(i)}=0$
+\begin{equation}
+ \gamma_{i,M(i)}+\delta_{i,M(i)} = \bi - d_{i,M(i)} ,\quad \forall i
+\end{equation}
+
+\subsubsection{$\xij=1,\; \zdj = 1, \; \wij = 0 $} \label{zetadj}
+$j\in \cM$, but $j \neq M(i)$ \\
+$\dtij = 0, \gij = 0 \Rightarrow  \aij = \dij - \bi \geq 0$, i.e.,
+\begin{equation} \label{clusters_same_dataset}
+ \bi \leq \dij, \quad \forall j \in \cM \text{ but } j\neq M(i) \text{ and } \cD_j \cap \cD_{M(i)} \neq \phi.
+\end{equation}
+\textbf{Summary of Section \ref{wij} and \ref{zetadj}}\\
+We can set $\gamma_{\imi} = \frac{\lambda}{\NMi}$ such that Eq. \eqref{lambda_sum} holds and $\delta_{\imi} = \frac{\theta}{\NdM}$ such that Eq. \eqref{dataset_blocks} holds. Thus,
+\begin{equation}
+\bi = \frac{\lambda}{\NMi} + \frac{\theta}{\NdM}+ d_{\imi}
+\end{equation}
+
+
+\subsubsection{$ \xij = 1, \; \zdj =0, \; \wij = 0 $}
+$j\in \cM$, but $j \neq M(i)$\\
+$\gij = 0 \Rightarrow \alpha_{ij} = \dij - \bi + \dtij \geq 0$. Now we have
+\begin{align*}
+&\dtij \geq \bi - \dij \\
+&\dtij \geq 0
+\end{align*}
+Thus
+\begin{equation}\label{no_same_dataset}
+\theta = \sum_{i \in \cN_d}\dtij \geq \sum_{i \in \cN_d} (\bi - \dij)_+ , \quad \forall d\notin \cD_j, j\in \cM
+\end{equation}
+If we set $\bi - \dij \leq \frac{\theta}{N_{d(i)}}$, Eq. \eqref{no_same_dataset} will be satisfied. That is \begin{equation}\label{not_share}
+\frac{\lambda}{\NMi} + \frac{\theta}{\NdM}+ d_{\imi} -d_{ij} \leq \frac{\theta}{N_{d(i)}}
+\end{equation}
+%If we require
+%\begin{equation}\label{distance_no_share}
+%\epsilon_{kl} \geq \max \left\{\max_{i \in \cS_k} \left\{ \frac{\lambda}{N_k} + \frac{\theta}{N_{k,d(i)}}+ d_{i,k} -\frac{\theta}{N_{d(i)} }\right\} ,2R_{l}- \min_{d\in \mathcal{D}(k)} \left\{\theta/N_{d} \right\}\right\}  \quad \text{for } \cD_k \cap \cD_l = \phi
+%\end{equation}
+% Eq.\eqref{not_share} will be satisfied.
+
+\subsubsection{$ \xij = 0,\; \zdj =0, \; \wij = 0 $}
+$\aij = \dij - \bi + \dtij + \gij \geq 0 \Rightarrow$
+\begin{equation}
+\gij \geq \bi - \dij- \dtij
+ \end{equation}
+
+\begin{align}
+\lambda &= \sum_{i} \gij \geq  \sum_{i}(\bi - \dij- \dtij)_+ ,\quad \forall j\notin \cM\\
+\theta &= \sum_{i\in \cN_d} \dtij, \quad \forall d \in [D], \forall j\notin \cM
+\end{align}
+
+To analyze this case, we divide $i \in [N]$ into three parts. The first part is the points in the same cluster as $j$ denoted by $S_{M(j)}$. The second part is the points who have sister points (sister points mean they belong to the same dataset) in $S_{M(j)}$ but themselves are not in $S_{M(j)}$, denoted by $S_{-M(j)} := \left( \cup_{d\in \cD_{M(j)}} \cN_d \right) \setminus S_{M(j)}$. The third part is all the points who don't have sister points in $S_{M(j)}$, denoted by $S_{--M(j)} :=\cup_{d \in [D] \setminus \cD_{M(j)}} \cN_d$
+\begin{equation}
+\lambda \geq  \sum_{i \in S_{M(j)}}(\bi - \dij- \dtij)_+  + \sum_{i\in S_{-M(j) }}(\bi - \dij- \dtij)_+ +  \sum_{i\in S_{--M(j)}}(\bi - \dij- \dtij)_+ \label{lambda_not_medoid}
+\end{equation}
+In the following we will show our strategy to make this inequality hold.\\
+If we set $\dtij$ to be
+\begin{align}
+ \theta &= \left( \sum_{i \in \cS_{M(j),d}} \dtij \right) , \quad \forall d \in \cD_{M(j)}, \forall j\notin \cM \label{theta_first} \\
+\dtij &= 0, \quad \forall  i\in  \cS_{-M(j)}, \forall j\notin \cM
+\label{sister_cluster} \\
+\dtij &= \frac{\theta}{N_{d(i)}} ,\quad \forall  i\in  \cS_{--M(j)}, \forall j\notin \cM
+\end{align}
+such that Eq. \eqref{dataset_blocks} is satisfied. \\
+Further more, if we can get the following equations satisfied,
+\begin{equation}\label{three_parts}
+\begin{aligned}
+\bi - \dij- \dtij &\geq 0 ,\; \forall i \in \cS_{M(j)} \\
+\bi - \dij- \dtij &\leq 0 ,\;\forall i \in \cS_{-M(j)} \\
+\bi - \dij- \dtij &\leq 0 ,\;\forall i \in \cS_{--M(j)}
+\end{aligned}
+\end{equation}
+the only thing we need to show is
+\begin{align*}
+\lambda & \geq \sum_{i \in S_{M(j)}}(\bi - \dij- \dtij) \\
+& =  \sum_{i \in S_{M(j)}}( \frac{\lambda}{\NMi} +d_{\imi} - \dij )
+\end{align*}
+It is equivalent to $$\sum_{i \in S_{M(j)}}d_{\imi} \leq \sum_{i \in S_{M(j)}}\dij, $$ which is satisfied by medoid definition. \\
+In the following, we analyze the conditions under which the three inequalities of Eq. \eqref{three_parts} hold.
+ \paragraph{First part $i \in S_{M(j)}$}
+In this part we try to let $\bi - \dij- \dtij \geq 0$. As $\dtij \geq 0$, we require
+\begin{equation*}
+\bi - \dij \geq 0 ,\quad \forall i \in S_{M(j)}
+\end{equation*}
+That is,
+\begin{equation}
+\frac{\lambda}{\NMi} + \frac{\theta}{\NdM}+ d_{\imi} \geq \dij   ,\;\forall i,j \text{ s.t. }M(i) = M(j)
+\end{equation}
+Then we can always find a $\dtij$ such that $0\leq \dtij \leq \bi-\dij$. To satisfy Eq. \eqref{theta_first}, we require
+\begin{equation*}
+\theta \leq \sum_{i \in \cS_{k,d}} \bi-\dij, \quad \forall d \in \cD_{k} ,k=M(j)
+\end{equation*}
+Equivalently, we have
+\begin{equation} \label{theta_bound}
+\lambda  \geq \frac{N_{k}}{N_{k,d}}   \sum_{i \in \cS_{k,d}}  \dij - d_{\imi}, \;  \forall d \in \cD_k, \forall j\in \cS_k, \forall k
+%\sum_{i \in D_{j_t} \cap S_{M(j)}}  \left( \frac{\lambda}{\NMi} +d_{\imi} -\dij \right)   \geq 0
+\end{equation}
+
+\paragraph{Second part $i \in S_{-M(j)}$}
+As set in Eq. \eqref{sister_cluster}, $\dtij =0$, we require
+\begin{equation*}
+\bi - \dij \leq 0  ,\;\forall i \in \cS_{-M(j)}
+\end{equation*}
+That is,
+\begin{equation}
+\frac{\lambda}{\NMi} + \frac{\theta}{\NdM}+ d_{\imi} \leq \dij   ,\;\forall i,j \text{ s.t. } \cD_{M(i)} \cap \cD_{M(j)} \neq \phi \text{ and } M(i) \neq M(j)
+\end{equation}
+This requirement also implies Eq. \eqref{clusters_same_dataset} will hold.
+
+\paragraph{Third part $i \in S_{--M(j)}$}
+For this part,
+\begin{equation*}
+\bi - \dij \leq \frac{\theta}{N_{d(i)}},\;\forall i \in \cS_{--M(j)}
+\end{equation*}
+That is,
+\begin{equation}
+\frac{\lambda}{\NMi} + \theta \left( \frac{1}{\NdM} -  \frac{1}{N_{d(i)}} \right)+ d_{\imi} \leq \dij ,\;\forall i,j \text{ s.t. } \cD_{M(i)} \cap \cD_{M(j)} = \phi
+\end{equation}
+This requirement also implies Eq. \eqref{not_share} will hold.
+
+
+
+\begin{thebibliography}{99}
+
+\bibitem{MAD_Bayes} T. Broderick, B. Kulis, and M. I. Jordan. MAD-Bayes: MAP-based asymptotic derivations from Bayes. In Proceedings of the 30th International Conference on Machine Learning, 2013.
+    
+\bibitem{revisit_kmeans} B. Kulis and M. I. Jordan. Revisiting k-means: New algorithms via Bayesian nonparametrics. In Proceedings of the 29th International Conference on Machine Learning, 2012.
+    
+\bibitem{MAD_HMM} A. Roychowdhury, K. Jiang, and B. Kulis, “Small-variance asymptotics for hidden markov models,” in Advances in Neural Information Processing Systems 26, C. Burges, L. Bottou, M. Welling, Z. Ghahramani, and K. Weinberger, Eds., 2013, pp. 2103–2111.
+\end{thebibliography}
+
+\end{document}
