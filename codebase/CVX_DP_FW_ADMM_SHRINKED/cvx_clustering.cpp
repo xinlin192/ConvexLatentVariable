@@ -459,6 +459,34 @@ int main (int argc, char ** argv) {
     /* Output assignment */
     output_assignment (W, data, N);
 
+    /*
+    // output the examplar 
+    // compute the mean and update objective to compare with DP_MEANS
+    vector< int > centroids ();
+    get_all_centroids(W, &centroids, N, N);
+    int nCentroids = centroids.size();
+    vector< vector<int> > members (nCentroids, vector<int> ());
+    for (int j = 0; j < nCentroids; i++) {
+        for (int i = 0; i < N; i++) {
+            if (W[i][j] < 1.001 && W[i][j] > 0.999)
+                members[j].push_back(i);
+        }
+    }
+    // compute the means
+    vector< vector<double> > means (nCentroids, vector<double>());
+    for (int j = 0; j < nCentroids; j++) {
+        int numMembers = members[j].size();
+        for (int x = 0; x < numMembers; x ++) {
+            int i = members[j][x];
+            for (int )
+        }
+    }
+    */
+
+    // compute distance
+    
+    // output distance
+
     /* reallocation */
     mat_free (dist_mat, N, N);
     mat_free (W, N, N);

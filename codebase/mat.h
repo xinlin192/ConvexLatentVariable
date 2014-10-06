@@ -17,6 +17,7 @@
 #include<string>
 
 using namespace std;
+double MAT_DOUBLE_INF = 1e300;
 
 double ** mat_init (int nRows, int nCols) {
     double ** res = new double * [nRows];
@@ -28,10 +29,15 @@ double ** mat_init (int nRows, int nCols) {
 double ** mat_read (char* fname, int R, int C) {
    	ifstream fin(fname);
     double ** result = mat_init (R, C);
+    string word; 
     double val;
     for (int i = 0; i < R; i ++) {
         for (int j = 0; j < C; j ++) {
-            fin >> val;
+            fin >> word;
+            if (word.compare("inf") == 0) 
+                val = MAT_DOUBLE_INF;
+            else 
+                val = atof(word.c_str());
             result[i][j] = val;
         }
     }

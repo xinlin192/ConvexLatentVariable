@@ -225,7 +225,19 @@ void skyline (double** wout, double**wbar, int R_start, int R_end, int C, double
         }
     }
 }
-void group_lasso_solver (double** y, double** z, double** w, double rho, vector<double>& lambda, Lookups *tables, set<int> col_active_sets) {
+void global_group_lasso_solver (double** y, double** z, double** w, double rho, vector<double>& lambda, Lookups *tables, set<int> col_active_sets) {
+    int R = tables->nWords;
+    int C = tables->nDocs;
+    int global_lambda = lambda[0];
+    int local_lambda = lambda[1];
+    double** wbar = mat_init (R, C); mat_zeros (wbar, R, C);
+    for (int i = 0; i < R; i ++) 
+        for (int j = 0; j < C; j ++) 
+            wbar[i][j] = (rho * z[i][j] - y[i][j]) / rho;
+    skyline (w, wbar, 0, R, C, global_lambda, col_active_sets);
+    mat_free (wbar, R, C);
+}
+void local_group_lasso_solver (double** y, double** z, double** w, double rho, vector<double>& lambda, Lookups *tables, set<int> col_active_sets) {
     int R = tables->nWords;
     int C = tables->nDocs;
     vector< pair<int,int> > word_lookup = *(tables->word_lookup);
@@ -233,25 +245,18 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
     int global_lambda = lambda[0];
     int local_lambda = lambda[1];
 
-    double** wlocal = mat_init (R, C); mat_zeros (wlocal, R, C);
     double** wbar = mat_init (R, C); mat_zeros (wbar, R, C);
-    for (int i = 0; i < R; i ++) {
-        for (int j = 0; j < C; j ++) {
+    for (int i = 0; i < R; i ++) 
+        for (int j = 0; j < C; j ++) 
             wbar[i][j] = (rho * z[i][j] - y[i][j]) / rho;
-        }
-    }
     // extend the group lasso solver to both local and global
     for (int d = 0; d < tables->nDocs; d++) {
         int R_start = doc_lookup[d].first;
         int R_end = doc_lookup[d].second;
-        skyline (wlocal, wbar, R_start, R_end, C, local_lambda, col_active_sets);
+        skyline (w, wbar, R_start, R_end, C, local_lambda, col_active_sets);
     }
-    skyline (w, wlocal, 0, R, C, global_lambda, col_active_sets);
-
-    mat_free (wlocal, R, C);
     mat_free (wbar, R, C);
 }
-
 double lasso_objective (double** z, double lambda, int R_start, int R_end, int C) {
     double lasso = 0.0;
     vector<double> maxn(C, -INF); 
@@ -263,7 +268,6 @@ double lasso_objective (double** z, double lambda, int R_start, int R_end, int C
         lasso += lambda * maxn[j];
     return lasso;
 }
-
 double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int C, double ** z, Lookups* tables) {
     int D = tables->nDocs;
     vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
@@ -316,26 +320,24 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
     double error = INF;
     double ** wone = mat_init (N, D);
     double ** wtwo = mat_init (N, D);
+    double ** wthree = mat_init (N, D);
     double ** yone = mat_init (N, D);
     double ** ytwo = mat_init (N, D);
+    double ** ythree = mat_init (N, D);
     double ** z = mat_init (N, D);
     double ** z_old = mat_init (N, D);
-    double ** diffzero = mat_init (N, D);
-    double ** diffone = mat_init (N, D);
-    double ** difftwo = mat_init (N, D);
     mat_zeros (wone, N, D);
     mat_zeros (wtwo, N, D);
+    mat_zeros (wthree, N, D);
     mat_zeros (yone, N, D);
     mat_zeros (ytwo, N, D);
+    mat_zeros (ythree, N, D);
     mat_zeros (z, N, D);
     mat_zeros (z_old, N, D);
-    mat_zeros (diffzero, N, D);
-    mat_zeros (diffone, N, D);
-    mat_zeros (difftwo, N, D);
 
     // variables for shriking method
-    set<int> col_active_sets;
     // set initial active_set as all elements
+    set<int> col_active_sets;
     for (int i = 0; i < D; i++) 
         col_active_sets.insert(i);
 
@@ -345,23 +347,22 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
     int iter = 0; // Ian: usually we count up (instead of count down)
     bool no_active_element = false, admm_opt_reached = false;
     while ( iter < ADMM_max_iter ) { // TODO: stopping criteria
-
         // STEP ONE: resolve w_1 and w_2
         frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, D, fw_max_iter, col_active_sets);
-        group_lasso_solver (ytwo, z, wtwo, rho, lambda, tables, col_active_sets);
-
+        global_group_lasso_solver (ytwo, z, wtwo, rho, lambda, tables, col_active_sets);
+        local_group_lasso_solver (ythree, z, wthree, rho, lambda, tables, col_active_sets);
         // STEP TWO: update z by averaging w_1 and w_2
         // STEP THREE: update the y_1 and y_2 by w_1, w_2 and z
         set<int>::iterator it;
         for (it=col_active_sets.begin();it!=col_active_sets.end();++it) {
             int j = *it;
             for (int i = 0; i < N; i ++) {
-                z[i][j] = (wone[i][j] + wtwo[i][j]) / 2.0;
+                z[i][j] = (wone[i][j] + wtwo[i][j] + wthree[i][j]) / 3.0;
                 yone[i][j] += alpha * (wone[i][j] - z[i][j]) ;
                 ytwo[i][j] += alpha * (wtwo[i][j] - z[i][j]) ;
+                ythree[i][j] += alpha * (wthree[i][j] - z[i][j]) ;
             }
         }
-
         // Shrinking Method:
         // STEP ONE: reduce number of elements considered in next iteration
         vector<int> col_to_shrink;
@@ -373,7 +374,7 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
                 // (A) primal shrinking:
                 if ( z[i][j] > ADMM_EPS || z_old[i][j] > ADMM_EPS ) break;
                 // (B) dual shrinking:
-                if ( wone[i][j] > ADMM_EPS || wtwo[i][j] > ADMM_EPS ) break;
+                if ( wone[i][j] > ADMM_EPS || wtwo[i][j] > ADMM_EPS || wthree[i][j] > ADMM_EPS) break;
             }
             // cache index of element to be removed
             if ( i == N ) 
@@ -385,8 +386,10 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
         for (int s = 0; s < num_col_to_shrink; s ++) {
             int j_shr = col_to_shrink[s];
             col_active_sets.erase(j_shr);
-            for(int i=0;i<N;i++){
+            for(int i=0;i<N;i++) {
                 wone[i][j_shr] = 0.0;
+                wtwo[i][j_shr] = 0.0;
+                wthree[i][j_shr] = 0.0;
                 z[i][j_shr] = 0.0;
                 z_old[i][j_shr] = 0.0;
             }
@@ -409,7 +412,7 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
             ss_out << cputime << " " << error << endl;
             prev = clock();
         }
-        int num_active_elements=N*num_active_cols;
+        int num_active_elements = N * num_active_cols;
         // STEP TWO: consider to open all elements to check optimality
         /*
         if (num_active_elements == 0 && !no_active_element) {
@@ -435,8 +438,6 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
     mat_free (wtwo, N, D);
     mat_free (yone, N, D);
     mat_free (ytwo, N, D);
-    mat_free (diffone, N, D);
-    mat_free (difftwo, N, D);
     mat_free (z_old, N, D);
     // STEP SIX: put converged solution to destination W
     mat_copy (z, W, N, D);
@@ -446,7 +447,6 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
 
 // entry main function
 int main (int argc, char ** argv) {
-
     if (argc < 7) {
         cerr << "Usage: " << endl;
         cerr << "\tcvx_hdp_medoids [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local] [FW_MAX_ITER] [ADMM_MAX_ITER]" << endl;
@@ -510,7 +510,7 @@ int main (int argc, char ** argv) {
     dmat_out.close();
     cerr << "dist_mat output finished.." << endl;
 
-    // word2doc 
+    // word2doc output with frequency
     ofstream w2dvec_out ("word2doc");
     for (int i = 0; i < N; i ++)
         w2dvec_out << word_in_doc[i].first << " "
