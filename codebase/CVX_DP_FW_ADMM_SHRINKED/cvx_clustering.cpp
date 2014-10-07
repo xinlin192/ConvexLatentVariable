@@ -7,7 +7,7 @@
 // #define EXACT_LINE_SEARCH_DUMP
 
 const double FRANK_WOLFE_TOL = 1e-20;
-const double ADMM_EPS = 1e-2;
+const double ADMM_EPS = 0.02;
 const double SPARSITY_TOL = 1e-5;
 const double r = 1000000.0;
 
@@ -337,6 +337,7 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
             col_active_sets.erase(j_shr);
             for(int i=0;i<N;i++){
                 wone[i][j_shr] = 0.0;
+                wtwo[i][j_shr] = 0.0;
                 z[i][j_shr] = 0.0;
                 z_old[i][j_shr] = 0.0;
             }
