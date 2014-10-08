@@ -304,7 +304,8 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
         }
 
         // STEP FOUR: trace the objective function
-        if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
+        // if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
+        if ((iter+1) % SS_PERIOD == 0) {
             cputime += (double)(clock() - prev) / CLOCKS_PER_SEC;
             error = overall_objective (dist_mat, lambda, N, wone);
             cout << "[Overall] iter = " << iter 
