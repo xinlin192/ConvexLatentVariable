@@ -15,7 +15,12 @@
 #include "../util.h"
 #include <cassert>
 #include <cmath>
+#include <omp.h>
 #define INTEGER_MAX 3000000
+
+ofstream objmin_trace("../obj_vs_time_dp/iris/DP-Medoid");
+double objmin = 1e300;
+double start_time;
 
 typedef double (* dist_func) (Instance*, Instance*, int); 
 /* Compute the mutual distance of input instances contained within "data" */
@@ -102,6 +107,12 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         new_cost = 0.5 * mat_frob_dot (w, dist_mat, N,N)+ K * lambda ;
 
         cout << "new_cost: " << new_cost << endl;
+        if( new_cost < objmin ){
+            objmin = new_cost;
+        }
+        objmin_trace << omp_get_wtime()-start_time << " " << objmin << endl;
+        
+
         // STEP FOUR: stopping criteria
         if (new_cost >= last_cost && last_K == K) {
             cout << "CLUSTERING COST: " << last_cost << endl;
@@ -178,6 +189,8 @@ int main (int argc, char ** argv) {
     char* dataFile = argv[1];
     int nRuns = atoi(argv[2]);
     double lambda = atof(argv[3]);
+    
+    objmin_trace << "time objective" << endl;
 
     // read in data
     //vector<Instance*> data;
@@ -222,6 +235,7 @@ int main (int argc, char ** argv) {
     double ** min_w = mat_init (N, N);
     vector<int> min_medoids;
     int min_nMedoids;
+    start_time = omp_get_wtime();
     for (int i = 0; i < nRuns; i++) {
         W[i] = mat_init (N, N);
         mat_zeros (W[i], N, N);
@@ -246,7 +260,8 @@ int main (int argc, char ** argv) {
 
     /* Output assignments */
     output_assignment (min_w, data, N);
-
+    
+    objmin_trace.close();
     /* Deallocation */
     mat_free (min_w, N, N);
     for (int i = 0; i < nRuns; i++) {

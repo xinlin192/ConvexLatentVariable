@@ -251,7 +251,7 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
     double rho = 1;
     ofstream ss_out ("plot_cputime_objective");
     ss_out << "Time Objective" << endl;
-    clock_t cputime = 0;
+    double cputime = 0;
     clock_t prev = clock();
     // iterative optimization 
     double error = INF;
@@ -305,8 +305,8 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
 
         // STEP FOUR: trace the objective function
         if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
-            cputime += clock() - prev;
-            error = overall_objective (dist_mat, lambda, N, z);
+            cputime += (double)(clock() - prev) / CLOCKS_PER_SEC;
+            error = overall_objective (dist_mat, lambda, N, wone);
             cout << "[Overall] iter = " << iter 
                 << ", Loss Error: " << error << endl;
             ss_out << cputime << " " << error << endl;
