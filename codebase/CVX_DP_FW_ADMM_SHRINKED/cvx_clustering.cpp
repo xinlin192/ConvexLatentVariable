@@ -1,4 +1,5 @@
 #include "cvx_clustering.h"
+ofstream ss_out ("../obj_vs_time_dp/iris/CVX-DP-MEDOID");
 
 /* algorithmic options */ 
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
@@ -248,9 +249,9 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
     // parameters 
     double alpha = 0.2;
     double rho = 1;
-    ofstream ss_out ("plot_cputime_objective");
     ss_out << "Time Objective" << endl;
     double cputime = 0;
+    double last_cost = INF;
     clock_t prev = clock();
     // iterative optimization 
     double error = INF;
@@ -260,18 +261,6 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
     double ** ytwo = mat_init (N, N);
     double ** z = mat_init (N, N);
     double ** z_old = mat_init (N, N);
-    double ** diffzero = mat_init (N, N);
-    double ** diffone = mat_init (N, N);
-    double ** difftwo = mat_init (N, N);
-    mat_zeros (wone, N, N);
-    mat_zeros (wtwo, N, N);
-    mat_zeros (yone, N, N);
-    mat_zeros (ytwo, N, N);
-    mat_zeros (z, N, N);
-    mat_zeros (z_old, N, N);
-    mat_zeros (diffzero, N, N);
-    mat_zeros (diffone, N, N);
-    mat_zeros (difftwo, N, N);
 
     // variables for shriking method
     set<int> col_active_sets;
@@ -304,11 +293,15 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
 
         // STEP FOUR: trace the objective function
         // if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
+        
         if ((iter+1) % SS_PERIOD == 0) {
             cputime += (double)(clock() - prev) / CLOCKS_PER_SEC;
             error = overall_objective (dist_mat, lambda, N, wone);
             cout << "[Overall] iter = " << iter 
                 << ", Loss Error: " << error << endl;
+            // NOTE: here is just for plotting
+            if (error >= last_cost) error = last_cost;
+            else last_cost = error;
             ss_out << cputime << " " << error << endl;
             prev = clock();
         }
@@ -384,8 +377,6 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
     mat_free (wtwo, N, N);
     mat_free (yone, N, N);
     mat_free (ytwo, N, N);
-    mat_free (diffone, N, N);
-    mat_free (difftwo, N, N);
     mat_free (z_old, N, N);
     // STEP SIX: put converged solution to destination W
     mat_copy (z, W, N, N);
@@ -444,9 +435,8 @@ int main (int argc, char ** argv) {
     // pre-compute distance matrix
     dist_func df = L2norm;
     double ** dist_mat = mat_init (N, N);
-    //  double ** dist_mat = mat_read (dmatFile, N, N);
-    mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
+    //  double ** dist_mat = mat_read (dmatFile, N, N);
 
     // Run sparse convex clustering
     double ** W = mat_init (N, N);

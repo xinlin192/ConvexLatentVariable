@@ -443,9 +443,8 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
         for (int j = 0; j < N; j ++) {
             Instance * xi = data[i];
             Instance * muj = data[j];
-            dist_mat[i][j] = df (xi, muj, D);
+            double value = df (xi, muj, D);
+            dist_mat[i][j] = value * value;
         }
     }
 }
-
-

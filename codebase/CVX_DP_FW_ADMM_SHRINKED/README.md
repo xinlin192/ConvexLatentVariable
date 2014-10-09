@@ -4,13 +4,6 @@ Sparse convex optimization for Clustering
 This github directory contains our experiments about self-initiated research
 project: a method to achieve acceleration by decomposing optimization to two subproblem.
 
-DEVELOPERS
----------------
-
-    Jimmy Lin - jimmylin@utexas.edu
-    Ian Yen - a061105@gmail.com
-
-
 Inventory
 --------------
 
@@ -25,4 +18,6 @@ Inventory
 Executive Commands
 -----------------
 
-
+    
+    lambda = 10, 3 clusters
+    ./cvx_clustering ../../dataset/iris/iris.scale.1 30 3000 10 20
