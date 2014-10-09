@@ -31,7 +31,7 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
     vector<bool> is_fw_opt_reached (N, false);
     set<pair<int,double> >::iterator it;
     // cout << "within frank_wolfe_solver: start iteration" << endl;
-    while (k < K) { // TODO: change to use portional criteria
+    while (k < K) { // change to use portional criteria
         // compute new active atom: can be in active set or not
         vector< pair<int, double> > s (N, pair<int,double>());
         vector<bool> isInActives (N, false);
@@ -124,7 +124,6 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
         k ++;
     }
 }
-
 
 void skyline (double** wout, double** wbar, int R, int C, double lambda, set<int> col_active_sets) {
     vector< vector< double > > alpha_vec (C, vector<double>());
@@ -439,7 +438,7 @@ int main (int argc, char ** argv) {
     int seed = time(NULL);
     srand (seed);
     cerr << "seed = " << seed << endl;
-
+    cerr << "==================================================" << endl; 
     double lambda = lambda_base;
 
     // pre-compute distance matrix
@@ -461,34 +460,59 @@ int main (int argc, char ** argv) {
     /* Output assignment */
     output_assignment (W, data, N);
 
-    /*
     // output the examplar 
     // compute the mean and update objective to compare with DP_MEANS
-    vector< int > centroids ();
+    cerr << "==================================================" << endl; 
+    cerr << "Computing the mean of derived group members ..." << endl;
+    vector<int> centroids;
     get_all_centroids(W, &centroids, N, N);
     int nCentroids = centroids.size();
-    vector< vector<int> > members (nCentroids, vector<int> ());
-    for (int j = 0; j < nCentroids; i++) {
+    vector< vector<int> > members (nCentroids, vector<int>());
+    for (int c = 0; c < nCentroids; c++) {
+        int j = centroids[c];
+        // cout << "centroid: " << j << endl;
         for (int i = 0; i < N; i++) {
-            if (W[i][j] < 1.001 && W[i][j] > 0.999)
-                members[j].push_back(i);
+            if (W[i][j] < 1.000001 && W[i][j] > 0.99999) {
+                members[c].push_back(i);
+               // cout << "member: "<< i << endl;
+            }
         }
     }
     // compute the means
-    vector< vector<double> > means (nCentroids, vector<double>());
-    for (int j = 0; j < nCentroids; j++) {
-        int numMembers = members[j].size();
+    vector< vector<double> > means (nCentroids, vector<double>(D, 0.0));
+    for (int c = 0; c < nCentroids; c++) {
+        int numMembers = members[c].size();
         for (int x = 0; x < numMembers; x ++) {
-            int i = members[j][x];
-            for (int )
+            int i = members[c][x];
+            Instance* ins = data[i];
+            int fea_size = ins->fea.size();
+            for (int f = 0; f < fea_size; f++) 
+                means[c][ins->fea[f].first-1] += ins->fea[f].second;
         }
+        for (int f = 0; f < D; f++) 
+            means[c][f] = means[c][f] / numMembers;
     }
-    */
-
     // compute distance
-    
+    double means_reg = lambda * nCentroids;
+    double sum_means_loss = 0.0;
+    for (int c = 0; c < nCentroids; c++) {
+        double mean_loss = 0.0;
+        int numMembers = members[c].size();
+        Instance* mean_ins = new Instance(c+100000);
+        for (int f = 0; f < D; f++) 
+            mean_ins->fea.push_back(make_pair(f+1, means[c][f]));
+        for (int x = 0; x < numMembers; x ++) {
+            int i = members[c][x];
+            Instance* ins = data[i];
+            mean_loss += 0.5 * df(mean_ins, ins, D);
+        }
+        delete mean_ins;
+        cerr << "c=" << centroids[c] << ", mean_loss: " << mean_loss << endl;
+        sum_means_loss += mean_loss;
+    }
     // output distance
-
+    cerr << "Total_means_loss: " << sum_means_loss << ", Means_reg: " << means_reg << endl;
+    cerr << "Total_Error: " << sum_means_loss + means_reg << endl;
     /* reallocation */
     mat_free (dist_mat, N, N);
     mat_free (W, N, N);
