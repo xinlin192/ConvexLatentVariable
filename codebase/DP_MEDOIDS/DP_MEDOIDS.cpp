@@ -1,17 +1,8 @@
+#include "DP_MEDOIDS.h"
+
 ofstream objmin_trace("../obj_vs_time_dp/iris/DP-Medoid");
 double objmin = 1e300;
 double start_time;
-
-/* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j ++) {
-            Instance * xi = data[i];
-            Instance * muj = data[j];
-            dist_mat[i][j] = df (xi, muj, D);
-        }
-    }
-}
 
 /* Note that entries in dist_mat should be squared distance */
 double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<int>* medoids) {
@@ -21,20 +12,18 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
             assert (dist_mat[i][j]>=0.0);
     // STEP ONE: a. pick up the optimal *global* medoid for initialization
     vector<int> new_medoids (1,0);
-    // new_medoids[0] = random() % N; // by random
-    // cout << "randomized medoids: " << new_medoids[0]  << endl;
     double * sum_col = new double [N];
     mat_sum_col (W, sum_col, N, N);
-    double max_sum = -1e300;
-    int max_sum_index = -1;
+    double min_sum = 1e300;
+    int min_sum_index = -1;
     for (int i = 0; i < N; i ++) {
-       if (sum_col[i] > max_sum) {
-           max_sum = sum_col[i];
-           max_sum_index = i;
+       if (sum_col[i] < min_sum) {
+           min_sum = sum_col[i];
+           min_sum_index = i;
        }
     }
-    if (max_sum_index >= 0) 
-        new_medoids[0] = max_sum_index;
+    if (min_sum_index >= 0) 
+        new_medoids[0] = min_sum_index;
     else {
         cerr << "Init: optimal global medoids not found!" << endl;
         assert (false); 
@@ -45,10 +34,8 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
     // OPTIONAL: write randomized medoids to stdout or external files
     double last_cost = INF, new_cost = INF; // compute last cost
     double ** w = mat_init (N,N);
-    mat_zeros(w, N,N);
-    for (int i = 0; i < N; i ++) {
+    for (int i = 0; i < N; i ++) 
         w[i][last_medoids[0]] = 1.0;
-    }
     while (true) {
         // STEP TWO: compute dist square to new medoids d_ic
         int last_K = last_medoids.size();
@@ -99,11 +86,10 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         new_cost = 0.5 * mat_frob_dot (w, dist_mat, N,N)+ K * lambda ;
 
         cout << "new_cost: " << new_cost << endl;
-        if( new_cost < objmin ){
+        if( new_cost < objmin )
             objmin = new_cost;
-        }
-        objmin_trace << omp_get_wtime()-start_time << " " << objmin << endl;
         
+        objmin_trace << omp_get_wtime()-start_time << " " << objmin << endl;
 
         // STEP FOUR: stopping criteria
         if (new_cost >= last_cost && last_K == K) {
@@ -208,7 +194,6 @@ int main (int argc, char ** argv) {
     // pre-compute distance matrix
     dist_func df = L2norm;
     double ** dist_mat = mat_init (N, N);
-    mat_zeros (dist_mat, N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
 
     // Run sparse convex clustering
@@ -222,7 +207,6 @@ int main (int argc, char ** argv) {
     start_time = omp_get_wtime();
     for (int i = 0; i < nRuns; i++) {
         W[i] = mat_init (N, N);
-        mat_zeros (W[i], N, N);
         // INVOKE algorithm function
         objectives[i] = DP_MEDOIDS (dist_mat, N, lambda, W[i], &(medoids[i]));
         if (objectives[i] < min_obj) {
