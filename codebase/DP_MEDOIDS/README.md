@@ -1,14 +1,6 @@
 DP\_MEDOIDS clustering algorithm
 =======================
 
-MAD\_BAYES 
-
-DEVELOPERS
----------------
-
-    Jimmy Lin - jimmylin@utexas.edu
-    Ian Yen - a061105@gmail.com
-
 
 Inventory
 --------------
@@ -16,19 +8,15 @@ Inventory
     Makefile                for compilation
     README.md               records basic information
 
-    util.h                  auxiliary facility function
-    mat.h                   contains auxiliary functions for mat data structure
-    MAD_BAYES.h             header file for algorithmic script
-    MAD_BAYES.cpp           codebase as our algorithmic script
+    DP_MEDOIDS.h             header file for algorithmic script
+    DP_MEDOIDS.cpp           codebase as our algorithmic script
+
+    ../util.h                  auxiliary facility function
+    ../mat.h                   contains auxiliary functions for mat data structure
 
 Executive Commands
 ---------------
     
-    ./DP_MEDOIDS ../../dataset/wine.scale 13 [lambda]
-
-DEVELOPMENT LOGS
----------------
-
 
 REFERENCE
 ---------------

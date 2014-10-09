@@ -1,15 +1,7 @@
-#include "DP_MEDOIDS.h"
-#include "../util.h"
-#include <cassert>
-#include <cmath>
-#include <omp.h>
-#define INTEGER_MAX 3000000
-
 ofstream objmin_trace("../obj_vs_time_dp/iris/DP-Medoid");
 double objmin = 1e300;
 double start_time;
 
-typedef double (* dist_func) (Instance*, Instance*, int); 
 /* Compute the mutual distance of input instances contained within "data" */
 void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
     for (int i = 0; i < N; i ++) {
