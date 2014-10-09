@@ -1,6 +1,7 @@
 #include <cassert>
 #include <queue>
 #include <time.h>
+#include <omp.h>
 
 #include "../util.h"
 class Compare
