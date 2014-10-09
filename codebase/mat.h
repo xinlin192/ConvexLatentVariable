@@ -21,9 +21,9 @@ double MAT_DOUBLE_INF = 1e300;
 
 double ** mat_init (int nRows, int nCols) {
     double ** res = new double * [nRows];
-    for (int i = 0; i < nRows; i ++) {
+    for (int i = 0; i < nRows; i ++) 
         res[i] = new double [nCols];
-    }
+    mat_zeros(res, nRows, nCols);
     return res;
 }
 double ** mat_read (char* fname, int R, int C) {
@@ -119,30 +119,23 @@ double mat_sum (double ** src, int nRows, int nCols) {
 void mat_sum_row (double ** src, double * dest, int nRows, int nCols) {
     for (int i = 0; i < nRows; i ++) {
         double sum = 0.0;
-        for (int j = 0; j < nCols; j ++) {
+        for (int j = 0; j < nCols; j ++) 
             sum += src[i][j];
-        }
         dest[i] = sum;
     }
 }
 
 void mat_sum_col(double ** src, double * dest, int nRows, int nCols) {
-    for(int j = 0;j < nCols; j ++)
-	    dest[j] = 0.0;
-    for (int i = 0; i < nRows; i ++) {
-        for (int j = 0; j < nCols; j ++) {
+    for(int j = 0;j < nCols; j ++) dest[j] = 0.0;
+    for (int i = 0; i < nRows; i ++) 
+        for (int j = 0; j < nCols; j ++) 
             dest[j] += src[i][j];
-        }
-    }
 }
 
 double mat_dot (double * vec1, double * vec2, int N) {
-
     double sum = 0.0;
-    for (int i = 0; i < N; i ++) {
+    for (int i = 0; i < N; i ++) 
         sum += vec1[i] * vec2[i];
-    }
-
     return sum;
 }
 string mat_toString (double ** src, int nRows, int nCols) {
@@ -171,7 +164,6 @@ void mat_print (double ** src, int nRows, int nCols) {
 }
 
 void mat_copy (double ** src, double ** dest, int nRows, int nCols) {
-
     for (int i = 0; i < nRows; i ++) {
         for (int j = 0; j < nCols; j ++) {
             dest[i][j] = src[i][j];
@@ -180,7 +172,6 @@ void mat_copy (double ** src, double ** dest, int nRows, int nCols) {
 }
 
 void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
-
     // we assume that the given dest is all-zero mat
     for (int j = 0; j < nCols; j ++) {
         int max_index = -1;
@@ -190,7 +181,7 @@ void mat_max_col (double ** src, double ** dest, int nRows, int nCols) {
                 max_index = i;
                 max_value = src[i][j];
             }
-	    dest[i][j] = 0;
+            dest[i][j] = 0;
         }
         dest[max_index][j] = 1;
     }
@@ -251,35 +242,27 @@ void mat_min_index_row (double ** src, double * dest, int nRows, int nCols) {
 }
 double mat_norm2 (double ** src, int nRows, int nCols) {
     double sum = 0.0;
-    for (int i = 0; i < nRows; i ++) {
-        for (int j = 0; j < nCols; j ++) {
+    for (int i = 0; i < nRows; i ++) 
+        for (int j = 0; j < nCols; j ++) 
             sum += src[i][j] * src[i][j];
-        }
-    }
     return sum;
 }
 
 void mat_set_all (double ** mat, double value, int R, int C) {
-	for (int i = 0; i < R; i++) {
-		for (int j = 0; j < C; j++) {
+	for (int i = 0; i < R; i++) 
+		for (int j = 0; j < C; j++) 
             mat[i][j] = value;
-        }
-    }
 }
 void mat_set(double ** mat, double ** z, int R, int C) {
-	for (int i = 0; i < R; i++) {
-		for (int j = 0; j < C; j++) {
+	for (int i = 0; i < R; i++) 
+		for (int j = 0; j < C; j++) 
             mat[i][j] = z[i][j];
-        }
-    }
 }
 
 // TODO: mat_write and mat_read
 void trim (double** mat, int R, int C) {
-	for (int i = 0; i < R; i++) {
-		for (int j = 0; j < C; j++) {
+	for (int i = 0; i < R; i++) 
+		for (int j = 0; j < C; j++) 
 			if( fabs(mat[i][j]) < 1e-5 )
 				mat[i][j] = 0.0;
-		}
-	}
 }

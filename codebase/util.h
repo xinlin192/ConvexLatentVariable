@@ -93,6 +93,7 @@ class Instance {
 	Instance(int _id){
 		id = _id;
 		_x_sq = -1.0;
+        fea.clear();
 	}
 	double x_sq(){
 		// Pre-calculated
@@ -142,24 +143,17 @@ class Cluster{
 };
 typedef double (* dist_func) (Instance*, Instance*, int); 
 double L2norm (Instance * ins1, Instance * ins2, int D) {
-    // TODO: 
-    //   1. refine by using hash table to restore each instance
     double * diff = new double [D];
-    for (int i = 0; i < D; i ++) 
-        diff[i] = 0.0;
+    for (int i = 0; i < D; i ++) diff[i] = 0.0;
     int n1 = ins1->fea.size();
-    for (int i = 0; i < n1; i ++) {
-        diff[ ins1->fea[i].first-1 ] = ins1->fea[i].second;
-    }
     int n2 = ins2->fea.size();
-    for (int i = 0; i < n2; i ++) {
+    for (int i = 0; i < n1; i ++) 
+        diff[ ins1->fea[i].first-1 ] = ins1->fea[i].second;
+    for (int i = 0; i < n2; i ++) 
         diff[ ins2->fea[i].first-1 ] -= ins2->fea[i].second;
-    }
-
     double norm = 0.0;
-    for (int i = 0; i < D; i ++) {
+    for (int i = 0; i < D; i ++) 
         norm += diff[i] * diff[i];
-    }
     norm = sqrt(norm);
     
     delete[] diff;
