@@ -21,22 +21,35 @@ void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D
     }
 }
 
+/* Note that entries in dist_mat should be squared distance */
 double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<int>* medoids) {
     // STEP ZERO: validate input
-    for (int i = 0; i < N; i ++) {
-        for (int j = 0; j < N; j++) {
+    for (int i = 0; i < N; i ++) 
+        for (int j = 0; j < N; j++) 
             assert (dist_mat[i][j]>=0.0);
-        }
-    }
-    // STEP ONE: a. randomly pick up the initial *global* medoid
+    // STEP ONE: a. pick up the optimal *global* medoid for initialization
     vector<int> new_medoids (1,0);
-    new_medoids[0] = random() % N;
-    //new_medoids[0] = 7;
-    //new_medoids[1] = 126;
-    
+    // new_medoids[0] = random() % N; // by random
+    // cout << "randomized medoids: " << new_medoids[0]  << endl;
+    double * sum_col = new double [N];
+    mat_sum_col (W, sum_col, N, N);
+    double max_sum = -1e300;
+    int max_sum_index = -1;
+    for (int i = 0; i < N; i ++) {
+       if (sum_col[i] > max_sum) {
+           max_sum = sum_col[i];
+           max_sum_index = i;
+       }
+    }
+    if (max_sum_index >= 0) 
+        new_medoids[0] = max_sum_index;
+    else {
+        cerr << "Init: optimal global medoids not found!" << endl;
+        assert (false); 
+    }
+    delete[] sum_col;
+    cout << "optimal global medoid: " << new_medoids[0] << endl;
     vector<int> last_medoids (new_medoids);
-    cout << "randomized medoids: " << last_medoids[0]  << endl;
-
     // OPTIONAL: write randomized medoids to stdout or external files
     double last_cost = INF, new_cost = INF; // compute last cost
     double ** w = mat_init (N,N);
@@ -152,19 +165,15 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
 
     // STEP SEVEN: put converged solution to destination W
     mat_copy (w, W, N, N);
-    for (int i = 0; i < last_medoids.size(); i ++) {
+    for (int i = 0; i < last_medoids.size(); i ++) 
         medoids->push_back(last_medoids[i]);
-    }
     // STEP EIGHT: memory recollection
     mat_free (w, N, N);
 
     return last_cost;
 }
 
-// entry main function
 int main (int argc, char ** argv) {
-
-    // exception control: illustrate the usage if get input of wrong format
     if (argc != 4) {
         cerr << "Usage: DP_MEDOIDS [dataFile] [nRuns] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
@@ -179,10 +188,6 @@ int main (int argc, char ** argv) {
     
     objmin_trace << "time objective" << endl;
 
-    // read in data
-    //vector<Instance*> data;
-    //readFixDim (dataFile, data, FIX_DIM);
-    //
     int FIX_DIM;
     Parser parser;
     vector<Instance*>* pdata;
@@ -241,18 +246,15 @@ int main (int argc, char ** argv) {
 
     /* Output objective */
     output_objective(clustering_objective (dist_mat, min_w, N));
-    
     /* Output model */
     output_model (min_w, N);
-
     /* Output assignments */
     output_assignment (min_w, data, N);
     
     objmin_trace.close();
     /* Deallocation */
     mat_free (min_w, N, N);
-    for (int i = 0; i < nRuns; i++) {
+    for (int i = 0; i < nRuns; i++) 
         mat_free (W[i], N, N);
-    }
     mat_free (dist_mat, N, N);
 }
