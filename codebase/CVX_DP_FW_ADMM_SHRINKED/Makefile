@@ -1,7 +1,7 @@
 cpps=$(shell ls *.cpp)
 
 all: 
-	g++ -O3 $(cpps) -o cvx_clustering 
+	g++ -fopenmp -O3 $(cpps) -o cvx_clustering 
 
 push:
 	git add cvx_clustering.cpp Makefile 

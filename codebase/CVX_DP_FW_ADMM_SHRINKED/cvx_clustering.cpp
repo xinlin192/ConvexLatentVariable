@@ -252,7 +252,7 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
     ss_out << "Time Objective" << endl;
     double cputime = 0;
     double last_cost = INF;
-    clock_t prev = clock();
+    double prev = omp_get_wtime();
     // iterative optimization 
     double error = INF;
     double ** wone = mat_init (N, N);
@@ -268,9 +268,9 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
     for (int i = 0; i < N; i++) 
         col_active_sets.insert(i);
 
-    cputime += clock() - prev;
+    cputime += omp_get_wtime() - prev;
     ss_out << cputime << " " << 0 << endl;
-    prev = clock();
+    prev = omp_get_wtime();
     int iter = 0; // Ian: usually we count up (instead of count down)
     bool no_active_element = false, admm_opt_reached = false;
     while ( iter < ADMM_max_iter ) { // stopping criteria
@@ -295,7 +295,7 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
         // if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
         
         if ((iter+1) % SS_PERIOD == 0) {
-            cputime += (double)(clock() - prev) / CLOCKS_PER_SEC;
+            cputime += (omp_get_wtime() - prev);
             error = overall_objective (dist_mat, lambda, N, wone);
             cout << "[Overall] iter = " << iter 
                 << ", Loss Error: " << error << endl;
@@ -303,7 +303,7 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
             if (error >= last_cost) error = last_cost;
             else last_cost = error;
             ss_out << cputime << " " << error << endl;
-            prev = clock();
+            prev = omp_get_wtime();
         }
         // Shrinking Method:
         // STEP ONE: reduce number of elements considered in next iteration
