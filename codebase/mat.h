@@ -19,6 +19,11 @@
 using namespace std;
 double MAT_DOUBLE_INF = 1e300;
 
+void mat_zeros (double ** src, int nRows, int nCols) {
+    for (int i = 0; i < nRows; i ++) 
+        for (int j = 0; j < nCols; j ++) 
+            src[i][j] = 0;
+}
 double ** mat_init (int nRows, int nCols) {
     double ** res = new double * [nRows];
     for (int i = 0; i < nRows; i ++) 
@@ -43,13 +48,6 @@ double ** mat_read (char* fname, int R, int C) {
     }
     fin.close();
     return result;
-}
-void mat_zeros (double ** src, int nRows, int nCols) {
-    for (int i = 0; i < nRows; i ++) {
-        for (int j = 0; j < nCols; j ++) {
-            src[i][j] = 0;
-        }
-    }
 }
 
 void mat_free (double ** src, int nRows, int nCols) {

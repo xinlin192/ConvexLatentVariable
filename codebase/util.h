@@ -438,3 +438,14 @@ void output_assignment (double ** W, vector<Instance*>& data, int N) {
     asgn_out.close();
 }
 
+void compute_dist_mat (vector<Instance*>& data, double ** dist_mat, int N, int D, dist_func df, bool isSym) {
+    for (int i = 0; i < N; i ++) {
+        for (int j = 0; j < N; j ++) {
+            Instance * xi = data[i];
+            Instance * muj = data[j];
+            dist_mat[i][j] = df (xi, muj, D);
+        }
+    }
+}
+
+
