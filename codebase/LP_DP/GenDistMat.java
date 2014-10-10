@@ -116,8 +116,8 @@ public class GenDistMat{
 			}
 		}
 		
-		return Math.sqrt(sum)/2;
-		//return sum/2;
+		// return Math.sqrt(sum)/2;
+		return sum/2;
 	}
 
 	static List<Instance> readData(String fname){
