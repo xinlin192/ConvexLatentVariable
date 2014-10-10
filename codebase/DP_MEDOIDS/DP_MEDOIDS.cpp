@@ -41,11 +41,9 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         int last_K = last_medoids.size();
         int K = new_medoids.size(); 
         double ** temp = mat_init (N,K); // temp[i][c] <- d_ic
-        for (int i = 0; i < K; i ++) {
-            for (int j = 0; j < N; j ++) {
+        for (int i = 0; i < K; i ++) 
+            for (int j = 0; j < N; j ++) 
                 temp[j][i] = dist_mat[j][new_medoids[i]];
-            }
-        }
         // STEP THREE: create new cluster medoid if min_c d_ic > lambda
         // for here, we make the condition squared:
         //           min_c d_ic^2 > lambda^2
@@ -84,13 +82,10 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
 
         // STEP THREE: compute cost
         new_cost = 0.5 * mat_frob_dot (w, dist_mat, N,N)+ K * lambda ;
-
         cout << "new_cost: " << new_cost << endl;
         if( new_cost < objmin )
             objmin = new_cost;
-        
         objmin_trace << omp_get_wtime()-start_time << " " << objmin << endl;
-
         // STEP FOUR: stopping criteria
         if (new_cost >= last_cost && last_K == K) {
             cout << "CLUSTERING COST: " << last_cost << endl;
@@ -139,6 +134,7 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
             delete [] squared_dist;
             mat_free (cluster_dist_mat, nPoints, nPoints);
         }
+
     }
 
     // STEP SEVEN: put converged solution to destination W
