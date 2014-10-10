@@ -39,15 +39,18 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
     double last_cost = INF, new_cost = INF; // compute last cost
     while (true) {
         // STEP TWO: compute dist square to new medoids d_ic
+        std::random_shuffle(data.begin(), data.end());
         for (int i = 0; i < N; i ++) {
             int nClusters = new_means.size();
             // cout << "nClusters: " << nClusters << endl;
             vector<double> dist_vec (nClusters, 0.0);
             for (int c = 0; c < nClusters; c ++) {
                 Instance* mean_ins = new Instance (10000+c);
+                // d_ic = || x_i + mu_c ||^2
                 for (int f = 0; f < D; f++) 
                     mean_ins->fea.push_back(make_pair(f+1, new_means[c][f]));
-                dist_vec[c] = df(mean_ins, data[i], D);
+                double dist_val = df(mean_ins, data[i], D);
+                dist_vec[c] = dist_val * dist_val;
                 delete mean_ins;
             }
             int min_index = -1;
@@ -67,7 +70,7 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
                 for (int f = 0; f < F; f ++) 
                     tmp_mean[data[i]->fea[f].first-1] = data[i]->fea[f].second;
                 new_means.push_back(tmp_mean);
-            } 
+            }
         }
         compute_means (data, assignment, D, new_means);
         // STEP THREE: compute cost
@@ -79,8 +82,10 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
                 means_ins[c]->fea.push_back(make_pair(j+1, new_means[c][j]));
         }
         new_cost = 0.0;
-        for (int i = 0; i < N; i ++) 
-            new_cost += 0.5 * df (means_ins[assignment[i]], data[i], D);
+        for (int i = 0; i < N; i ++) {
+            double dist_val = df (means_ins[assignment[i]], data[i], D);
+            new_cost += 0.5 * dist_val * dist_val;
+        }
         new_cost += lambda * nClusters;
         for (int c = 0; c < nClusters; c++) delete means_ins[c];
         cout << "CLUSTERING COST: " << new_cost << endl;
