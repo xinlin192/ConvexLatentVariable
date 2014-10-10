@@ -28,7 +28,7 @@ void compute_means (vector<Instance*>& data, vector<int>& assignment, int D, vec
             means[c][j] = means[c][j] / means_count[c];
 }
 
-double DP_MEDOIDS (vector<Instance*>& data, int N, int D, double lambda, dist_func df) {
+double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func df) {
     // STEP ZERO: validate input
     assert (data.size() == N);
     // STEP ONE: a. set initial *global* medoid as global mean
@@ -129,7 +129,7 @@ int main (int argc, char ** argv) {
     cerr << "==========================================" << endl;
     // pre-compute distance matrix
     dist_func df = L2norm;
-    DP_MEDOIDS (data, N, D, lambda, df);
+    DP_MEANS (data, N, D, lambda, df);
 
     /* Output objective, model and assignments */
     /*
