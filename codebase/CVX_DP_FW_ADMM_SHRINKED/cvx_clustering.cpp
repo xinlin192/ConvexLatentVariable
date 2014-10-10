@@ -494,7 +494,7 @@ int main (int argc, char ** argv) {
         for (int x = 0; x < numMembers; x ++) {
             int i = members[c][x];
             Instance* ins = data[i];
-            mean_loss += 0.5 * df(mean_ins, ins, D);
+            mean_loss += 0.5 * df(mean_ins, ins, D) * df(mean_ins, ins, D);
         }
         delete mean_ins;
         cerr << "c=" << centroids[c] << ", mean_loss: " << mean_loss << endl;
