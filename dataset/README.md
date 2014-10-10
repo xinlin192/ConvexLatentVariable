@@ -6,7 +6,6 @@ Small Scale
 1. colon-cancer N=60 D=2000(high) C=2
 2. iris N=150 D=4(low) C=3
 3. glass N=214 D=8 C=6
-
 4. vehicle N=846 D=18 C=4
 
 
@@ -22,18 +21,11 @@ Large scale
 2. covtype N=581,012 D=54(low) C=7
 3. shuttle N=43,500 D=9 C=7(low)
 
-Algorithm: PAM
--------------------------
 
-
-
-Algorithm: DP\_MEDOIDS
---------------------------
-
-
-
-Algorithm: DP\_Cvx\_MEDOIDS
--------------
-
+       Dataset & CVX_DP(MEDOIDS) & CVX_DP(MEANS) & DP_MEDOIDS & DP_MEAN 
+    ---------------------------------------------------------------------
+    Iris(N=150,D=4,L=9) & 41.8408(K=3) & 41.1715(K=3) & 93.5825(K=1) & 91.2763(K=1)
+    Iris(N=150,D=4,L=3) & 23.8408(K=3) & 23.1715(K=3) & 31.1684(K=2) & 30.2874(K=2)
+    Glass(N=214,D=8,L=9) & 88.3696(K=4) & 83.4829(K=4) & 96.7075(K=2) & 86.3317(K=2)
 
 
