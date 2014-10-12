@@ -6,9 +6,10 @@ ofstream ss_out ("../obj_vs_time_dp/iris/CVX-DP-MEDOID");
 
 /* dumping options */
 // #define EXACT_LINE_SEARCH_DUMP
+#define LAMBDA_K_PLOT
 
 const double FRANK_WOLFE_TOL = 1e-20;
-const double ADMM_EPS = 0.02;
+const double ADMM_EPS = 1e-4;
 const double SPARSITY_TOL = 1e-5;
 const double r = 1000000.0;
 
@@ -421,6 +422,19 @@ int main (int argc, char ** argv) {
     assert (dimensions == FIX_DIM);
 
     int D = dimensions;
+   double lambda = lambda_base;
+
+    // pre-compute distance matrix
+    dist_func df = L2norm;
+    double ** dist_mat = mat_init (N, N);
+    compute_dist_mat (data, dist_mat, N, D, df, true); 
+    ofstream dmat_out ("dist_mat");
+    dmat_out << mat_toString(dist_mat, N, N);
+    dmat_out.close();
+    //  double ** dist_mat = mat_read (dmatFile, N, N);
+
+    // Run sparse convex clustering
+#ifndef LAMBDA_K_PLOT
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
     cerr << "lambda = " << lambda_base << endl;
@@ -430,17 +444,8 @@ int main (int argc, char ** argv) {
     srand (seed);
     cerr << "seed = " << seed << endl;
     cerr << "==================================================" << endl; 
-    double lambda = lambda_base;
-
-    // pre-compute distance matrix
-    dist_func df = L2norm;
-    double ** dist_mat = mat_init (N, N);
-    compute_dist_mat (data, dist_mat, N, D, df, true); 
-    //  double ** dist_mat = mat_read (dmatFile, N, N);
-
-    // Run sparse convex clustering
+ 
     double ** W = mat_init (N, N);
-    mat_zeros (W, N, N);
     cvx_clustering (dist_mat, fw_max_iter, D, N, lambda, W, ADMM_max_iter, screenshot_period);
 
     // Output cluster
@@ -462,7 +467,7 @@ int main (int argc, char ** argv) {
         int j = centroids[c];
         // cout << "centroid: " << j << endl;
         for (int i = 0; i < N; i++) {
-            if (W[i][j] < 1.000001 && W[i][j] > 0.99999) {
+            if (W[i][j] < 1.01 && W[i][j] > 0.99) {
                 members[c].push_back(i);
                // cout << "member: "<< i << endl;
             }
@@ -503,7 +508,57 @@ int main (int argc, char ** argv) {
     // output distance
     cerr << "Total_means_loss: " << sum_means_loss << ", Means_reg: " << means_reg << endl;
     cerr << "Total_Error: " << sum_means_loss + means_reg << endl;
+    mat_free (W, N, N);
+#else
+    // =====================================================
+    ifstream fin ("lambdas");
+    vector<double> lambda_list;
+    vector<double> K_list;  // reg / lambda
+    vector<bool> fraction;
+    while(!fin.eof()){
+		double temp;
+		fin >> temp;
+		if( fin.eof() )break;
+	    lambda_list.push_back(temp);	
+	}
+	fin.close();
+    for (int i = 0; i < lambda_list.size(); i ++) { 
+        double temp_lambda = lambda_list[i];
+    cerr << "D = " << D << endl; // # features
+    cerr << "N = " << N << endl; // # instances
+    cerr << "lambda = " << temp_lambda << endl;
+    cerr << "r = " << r << endl;
+    cerr << "Screenshot period = " << screenshot_period << endl;
+    int seed = time(NULL);
+    srand (seed);
+    cerr << "seed = " << seed << endl;
+    cerr << "==================================================" << endl; 
+ 
+        double ** wtemp = mat_init (N, N);
+        cvx_clustering (dist_mat, fw_max_iter, D, N, temp_lambda, wtemp, ADMM_max_iter, screenshot_period);
+        vector<int> centroids;
+        double group_lasso = get_reg (wtemp, N, lambda);
+        double reg_labmda_ratio = group_lasso/lambda;
+        K_list.push_back(reg_labmda_ratio);
+        get_all_centroids (wtemp, &centroids, N, N); 
+        int nCentroids = centroids.size();
+        if (reg_labmda_ratio > nCentroids - 1e-2 && reg_labmda_ratio < nCentroids + 1e-2) 
+            fraction.push_back(true);
+        else 
+            fraction.push_back(false);
+        mat_free(wtemp, N, N);
+    }
+    ofstream lambdaK_out ("lambda_vs_K_dp");
+    assert (lambda_list.size() == K_list.size());
+    lambdaK_out << "lambda K fractional" << endl;
+    for (int i =0 ; i < K_list.size(); i ++) 
+        lambdaK_out << lambda_list[i] << " " <<  K_list[i]
+            << " " << (fraction[i]?1:0) <<endl;
+    lambdaK_out.close();
+
+    // =====================================================
+#endif 
     /* reallocation */
     mat_free (dist_mat, N, N);
-    mat_free (W, N, N);
+
 }
