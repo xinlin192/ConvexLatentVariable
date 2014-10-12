@@ -28,7 +28,18 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         cerr << "Init: optimal global medoids not found!" << endl;
         assert (false); 
     }
-    cout << "optimal global medoid: " << new_medoids[0] << endl;
+    cerr << "optimal global medoid: " << new_medoids[0] << endl;
+    ofstream init_out ("init_global_medoid");
+    double min_val = INF, max_val = -INF;
+    for (int i = 0; i < N; i++) {
+        double val = dist_mat[i][new_medoids[0]];
+        init_out << val << endl;
+        if (val < min_val) min_val = val;
+        if (val > max_val) max_val = val;
+    }
+    init_out << "min: " << min_val << endl;
+    init_out << "max: " << max_val << endl;
+    init_out.close();
     vector<int> last_medoids (new_medoids);
     // OPTIONAL: write randomized medoids to stdout or external files
     double last_cost = min_sum, new_cost = min_sum; 
@@ -98,7 +109,7 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         objmin_trace << omp_get_wtime()-start_time << " " << objmin << endl;
         // STEP FOUR: stopping criteria
         if (new_cost == last_cost) {
-            cout << "CLUSTERING COST: " << last_cost << endl;
+            cout << "CLUSTERING COST: " << new_cost << endl;
             cout << "Resulted medoids: ";
             for (int c = 0; c < nClusters; c++) 
                 cout << new_medoids[c] << ",";
@@ -167,7 +178,7 @@ int main (int argc, char ** argv) {
 
     // pre-compute distance matrix
     dist_func df = L2norm;
-    random_shuffle (data.begin(), data.end());
+        random_shuffle (data.begin(), data.end());
 
     // Run sparse convex clustering
     double *** W = new double** [nRuns];
@@ -195,11 +206,12 @@ int main (int argc, char ** argv) {
             for (int j = 0; j < min_nMedoids; j++) {
                 min_medoids.push_back(medoids[i][j]);
             }
-        }
+        } 
+        mat_free(W[i], N, N);
     }
 
     /* Output objective */
-    output_objective(clustering_objective (dist_mat, min_w, N));
+    output_objective(min_obj);
     /* Output model */
     output_model (min_w, N);
     /* Output assignments */
@@ -208,7 +220,5 @@ int main (int argc, char ** argv) {
     objmin_trace.close();
     /* Deallocation */
     mat_free (min_w, N, N);
-    for (int i = 0; i < nRuns; i++) 
-        mat_free (W[i], N, N);
     mat_free (dist_mat, N, N);
 }
