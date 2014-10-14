@@ -1,6 +1,7 @@
 #include "../util.h"
 #include <time.h>
 #include <queue>
+#include <cassert>
 
 typedef struct {
     int nWords;
@@ -21,116 +22,133 @@ class Int_Double_Pair_Dec
         }
 };
 
-void output_model (double** W, int R, int C) {
+double lasso_objective (double** z, double lambda, int R_start, int R_end, int C) {
+    double lasso = 0.0;
+    vector<double> maxn(C, -INF); 
+    for (int i = R_start; i < R_end; i ++)
+        for (int j = 0; j < C; j ++)
+            if ( fabs(z[i][j]) > maxn[j])
+                maxn[j] = fabs(z[i][j]);
+    for (int j = 0; j < C; j ++) 
+        lasso += lambda * maxn[j];
+    return lasso;
+}
+
+void output_objective (double** dist_mat, double ** W, Lookups * tables, double dummy_rate, vector<double>& lambda) {
+    ofstream obj_out ("opt_objective");
+    int N = tables->nWords;
+    int D = tables->nDocs;
+    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
+    double normSum = 0.0;
+    for (int i = 0; i < N; i ++) 
+        for (int j = 0; j < N; j ++) 
+            normSum += W[i][j] * dist_mat[i][j];
+    double loss = 0.5 * normSum;
+    // STEP TWO: compute dummy loss
+    // sum4 = r dot (1 - sum_k w_nk) -> dummy
+    double * temp_vec = new double [N];
+    mat_sum_row (W, temp_vec, N, N);
+    double dummy_penalty = 0.0;
+    for (int i = 0; i < N; i ++) 
+        dummy_penalty += dummy_rate * max(1 - temp_vec[i], 0.0);
+    delete[] temp_vec;
+    // STEP THREE: compute group-lasso regularization
+    double global_lasso = lasso_objective(W, lambda[0], 0, N, N);
+    double sum_local_lasso = 0.0;
+    vector<double> local_lasso (D, 0.0);
+    for (int d = 0; d < D; d++) {
+        local_lasso[d] = lasso_objective(W, lambda[1], doc_lookup[d].first, doc_lookup[d].second, N); 
+        sum_local_lasso += local_lasso[d];
+    }
+    double overall = loss + global_lasso + sum_local_lasso + dummy_penalty;
+    obj_out << "loss: " << loss << endl;
+    obj_out << "dummy: " << dummy_penalty << endl;
+    obj_out << "global_lasso: " << global_lasso << endl;
+    obj_out << "sum_local_lasso: " << sum_local_lasso << endl;
+    obj_out << "loss+global+local: " <<loss+global_lasso +sum_local_lasso<< endl; 
+    obj_out << "overall: " << overall << endl;
+    obj_out << "======================================" << endl;
+    obj_out << "local lasso dump for each dataset" << endl;
+    for (int d = 0; d < D; d++) 
+        obj_out << "dataset(" << d << "): " << local_lasso[d] << endl;
+    obj_out.close();
+}
+
+void output_model (double ** W, Lookups * tables) {
+    int N = tables->nWords;
+    int D = tables->nDocs;
+    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup); 
     ofstream model_out ("opt_model");
+
     vector<int> centroids;
-    get_all_centroids (W, &centroids, R, C); // contains index of all centroids
+    get_all_centroids (W, &centroids, N, N); // contains index of all centroids
     int nCentroids = centroids.size();
     model_out << "nCentroids: " << nCentroids << endl;
-    for (int i = 0; i < nCentroids; i ++) {
+    for (int i = 0; i < nCentroids; i ++) 
         model_out << "centroids[" << i <<"]: " << centroids[i] << endl;
+
+    for (int d = 0; d < D; d++) {
+        model_out << "======================================" << endl;
+        model_out << "d = " << d << endl;
+        int nlocalwords =  doc_lookup[d].second-doc_lookup[d].first;
+        double ** wtemp = mat_init (nlocalwords, N);
+        for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
+            for (int j = 0; j < N; j ++) {
+                wtemp[i-doc_lookup[d].first][j] = W[i][j];
+            }
+        }
+
+        vector<int> centroids;
+        get_all_centroids (wtemp, &centroids, nlocalwords, N); // contains index of all centroids
+        int nCentroids = centroids.size();
+        model_out << "nCentroids: " << nCentroids << endl;
+        for (int i = 0; i < nCentroids; i ++) 
+            model_out << "centroids[" << i <<"]: " << centroids[i] << endl;
+
+        mat_free(wtemp, nlocalwords, N);
     }
     model_out.close();
 }
 void output_assignment (double ** W, Lookups * tables) {
     int N = tables->nWords;
     int D = tables->nDocs;
-    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup); ofstream asgn_out ("opt_assignment");
-    vector< pair<int,int> > word_lookup = *(tables->word_lookup); 
-    vector< vector<int> > voc_lookup = *(tables->voc_lookup);
+    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup); 
+    ofstream asgn_out ("opt_assignment");
     // get all centroids
     for (int d = 0; d < D; d++) {
         asgn_out << "d = " << d << endl;
         for (int i = doc_lookup[d].first; i < doc_lookup[d].second; i ++) {
             // output identification and its belonging
-            asgn_out << "  id=" << i+1 << ", voc_index=" << word_lookup[i].first << ", "; 
-            for (int j = 0; j < D; j ++) {
-                if( fabs(W[i][j]) > 1e-2 ) {
+            asgn_out << "  id=" << i << ", "; 
+            for (int j = 0; j < N; j ++) 
+                if ( fabs(W[i][j]) > 1e-2 ) 
                     asgn_out << j << "(" << W[i][j] << "), ";
-                }
-            }
             asgn_out << endl;
         }
     }
     asgn_out.close();
 }
 
-/* Note that operations within this function do not destroy original input */
-void split (string input, vector<string>* elements, string delimiter) {
-    string str (input);
-    int index = str.find_first_of(delimiter);
-    while (!(index < 0)) {
-        elements->push_back(str.substr(0, index));
-        str = str.substr(index+1);
-        index = str.find_first_of(delimiter);
+void get_doc_lookup (vector< Instance* > & data, vector<pair<int,int> >& doc_lookup) {
+    // validate the input
+    doc_lookup.clear();
+    int N = data.size();
+    for (int i = 1; i < N; i ++) 
+        assert(data[i-1]->label <= data[i]->label);
+    // compute list of document info
+    int doc_begin = 0;
+    int doc_end = 0;
+    int last_doc = data[0]->label;
+    for (int i = 0; i < N ; i++) {
+        int curr_doc = data[i]->label;
+        if (curr_doc != last_doc) {
+            doc_end = i;
+            cerr << "(" << doc_begin << ", " << doc_end << ")" <<endl;
+            doc_lookup.push_back(make_pair(doc_begin, doc_end));
+            doc_begin = i;
+            last_doc = curr_doc;
+        } 
     }
-    if (str.size() > 0) 
-        elements->push_back(str) ;  
-}
-
-
-/* TODO: consider the vocabulary is 0-based or 1-based */
-void voc_list_read (string fname, vector<string>* vocList) {
-   	ifstream fin(fname.c_str());
-    string line;
-	while (!fin.eof()) {
-        getline(fin, line);
-		if ( fin.eof() ) { 
-            break;
-        }
-        vocList->push_back (line);
-        // cout << line << endl;
-	}
-	// fin.close(); 
-}
-
-void voc_list_print (vector<string>* vocList) {
-    int nVoc = vocList->size();
-    for (int v = 0; v < nVoc; v ++) {
-        cout << (*vocList)[v] << endl;
-    }
-}
-
-/* word_lookup table restore the index in voc_list of vocabulary to which a word coresponds */
-void document_list_read (string fname, Lookups* tables) {
-    // document was zero-based 
-    // word was zero-based
-    // vocabulary was zero-based
-    vector< pair<int,int> >* doc_lookup = tables->doc_lookup;
-    vector< pair<int,int> >* word_lookup = tables->word_lookup; 
-    vector< vector<int> >* voc_lookup = tables->voc_lookup;
-    vector< pair<int,int> >* word_in_doc = tables->word_in_doc; 
-
-   	ifstream fin(fname.c_str());
-	string line = "";
-    int doc_index_begin = 0;
-    int doc_index_end = 0;
-    int d = 0, w = 0;
-	while (!fin.eof()) {
-        getline(fin, line);
-		if ( fin.eof() ) break;
-        // process new document
-        doc_index_begin = w;
-        // split the string to several field (delimiter: whitespace) 
-        vector<string> fields;
-        split (line, &fields, " ");
-        for (int f = 0; f < fields.size(); f ++) {
-            vector<string> voc_freq_pair;
-            split (fields[f], &voc_freq_pair, ":");
-            // for each word, split voc_index and frequency by ":"
-            int voc_index = atoi(voc_freq_pair[0].c_str());
-            int freq = atoi(voc_freq_pair[1].c_str());
-            // push to word_lookup table
-            word_lookup->push_back(make_pair(voc_index, freq));
-            word_in_doc->push_back(make_pair(d, freq));
-            ++ w;
-        }
-        doc_index_end = w;
-        doc_lookup->push_back(make_pair(doc_index_begin, doc_index_end));
-        ++ d;
-	}
-	fin.close(); 
-    int nWords = w;
-    for (int i = 0; i < nWords; i ++)  // 1-based index
-        (*voc_lookup)[ (*word_lookup)[i].first ].push_back(i);
+    cerr << "(" << doc_begin << ", " << doc_end << ")" <<endl;
+    doc_lookup.push_back(make_pair(doc_begin, N));
 }

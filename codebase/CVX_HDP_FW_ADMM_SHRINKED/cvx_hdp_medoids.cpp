@@ -5,62 +5,13 @@
 
 /* dumping options */
 // #define EXACT_LINE_SEARCH_DUMP
-
 const double SPARSITY_TOL = 1e-4; //
 const double FRANK_WOLFE_TOL = 1e-20; //
-const double ADMM_EPS = 1e-2;  //
+const double ADMM_EPS = -1;  //
 const double r = 1000000.0; // dummy penality rate
 const double EPS = 1e-5;
 
 /* Compute the mutual distance of input instances contained within "data" */
-void compute_dist_mat (double** dist_mat, Lookups* tables, int R, int C) {
-    int N = tables->nWords;
-    int D = tables->nDocs;
-    assert (R == N);
-    assert (C == D);
-    // STEP ZERO: parse input
-    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
-    vector< pair<int,int> > word_lookup = *(tables->word_lookup); 
-
-    // STEP ONE: compute distribution for each document
-    vector< map<int, double> > distributions (D, map<int, double>());
-    for (int d = 0; d < D; d ++) {
-        // a. compute sum of word frequency
-        int sumFreq = 0;
-        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) 
-            sumFreq += word_lookup[w].second;
-        // b. compute distribution
-        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
-            int voc_index = word_lookup[w].first;
-            double prob = 1.0 * word_lookup[w].second / sumFreq;
-            distributions[d].insert(pair<int, double> (voc_index, prob));
-        }
-    }
-    // STEP TWO: compute weight of word within one document
-    mat_zeros(dist_mat, R, C);
-    for (int d = 0; d < D; d ++) {
-        for (int w = doc_lookup[d].first; w < doc_lookup[d].second; w++) {
-            for (int j = 0; j < C; j ++) {
-                int voc_index = word_lookup[w].first;
-                int count_w_d1 = word_lookup[w].second;    
-                double prob_w_d2;
-                double dist;
-                map<int, double>::const_iterator iter;
-                iter = distributions[j].find(voc_index);
-                if (iter == distributions[j].end()) {
-                    prob_w_d2 = 0.0;
-                    dist = INF;
-                } else {
-                    prob_w_d2 = iter->second;
-                    //   dist(w, d2) =  - count_w_d1 * log( prob_d2(w) )
-                    dist = - count_w_d1 * log(prob_w_d2);
-                }
-                int esmat_index = w + N * j;
-                dist_mat[w][j] = dist + noise(0.0, 0.01);
-            }
-        }
-    }
-}
 
 void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double ** w, double rho, int R, int C, int FW_MAX_ITER, set<int>& col_active_set) {
     // cout << "within frank_wolfe_solver" << endl;
@@ -82,7 +33,7 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
     vector<bool> is_fw_opt_reached (R, false);
     set<pair<int,double> >::iterator it;
     // cout << "within frank_wolfe_solver: start iteration" << endl;
-    while (k < FW_MAX_ITER) { // TODO: change to use portional criteria
+    while (k < FW_MAX_ITER) { 
         // compute new active atom: can be in active set or not
         vector< pair<int, double> > s (R, pair<int,double>());
         vector<bool> isInActives (R, false);
@@ -227,19 +178,16 @@ void skyline (double** wout, double**wbar, int R_start, int R_end, int C, double
 }
 void group_lasso_solver (double** y, double** z, double** w, double rho, vector<double>& lambda, Lookups *tables, set<int> col_active_sets) {
     int R = tables->nWords;
-    int C = tables->nDocs;
-    vector< pair<int,int> > word_lookup = *(tables->word_lookup);
+    int C = tables->nWords;
     vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
     int global_lambda = lambda[0];
     int local_lambda = lambda[1];
 
-    double** wlocal = mat_init (R, C); mat_zeros (wlocal, R, C);
-    double** wbar = mat_init (R, C); mat_zeros (wbar, R, C);
-    for (int i = 0; i < R; i ++) {
-        for (int j = 0; j < C; j ++) {
+    double** wlocal = mat_init (R, C);
+    double** wbar = mat_init (R, C);
+    for (int i = 0; i < R; i ++) 
+        for (int j = 0; j < C; j ++) 
             wbar[i][j] = (rho * z[i][j] - y[i][j]) / rho;
-        }
-    }
     // extend the group lasso solver to both local and global
     for (int d = 0; d < tables->nDocs; d++) {
         int R_start = doc_lookup[d].first;
@@ -250,18 +198,6 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
 
     mat_free (wlocal, R, C);
     mat_free (wbar, R, C);
-}
-
-double lasso_objective (double** z, double lambda, int R_start, int R_end, int C) {
-    double lasso = 0.0;
-    vector<double> maxn(C, -INF); 
-    for (int i = R_start; i < R_end; i ++)
-        for (int j = 0; j < C; j ++)
-            if ( fabs(z[i][j]) > maxn[j])
-                maxn[j] = fabs(z[i][j]);
-    for (int j = 0; j < C; j ++) 
-        lasso += lambda * maxn[j];
-    return lasso;
 }
 
 double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int C, double ** z, Lookups* tables) {
@@ -303,7 +239,6 @@ double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int
 void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambda, double ** W, int ADMM_max_iter, int SS_PERIOD, Lookups * tables) {
     int N = tables->nWords;
     int D = tables->nDocs;
-    vector< pair<int,int> >* word_lookup = tables->word_lookup;
     vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
     // parameters 
     double alpha = 0.2;
@@ -314,40 +249,28 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
     clock_t prev = clock();
     // iterative optimization 
     double error = INF;
-    double ** wone = mat_init (N, D);
-    double ** wtwo = mat_init (N, D);
-    double ** yone = mat_init (N, D);
-    double ** ytwo = mat_init (N, D);
-    double ** z = mat_init (N, D);
-    double ** z_old = mat_init (N, D);
-    double ** diffzero = mat_init (N, D);
-    double ** diffone = mat_init (N, D);
-    double ** difftwo = mat_init (N, D);
-    mat_zeros (wone, N, D);
-    mat_zeros (wtwo, N, D);
-    mat_zeros (yone, N, D);
-    mat_zeros (ytwo, N, D);
-    mat_zeros (z, N, D);
-    mat_zeros (z_old, N, D);
-    mat_zeros (diffzero, N, D);
-    mat_zeros (diffone, N, D);
-    mat_zeros (difftwo, N, D);
+    double ** wone = mat_init (N, N);
+    double ** wtwo = mat_init (N, N);
+    double ** yone = mat_init (N, N);
+    double ** ytwo = mat_init (N, N);
+    double ** z = mat_init (N, N);
+    double ** z_old = mat_init (N, N);
 
     // variables for shriking method
     set<int> col_active_sets;
     // set initial active_set as all elements
-    for (int i = 0; i < D; i++) 
+    for (int i = 0; i < N; i++) 
         col_active_sets.insert(i);
 
     cputime += clock() - prev;
     ss_out << cputime << " " << 0 << endl;
     prev = clock();
-    int iter = 0; // Ian: usually we count up (instead of count down)
+    int iter = 0; 
     bool no_active_element = false, admm_opt_reached = false;
-    while ( iter < ADMM_max_iter ) { // TODO: stopping criteria
+    while ( iter < ADMM_max_iter ) { 
 
         // STEP ONE: resolve w_1 and w_2
-        frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, D, fw_max_iter, col_active_sets);
+        frank_wolfe_solver (dist_mat, yone, z, wone, rho, N, N, fw_max_iter, col_active_sets);
         group_lasso_solver (ytwo, z, wtwo, rho, lambda, tables, col_active_sets);
 
         // STEP TWO: update z by averaging w_1 and w_2
@@ -387,6 +310,7 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
             col_active_sets.erase(j_shr);
             for(int i=0;i<N;i++){
                 wone[i][j_shr] = 0.0;
+                wtwo[i][j_shr] = 0.0;
                 z[i][j_shr] = 0.0;
                 z_old[i][j_shr] = 0.0;
             }
@@ -402,7 +326,7 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
         // STEP FOUR: trace the objective function
         if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
             cputime += clock() - prev;
-            error = overall_objective (dist_mat, lambda, N, D, z, tables);
+            error = overall_objective (dist_mat, lambda, N, N, z, tables);
             cout << "[Overall] iter = " << iter 
                 << ", num_active_cols: " << num_active_cols
                 << ", Loss Error: " << error << endl;
@@ -431,64 +355,52 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
     }
 
     // STEP FIVE: memory recollection
-    mat_free (wone, N, D);
-    mat_free (wtwo, N, D);
-    mat_free (yone, N, D);
-    mat_free (ytwo, N, D);
-    mat_free (diffone, N, D);
-    mat_free (difftwo, N, D);
-    mat_free (z_old, N, D);
+    mat_free (wone, N, N);
+    mat_free (wtwo, N, N);
+    mat_free (yone, N, N);
+    mat_free (ytwo, N, N);
+    mat_free (z_old, N, N);
     // STEP SIX: put converged solution to destination W
-    mat_copy (z, W, N, D);
-    mat_free (z, N, D);
+    mat_copy (z, W, N, N);
+    mat_free (z, N, N);
     ss_out.close();
 }
 
 // entry main function
 int main (int argc, char ** argv) {
-
-    if (argc < 7) {
+    if (argc < 6) {
         cerr << "Usage: " << endl;
-        cerr << "\tcvx_hdp_medoids [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local] [FW_MAX_ITER] [ADMM_MAX_ITER]" << endl;
+        cerr << "\tcvx_hdp_medoids [word_dataFile] [lambda_global] [lambda_local] [FW_MAX_ITER] [ADMM_MAX_ITER]" << endl;
         exit(-1);
     }
 
     // PARSE arguments
-    string voc_file (argv[1]);
-    string doc_file (argv[2]);
+    char* dataFile = argv[1];
     vector<double> LAMBDAs (2, 0.0);
-    LAMBDAs[0] = atof(argv[3]); // lambda_global
-    LAMBDAs[1] = atof(argv[4]); // lambda_local
-    int FW_MAX_ITER = atoi(argv[5]);
-    int ADMM_MAX_ITER = atoi(argv[6]);
+    LAMBDAs[0] = atof(argv[2]); // lambda_global
+    LAMBDAs[1] = atof(argv[3]); // lambda_local
+    int FW_MAX_ITER = atoi(argv[4]);
+    int ADMM_MAX_ITER = atoi(argv[5]);
     int SS_PERIOD = 100;
 
-    // preprocess the input dataset
-    vector<string> voc_list;
-    voc_list_read (voc_file, &voc_list);
-    cerr << "vocs read done! " << endl;
-    int nVocs = voc_list.size();
+    // read in data
+    int FIX_DIM;
+    Parser parser;
+    vector<Instance*>* pdata;
+    vector<Instance*> data;
+    pdata = parser.parseSVM(dataFile, FIX_DIM);
+    data = *pdata;
 
     // init lookup_tables
     vector< pair<int,int> > doc_lookup;
-    vector< pair<int,int> > word_lookup;
-    vector< vector<int> > voc_lookup (nVocs, vector<int>());
-    vector< pair<int,int> > word_in_doc;
+    get_doc_lookup (data, doc_lookup);
     Lookups lookup_tables;
     lookup_tables.doc_lookup = &doc_lookup;
-    lookup_tables.word_lookup = &word_lookup;
-    lookup_tables.voc_lookup = &voc_lookup;
-    lookup_tables.word_in_doc = &word_in_doc;
-    document_list_read (doc_file, &lookup_tables);
-    cerr << "docs read done" << endl;
-
+    lookup_tables.nWords = data.size();
     lookup_tables.nDocs = lookup_tables.doc_lookup->size();
-    lookup_tables.nWords = lookup_tables.word_lookup->size();
-    lookup_tables.nVocs = nVocs;
     int seed = time(NULL);
     srand (seed);
     cerr << "###########################################" << endl;
-    cerr << "nVocs = " << lookup_tables.nVocs << endl; // # vocabularies
     cerr << "nDocs = " << lookup_tables.nDocs << endl; // # documents
     cerr << "nWords = " << lookup_tables.nWords << endl; // # words
     cerr << "lambda_global = " << LAMBDAs[0] << endl;
@@ -500,34 +412,26 @@ int main (int argc, char ** argv) {
     // Run sparse convex clustering
     int N = lookup_tables.nWords;
     int D = lookup_tables.nDocs;
-    double** W = mat_init (N, D);
-
+    double** W = mat_init (N, N);
     // dist_mat computation and output
-    double** dist_mat = mat_init (N, D);
-    compute_dist_mat (dist_mat, &lookup_tables, N, D);
+    dist_func df = L2norm;
+    double** dist_mat = mat_init (N, N);
+    compute_dist_mat (data, dist_mat, N, FIX_DIM, df, true);
     ofstream dmat_out ("dist_mat");
-    dmat_out << mat_toString (dist_mat, N, D);
+    dmat_out << mat_toString (dist_mat, N, N);
     dmat_out.close();
     cerr << "dist_mat output finished.." << endl;
 
-    // word2doc 
-    ofstream w2dvec_out ("word2doc");
-    for (int i = 0; i < N; i ++)
-        w2dvec_out << word_in_doc[i].first << " "
-           << word_in_doc[i].second << endl;
-    w2dvec_out.close();
-    cerr << "w2dvec output finished.." << endl;
-
     cvx_hdp_medoids (dist_mat, FW_MAX_ITER, LAMBDAs, W, ADMM_MAX_ITER, SS_PERIOD, &lookup_tables);
 
-    /* Output objective */
-    output_objective (clustering_objective (dist_mat, W, N, D));
+    /* Output objective */ 
+    output_objective (dist_mat, W, &lookup_tables, r, LAMBDAs);
     /* Output cluster centroids */
-    output_model (W, N, D);
+    output_model (W, &lookup_tables);
     /* Output assignment */
     output_assignment (W, &lookup_tables);
 
     /* reallocation */
-    mat_free (W, N, D);
-    mat_free (dist_mat, N, D);
+    mat_free (W, N, N);
+    mat_free (dist_mat, N, N);
 }
