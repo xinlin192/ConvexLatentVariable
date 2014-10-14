@@ -7,7 +7,7 @@
 // #define EXACT_LINE_SEARCH_DUMP
 const double SPARSITY_TOL = 1e-4; //
 const double FRANK_WOLFE_TOL = 1e-20; //
-const double ADMM_EPS = -1;  //
+const double ADMM_EPS = 0.1;  //
 const double r = 1000000.0; // dummy penality rate
 const double EPS = 1e-5;
 
