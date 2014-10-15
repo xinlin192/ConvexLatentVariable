@@ -54,12 +54,12 @@ void get_doc_lookup (vector< Instance* > & data, vector<pair<int,int> >& doc_loo
         int curr_doc = data[i]->label;
         if (curr_doc != last_doc) {
             doc_end = i;
-            cerr << "(" << doc_begin << ", " << doc_end << ")" <<endl;
+            //cerr << "(" << doc_begin << ", " << doc_end << ")" <<endl;
             doc_lookup.push_back(make_pair(doc_begin, doc_end));
             doc_begin = i;
             last_doc = curr_doc;
         } 
     }
-    cerr << "(" << doc_begin << ", " << doc_end << ")" <<endl;
+    // cerr << "(" << doc_begin << ", " << doc_end << ")" <<endl;
     doc_lookup.push_back(make_pair(doc_begin, N));
 }
