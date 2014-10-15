@@ -30,6 +30,6 @@ fclose(fp);
 
 fp = fopen('data','w');
 for i =1 : size(data,2)
-	fprintf(fp,'%d %g %g\n',dataset(1,i), data(1,i), data(2,i));
+	fprintf(fp,'%d 1:%g 2:%g\n',dataset(1,i), data(1,i), data(2,i));
 end
 fclose(fp);

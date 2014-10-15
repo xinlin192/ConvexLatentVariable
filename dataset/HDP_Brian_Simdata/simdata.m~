@@ -23,3 +23,13 @@ for m = 1:M
 		end
 	end
 end
+
+fp  = fopen('ground_truth','w');
+fprintf(fp,'%d\n',label);
+fclose(fp);
+
+fp = fopen('data','w');
+for i =1 : size(data,2)
+	fprintf(fp,'%d 1:%g 2:%g\n',dataset(1,i), data(1,i), data(2,i));
+end
+fclose(fp);

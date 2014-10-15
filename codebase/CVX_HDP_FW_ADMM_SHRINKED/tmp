@@ -1,0 +1,1114 @@
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 0, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 10, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 11, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 12, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 13, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 14, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 15, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 16, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 17, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 18, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 19, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 20, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 21, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 22, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 23, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 24, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 25, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 26, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 27, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 28, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 29, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 30, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 31, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 32, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 33, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 34, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 35, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 36, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 37, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 38, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 39, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 40, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 41, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 42, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 43, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 44, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 45, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 46, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 47, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 48, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 49, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 50, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 51, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 52, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 53, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 54, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 55, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 56, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 57, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 58, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 59, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 79, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 99, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 999, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1019, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1039, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1059, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1079, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1099, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 1999, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2019, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2039, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2059, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2079, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2099, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 2999, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3019, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3039, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3059, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3079, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3099, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 3999, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4019, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4039, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4059, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4079, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4099, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 4999, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5019, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5039, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5059, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5079, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5099, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 5999, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6019, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6039, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6059, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6079, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6099, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 6999, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7019, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7039, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7059, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7079, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7099, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 7999, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8019, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8039, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8059, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8079, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8099, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 8999, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9019, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9039, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9059, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9079, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9099, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9119, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9139, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9159, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9179, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9199, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9219, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9239, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9259, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9279, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9299, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9319, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9339, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9359, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9379, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9399, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9419, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9439, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9459, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9479, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9499, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9519, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9539, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9559, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9579, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9599, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9619, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9639, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9659, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9679, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9699, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9719, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9739, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9759, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9779, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9799, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9819, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9839, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9859, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9879, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9899, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9919, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9939, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9959, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9979, num_active_cols: 30, Loss Error: 1.00115
+loss: 0.000744485, dummy=1.44329e-08, global_lasso=1.00041, sum_local_lasso=0, overall=1.00115
+[Overall] iter = 9999, num_active_cols: 30, Loss Error: 1.00115

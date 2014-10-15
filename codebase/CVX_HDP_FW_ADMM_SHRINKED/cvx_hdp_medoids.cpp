@@ -1,13 +1,15 @@
 #include "cvx_hdp_medoids.h"
+#include <string>
 
 /* algorithmic options */ 
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define EXACT_LINE_SEARCH_DUMP
-const double SPARSITY_TOL = 1e-4; //
+const double NOISE_EPS = 1e-2;
+const double SPARSITY_TOL = 1e-5; //
 const double FRANK_WOLFE_TOL = 1e-20; //
-const double ADMM_EPS = 0.1;  //
+const double ADMM_EPS = 5e-3;  //
 const double r = 1000000.0; // dummy penality rate
 const double EPS = 1e-5;
 
@@ -18,6 +20,7 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
     // STEP ONE: compute gradient mat initially
     vector< set< pair<int, double> > > actives (R, set<pair<int,double> >());
     vector< priority_queue< pair<int,double>, vector< pair<int,double> >, Int_Double_Pair_Dec> > pqueues (R, priority_queue< pair<int,double>, vector< pair<int,double> >, Int_Double_Pair_Dec> ());
+    //#pragma omp parallel for
     for (int i = 0; i < R; i++) {
         for (set<int>::iterator it=col_active_set.begin();it != col_active_set.end(); ++it) {
             int j = *it;
@@ -139,6 +142,7 @@ void skyline (double** wout, double**wbar, int R_start, int R_end, int C, double
     vector<double> max_term (C, -1e50);
     vector<double> separator (C, 0.0);
     int R = R_end - R_start;
+    //#pragma omp parallel for
     for (int j = 0; j < C; j ++) {
         if (num_alpha_elem[j] == 0) continue;
         // 2. sorting
@@ -180,8 +184,8 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
     int R = tables->nWords;
     int C = tables->nWords;
     vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
-    int global_lambda = lambda[0];
-    int local_lambda = lambda[1];
+    double global_lambda = lambda[0];
+    double local_lambda = lambda[1];
 
     double** wlocal = mat_init (R, C);
     double** wbar = mat_init (R, C);
@@ -195,7 +199,8 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
         skyline (wlocal, wbar, R_start, R_end, C, local_lambda, col_active_sets);
     }
     skyline (w, wlocal, 0, R, C, global_lambda, col_active_sets);
-
+    //skyline (w, wbar, 0, R, C, global_lambda, col_active_sets);
+    
     mat_free (wlocal, R, C);
     mat_free (wbar, R, C);
 }
@@ -239,9 +244,9 @@ double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int
 void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambda, double ** W, int ADMM_max_iter, int SS_PERIOD, Lookups * tables) {
     int N = tables->nWords;
     int D = tables->nDocs;
-    vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
+    //vector< pair<int,int> > doc_lookup = *(tables->doc_lookup);
     // parameters 
-    double alpha = 0.2;
+    double alpha = 0.1;
     double rho = 1;
     ofstream ss_out ("plot_cputime_objective");
     ss_out << "Time Objective" << endl;
@@ -324,9 +329,9 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
         // count number of active elements
         int num_active_cols = col_active_sets.size();
         // STEP FOUR: trace the objective function
-        if (iter < 3 * SS_PERIOD || (iter+1) % SS_PERIOD == 0) {
+        if ( (iter+1) % SS_PERIOD == 0) {
             cputime += clock() - prev;
-            error = overall_objective (dist_mat, lambda, N, N, z, tables);
+            error = overall_objective (dist_mat, lambda, N, N, wone, tables);
             cout << "[Overall] iter = " << iter 
                 << ", num_active_cols: " << num_active_cols
                 << ", Loss Error: " << error << endl;
@@ -381,7 +386,7 @@ int main (int argc, char ** argv) {
     LAMBDAs[1] = atof(argv[3]); // lambda_local
     int FW_MAX_ITER = atoi(argv[4]);
     int ADMM_MAX_ITER = atoi(argv[5]);
-    int SS_PERIOD = 100;
+    int SS_PERIOD = 1;
 
     // read in data
     int FIX_DIM;
@@ -415,22 +420,34 @@ int main (int argc, char ** argv) {
     double** W = mat_init (N, N);
     // dist_mat computation and output
     dist_func df = L2norm;
+   
     double** dist_mat = mat_init (N, N);
+    double** noise_mat = mat_init(N, N);
     compute_dist_mat (data, dist_mat, N, FIX_DIM, df, true);
+    //adding perturbation
+    for(int i=0;i<N;i++){
+	for(int j=0;j<N;j++){
+		noise_mat[i][j] = NOISE_EPS * ((double)rand()/RAND_MAX);
+	}
+    }
+
     ofstream dmat_out ("dist_mat");
+    
     dmat_out << mat_toString (dist_mat, N, N);
     dmat_out.close();
     cerr << "dist_mat output finished.." << endl;
-
+    
+    mat_add( dist_mat, noise_mat, dist_mat, N, N);
     cvx_hdp_medoids (dist_mat, FW_MAX_ITER, LAMBDAs, W, ADMM_MAX_ITER, SS_PERIOD, &lookup_tables);
+    mat_sub( dist_mat, noise_mat, dist_mat, N, N); 
 
     /* Output objective */ 
     output_objective (dist_mat, W, &lookup_tables, r, LAMBDAs);
     /* Output cluster centroids */
-    output_model (W, &lookup_tables);
+    output_model (W, &lookup_tables, LAMBDAs);
     /* Output assignment */
-    output_assignment (W, &lookup_tables);
-
+    output_assignment (W, &lookup_tables, LAMBDAs);
+    
     /* reallocation */
     mat_free (W, N, N);
     mat_free (dist_mat, N, N);

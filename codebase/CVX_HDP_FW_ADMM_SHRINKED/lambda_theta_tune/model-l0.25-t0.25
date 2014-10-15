@@ -1,0 +1,60 @@
+nCentroids: 10
+centroids[0]: 40
+centroids[1]: 42
+centroids[2]: 44
+centroids[3]: 63
+centroids[4]: 87
+centroids[5]: 144
+centroids[6]: 242
+centroids[7]: 249
+centroids[8]: 333
+centroids[9]: 403
+======================================
+d = 0
+nCentroids: 5
+centroids[0]: 40
+centroids[1]: 44
+centroids[2]: 87
+centroids[3]: 249
+centroids[4]: 403
+======================================
+d = 1
+nCentroids: 9
+centroids[0]: 40
+centroids[1]: 44
+centroids[2]: 63
+centroids[3]: 87
+centroids[4]: 144
+centroids[5]: 242
+centroids[6]: 249
+centroids[7]: 333
+centroids[8]: 403
+======================================
+d = 2
+nCentroids: 5
+centroids[0]: 40
+centroids[1]: 42
+centroids[2]: 44
+centroids[3]: 242
+centroids[4]: 249
+======================================
+d = 3
+nCentroids: 3
+centroids[0]: 40
+centroids[1]: 42
+centroids[2]: 44
+======================================
+d = 4
+nCentroids: 5
+centroids[0]: 40
+centroids[1]: 44
+centroids[2]: 87
+centroids[3]: 242
+centroids[4]: 403
+======================================
+d = 5
+nCentroids: 4
+centroids[0]: 40
+centroids[1]: 87
+centroids[2]: 249
+centroids[3]: 333

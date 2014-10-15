@@ -1,0 +1,14 @@
+loss: 6.4052
+dummy: 19.1449
+global_lasso: 4.00029
+sum_local_lasso: 2.50004
+loss+global+local: 12.9055
+overall: 32.0504
+======================================
+local lasso dump for each dataset
+dataset(0): 0.5
+dataset(1): 0.500032
+dataset(2): 0.500001
+dataset(3): 0.25
+dataset(4): 0.25
+dataset(5): 0.500004

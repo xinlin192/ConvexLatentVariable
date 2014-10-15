@@ -6,12 +6,13 @@ ofstream ss_out ("../obj_vs_time_dp/iris/CVX-DP-MEDOID");
 
 /* dumping options */
 // #define EXACT_LINE_SEARCH_DUMP
-#define LAMBDA_K_PLOT
+//#define LAMBDA_K_PLOT
 
+const double NOISE_EPS = 1e-3;
 const double FRANK_WOLFE_TOL = 1e-20;
-const double ADMM_EPS = 1e-4;
+const double ADMM_EPS = 0.01;
 const double SPARSITY_TOL = 1e-5;
-const double r = 1000000.0;
+const double r = 10000000.0;
 
 void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K, set<int>& col_active_set) {
     // cout << "within frank_wolfe_solver" << endl;
@@ -428,6 +429,13 @@ int main (int argc, char ** argv) {
     dist_func df = L2norm;
     double ** dist_mat = mat_init (N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
+    //add noise
+    for(int i=0;i<N;i++){
+	for(int j=0;j<N;j++){
+		dist_mat[i][j] += NOISE_EPS* ((double)rand() / RAND_MAX);
+	}
+    }
+
     ofstream dmat_out ("dist_mat");
     dmat_out << mat_toString(dist_mat, N, N);
     dmat_out.close();

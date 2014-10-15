@@ -1,0 +1,47 @@
+nCentroids: 8
+centroids[0]: 89
+centroids[1]: 165
+centroids[2]: 180
+centroids[3]: 196
+centroids[4]: 199
+centroids[5]: 207
+centroids[6]: 329
+centroids[7]: 427
+======================================
+d = 0
+nCentroids: 1
+centroids[0]: 329
+======================================
+d = 1
+nCentroids: 6
+centroids[0]: 89
+centroids[1]: 196
+centroids[2]: 199
+centroids[3]: 207
+centroids[4]: 329
+centroids[5]: 427
+======================================
+d = 2
+nCentroids: 7
+centroids[0]: 89
+centroids[1]: 165
+centroids[2]: 180
+centroids[3]: 196
+centroids[4]: 199
+centroids[5]: 207
+centroids[6]: 427
+======================================
+d = 3
+nCentroids: 1
+centroids[0]: 329
+======================================
+d = 4
+nCentroids: 1
+centroids[0]: 329
+======================================
+d = 5
+nCentroids: 4
+centroids[0]: 89
+centroids[1]: 180
+centroids[2]: 196
+centroids[3]: 199

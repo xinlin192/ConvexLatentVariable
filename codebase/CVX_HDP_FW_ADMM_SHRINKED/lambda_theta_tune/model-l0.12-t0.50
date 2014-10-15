@@ -1,0 +1,37 @@
+nCentroids: 6
+centroids[0]: 42
+centroids[1]: 87
+centroids[2]: 144
+centroids[3]: 242
+centroids[4]: 333
+centroids[5]: 403
+======================================
+d = 0
+nCentroids: 2
+centroids[0]: 87
+centroids[1]: 403
+======================================
+d = 1
+nCentroids: 4
+centroids[0]: 144
+centroids[1]: 242
+centroids[2]: 333
+centroids[3]: 403
+======================================
+d = 2
+nCentroids: 2
+centroids[0]: 42
+centroids[1]: 242
+======================================
+d = 3
+nCentroids: 1
+centroids[0]: 42
+======================================
+d = 4
+nCentroids: 1
+centroids[0]: 42
+======================================
+d = 5
+nCentroids: 2
+centroids[0]: 87
+centroids[1]: 333

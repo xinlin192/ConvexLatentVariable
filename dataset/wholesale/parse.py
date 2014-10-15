@@ -20,9 +20,15 @@ with open('wholesale.csv') as csvfile:
         outstr += str(dindex)
         sum_row = 0.0
         for idx in range(2, 8):
+<<<<<<< Updated upstream
             sum_row += float(line[idx])
         for idx in range(2, 8):
             val = float(line[idx]) / sum_row
             outstr += " " + str(idx-1)+":" + str(val)
+=======
+	    sum_row += line[]
+	for idx in range(2, 8)
+            outstr += " " + str(idx-1)+":" + line[idx]
+>>>>>>> Stashed changes
         print outstr
         line_num += 1
