@@ -204,7 +204,7 @@ double HDP_MEANS (vector<Instance*>& data, vector< vector<double> >& means, Look
 
         // 7. convergence?
         new_cost = compute_cost (data, global_means, k, z, lambdas, tables, df, FIX_DIM);
-        if (new_cost != last_cost) {
+        if (new_cost < last_cost) {
             last_cost = new_cost;
         } else break;
     }
@@ -264,7 +264,7 @@ int main (int argc, char ** argv) {
     compute_dist_mat (data, dist_mat, N, FIX_DIM, df, true);
     double min_obj = INF;
     vector< vector<double> > min_means;
-    for (int i = 0; i < nRuns; i ++) {
+    for (int j = 0; j < nRuns; j ++) {
         vector< vector<double> > means;
         // inner-doc shuffle
         for (int d = 0; d < D; d++) {
@@ -273,7 +273,19 @@ int main (int argc, char ** argv) {
             random_shuffle(data.begin()+begin_i, data.begin()+end_i);
         }
         // between-doc shuffle
-        double obj = HDP_MEANS (data, means, &lookup_tables, LAMBDAs, df, FIX_DIM);
+        vector<pair<int,int> > s_doc_lookup (doc_lookup);
+        random_shuffle(s_doc_lookup.begin(), s_doc_lookup.end());
+        vector<Instance*> s_data (N, NULL);
+        int p = 0;
+        for (int d = 0; d < D; d ++) {
+            for (int i = s_doc_lookup[d].first; i < s_doc_lookup[d].second; i ++) {
+                s_data[p] = data[i];
+                p ++;
+            }
+        }
+        lookup_tables.doc_lookup = &s_doc_lookup;
+        double obj = HDP_MEANS (s_data, means, &lookup_tables, LAMBDAs, df, FIX_DIM);
+        lookup_tables.doc_lookup = &doc_lookup;
         cout << "###################################################" << endl;
         if (obj < min_obj) {
             min_obj = obj;
