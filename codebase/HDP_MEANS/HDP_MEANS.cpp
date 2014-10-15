@@ -208,6 +208,7 @@ double HDP_MEANS (vector<Instance*>& data, vector< vector<double> >& means, Look
             last_cost = new_cost;
         } else break;
     }
+    means = global_means;
     return last_cost;
 }
 
@@ -241,6 +242,7 @@ int main (int argc, char ** argv) {
     lookup_tables.doc_lookup = &doc_lookup;
     lookup_tables.nWords = data.size();
     lookup_tables.nDocs = lookup_tables.doc_lookup->size();
+    
     int seed = time(NULL);
     srand (seed);
     cerr << "###########################################" << endl;
@@ -260,11 +262,36 @@ int main (int argc, char ** argv) {
     dist_func df = L2norm;
     double** dist_mat = mat_init (N, N);
     compute_dist_mat (data, dist_mat, N, FIX_DIM, df, true);
-    vector< vector<double> > means;
-    double obj = HDP_MEANS (data, means, &lookup_tables, LAMBDAs, df, FIX_DIM);
+    double min_obj = INF;
+    vector< vector<double> > min_means;
+    for (int i = 0; i < nRuns; i ++) {
+        vector< vector<double> > means;
+        // inner-doc shuffle
+        for (int d = 0; d < D; d++) {
+            int begin_i = doc_lookup[d].first;
+            int end_i = doc_lookup[d].second;
+            random_shuffle(data.begin()+begin_i, data.begin()+end_i);
+        }
+        // between-doc shuffle
+        double obj = HDP_MEANS (data, means, &lookup_tables, LAMBDAs, df, FIX_DIM);
+        cout << "###################################################" << endl;
+        if (obj < min_obj) {
+            min_obj = obj;
+            min_means = means;
+        }
+    }
      
     /* Output objective */ 
-   // output_objective (dist_mat, W, &lookup_tables, r, LAMBDAs);
+    output_objective (min_obj);
+    ofstream model_out ("opt_model");
+    for (int i = 0; i < min_means.size(); i ++) {
+        model_out << "mean[" << i << "] "; 
+        for (int j = 0; j < min_means[i].size(); j ++) {
+            model_out << min_means[i][j] << " " ;
+        }
+        model_out << endl;
+    }
+    model_out.close();
     /* Output cluster centroids */
    // output_model (W, &lookup_tables);
     /* Output assignment */
