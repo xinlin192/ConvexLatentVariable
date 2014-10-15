@@ -1,64 +1,38 @@
 #include "HDP_MEANS.h"
 
-/*
-    computes distance of one word to a document 
- */
-double word_doc_dist (pair<int, int> word_pair, Instance* doc_ins) {
-    int voc_idx = word_pair.first;
-    int count_w_d1 = word_pair.second;
-    double dist;
-    map<int, double> distribution ();
-    // a. compute sum of word frequency
-    int sumFreq = 0;
-    int num_word_in_doc = doc_ins->fea.size();
-    for (int f = 0; f < num_word_in_doc; f++) 
-        sumFreq += doc_ins->fea[f].second;
-    // b. compute distribution
-    for (int f = 0; f < num_word_in_doc; f++) {
-        int voc_index = doc_ins->fea[f].first - 1;
-        double prob = 1.0 * doc_ins->fea[f].second / sumFreq;
-        distribution.insert(pair<int, double> (voc_index, prob));
-    }
-    // c. compute weight of word within document
-    map<int, double>::const_iterator iter;
-    doc_ins->doc_distribution[voc_idx];
-    count_w_di = freq;
-    if (iter == distribution.end()) { // no count
-        prob_w_d2 = 0.0;
-        dist = INF;
-    } else {
-        prob_w_d2 = iter->second;
-        dist = - count_w_d1 * log(prob_w_d2);
-    }
-    return dist;
+Instance* vec2ins (vector<double> vec) {
+    Instance* ins = new Instance (1);
+    int DIM = vec.size();
+    for (int f = 0; f < DIM; f ++) 
+        ins->fea.push_back(make_pair(f+1, vec[f]));
+    return ins;
 }
-
 /* 
     data: N data instance
     assignment: N by 1 vector indicating assignment of one atom
 */
-void compute_means (vector<Instance*>& means, vector< pair<int,int> >& words, vector<int>& assignment, int DIM) { 
+void compute_means (vector<Instance*>& data, vector<int>& assignment, int FIX_DIM, vector< vector<double> >& means) {
+    int N = data.size();
+    assert (assignment.size() == N);
     // compute number of existing clusters
-    int N = words.size();
     int nClusters = means.size();  // for 0-index
-    assert (N == assignment.size());
     // clear means
-    for (int c = 0; c < nClusters; c++) delete means[c];
+    for (int j = 0; j < nClusters; j++) 
+        std::fill(means[j].begin(), means[j].end(), 0.0);
     // compute sums and counts
-    vector< vector<double> > means_count (nClusters, vector<int>(DIM, 0.0));
+    vector<int> means_count (nClusters, 0);
     for (int i = 0; i < N; i++) {
-        int voc_idx = words[i].first;
-        int freq = words[i].second;
-        means_count[assignment[i]][voc_idx] += freq;
+        int belongsto = assignment[i];
+        for (int f = 0; f < data[i]->fea.size(); f++) {
+            int j = data[i]->fea[f].first - 1;
+            means[belongsto][j] += data[i]->fea[f].second;
+        }
+        ++ means_count[belongsto];
     }
     // compute means
-    for (int c = 0; c < nClusters; c ++) {
-        Instance* tmp_cluster = new Instance(1000+c);
-        for (int j = 0; j < DIM; j ++) 
-            if (means_count[c][j] > 0)
-                tmp_cluster->fea.push_back(make_pair(j+1, means_count[c][j]));
-        means.push_back(tmp_cluster);
-    }
+    for (int c = 0; c < nClusters; c ++) 
+        for (int j = 0; j < FIX_DIM; j++) 
+            means[c][j] = 1.0 * means[c][j] / means_count[c];
 }
 
 void compute_assignment (vector<int>& assignment, vector< vector<int> >& k, vector<int>& z, Lookups* tables) {
@@ -71,32 +45,35 @@ void compute_assignment (vector<int>& assignment, vector< vector<int> >& k, vect
             assignment[i] = k[j][z[i]];
 }
 
-double HDP_MEANS (vector<Instance*>& data, Lookups* tables, vector<double> lambdas, dist_func df) {
+double HDP_MEANS (vector<Instance*>& data, vector<Instance*>& means, Lookups* tables, vector<double> lambdas, dist_func df, int FIX_DIM) {
     // STEP ZERO: validate input and initialization
     int N = tables->nWords;
     int D = tables->nDocs;
-    int V = tables->nVocs;
+    vector< pair<int, int> > doc_lookup = *(tables->);
     double lambda_global = lambdas[0];
     double lambda_local = lambdas[1];
 
-    vector<Instance*> global_means (1, new Instance(0));
-    vector< vector<Instance*> > local_means (D, vector<Instance*>());
+    vector< vector<double> > global_means (1, new Instance(0));
     vector< vector<int> > k (D, vector<int>(1,0));  // global association
     vector<int> z (N, 0); // local assignment
-    vector<int> assignment (N, 0); // global assignment
+    vector<int> global_asgn (N, 0); // global assignment
 
     // STEP ONE: a. set initial *global* medoid as global mean
-    compute_assignment (assignment, k, z, tables);
-    compute_means (global_means, word_lookup, vector<int>& assignment, V); 
+    compute_assignment (global_asgn, k, z, tables);
+    compute_means (data, global_asgn, FIX_DIM, global_means);
 
     while (true) {
-        // 4. for each point x_ij
+        // 4. for each point x_ij,
         for (int j = 0; j < D; j ++) {
             for (int i = doc_lookup[j].first; i < doc_lookup[j].second; i++) {
                 int num_global_means = global_means.size();
                 vector<double> d_ij (num_global_means, 0.0);
-                for (int p = 0; p < num_global_means; p ++) 
-                    d_ij[p] = word_doc_dist(word_lookup[i], global_means[p]);
+                for (int p = 0; p < num_global_means; p ++) {
+                    Instance* temp_ins = vec2ins(global_means[p]);
+                    double euc_dist = df(data[i], temp_ins);
+                    d_ij[p] = euc_dist * euc_dist;
+                    delete temp_ins;
+                }
                 set<int> temp;
                 for (int p = 0; p < num_global_means; p ++) temp.insert(p);
                 int num_local_means = k[j].size();
@@ -112,12 +89,56 @@ double HDP_MEANS (vector<Instance*>& data, Lookups* tables, vector<double> lambd
                 if (min_dij > lambda_global + lambda_local) {
                     z[i] = num_local_means; 
                     k[j].push_back(num_global_means);
-                    global_means.push_back();
+                    Instance* new_g = new Instance* (10000+num_global_means);
+                    new_g->fea = data[i]->fea;
+                    global_means.push_back(new_g);
                 } else {
-
+                    bool c_exist = false;
+                    for (int c = 0; c < num_local_means; c ++) 
+                        if (k[j][c] == min_p) {
+                            z[i] = c;
+                            c_exist = true;
+                        }
+                    if (!c_exist) {
+                        z[i] = num_local_means;
+                        k[j].push_back(min_p);
+                    }
                 }
             }
         }
+        // 5. for all local clusters,
+        for (int j = 0; j < D; j ++) {
+            int doc_len = doc_lookup[j].second - doc_lookup[j].first;
+            int num_local_means = k[j].size();
+            vector<int> local_asgn;
+            vector<Instance*> local_data (data[doc_lookup[j].first], data[doc_lookup[j].second]);
+            vector< vector<double> > local_means ( vector<Instance*>());
+            for (i = doc_lookup[j].first; i < doc_lookup[j].second; i ++) 
+                local_asgn.push_back(z[i]);
+            compute_means (local_data, local_asgn, FIX_DIM, local_means);
+            num_local_means = local_means.size();
+            for (int c = 0; c < num_local_means; c ++) {
+                int num_global_means = global_means.size();
+                vector<double> d_jcp (num_global_means, 0);
+                for (int p = 0; p < num_global_means; p ++) {
+
+
+                }
+                int min_p = -1; double min_d_ijp = INF;
+                for (int p = 0; p < num_global_means; p ++) {
+
+                }
+                if (min_d_ijp > lambda_global + ) {
+                    global_means.push_back(); //  push mu_jc
+                    k[j].push_back(num_global_means);
+                } else {
+                    k[j][c] = min_p;
+                }
+            }
+        }
+        // 6. for each global clusters,
+        compute_assignment (global_asgn, k, z, tables);
+        compute_means (data, global_asgn, FIX_DIM, global_means);
     }
     /*
     vector< vector<double> > last_means = new_means; 
@@ -184,40 +205,37 @@ double HDP_MEANS (vector<Instance*>& data, Lookups* tables, vector<double> lambd
 int main (int argc, char ** argv) {
     if (argc < 5) {
         cerr << "Usage: " << endl;
-        cerr << "\thdp_medoids [voc_dataFile] [doc_dataFile] [lambda_global] [lambda_local]" << endl;
+        cerr << "\thdp_medoids [word_dataFile] [lambda_global] [nRuns] [lambda_local]" << endl;
         exit(-1);
     }
 
     // PARSE arguments
-    string voc_file (argv[1]);
-    string doc_file (argv[2]);
+    char* dataFile = argv[1];
     vector<double> LAMBDAs (2, 0.0);
-    LAMBDAs[0] = atof(argv[3]); // lambda_document
-    LAMBDAs[1] = atof(argv[4]); // lambda_topic
+    LAMBDAs[0] = atof(argv[2]); // lambda_global
+    LAMBDAs[1] = atof(argv[3]); // lambda_local
+    int FW_MAX_ITER = atoi(argv[4]);
+    int ADMM_MAX_ITER = atoi(argv[5]);
+    int SS_PERIOD = 100;
 
-    // preprocess the input dataset
-    vector<string> voc_list;
-    voc_list_read (voc_file, &voc_list);
-    int nVocs = voc_list.size();
+    // read in data
+    int FIX_DIM;
+    Parser parser;
+    vector<Instance*>* pdata;
+    vector<Instance*> data;
+    pdata = parser.parseSVM(dataFile, FIX_DIM);
+    data = *pdata;
 
     // init lookup_tables
     vector< pair<int,int> > doc_lookup;
-    vector< pair<int,int> > word_lookup;
-    vector< vector<int> > voc_lookup (nVocs, vector<int>());
+    get_doc_lookup (data, doc_lookup);
     Lookups lookup_tables;
     lookup_tables.doc_lookup = &doc_lookup;
-    lookup_tables.word_lookup = &word_lookup;
-    lookup_tables.voc_lookup = &voc_lookup;
-
-    document_list_read (doc_file, &lookup_tables);
+    lookup_tables.nWords = data.size();
     lookup_tables.nDocs = lookup_tables.doc_lookup->size();
-    lookup_tables.nWords = lookup_tables.word_lookup->size();
-    lookup_tables.nVocs = nVocs;
-
     int seed = time(NULL);
     srand (seed);
     cerr << "###########################################" << endl;
-    cerr << "nVocs = " << lookup_tables.nVocs << endl; // # vocabularies
     cerr << "nDocs = " << lookup_tables.nDocs << endl; // # documents
     cerr << "nWords = " << lookup_tables.nWords << endl; // # words
     cerr << "lambda_global = " << LAMBDAs[0] << endl;
@@ -226,17 +244,23 @@ int main (int argc, char ** argv) {
     cerr << "seed = " << seed << endl;
     cerr << "###########################################" << endl;
 
+    // Run sparse convex clustering
     int N = lookup_tables.nWords;
     int D = lookup_tables.nDocs;
-    double** dist_mat = mat_init (N, D);
-    HDP_MEANS (data, N, D, lambda, df);
+    double** W = mat_init (N, N);
+    // dist_mat computation and output
+    dist_func df = L2norm;
+    vector< Instance* > means;
+    double obj = HDP_MEANS (data, &means, &lookup_tables, lambdas, df, FIX_DIM);
 
-    /* Output objective, model and assignments */
-    /*
-    output_objective(clustering_objective (dist_mat, min_w, N));
-    output_model (min_w, N);
-    output_assignment (min_w, data, N);
-    */
-    /* Deallocation */
+    /* Output objective */ 
+    output_objective (dist_mat, W, &lookup_tables, r, LAMBDAs);
+    /* Output cluster centroids */
+    output_model (W, &lookup_tables);
+    /* Output assignment */
+    output_assignment (W, &lookup_tables);
 
+    /* reallocation */
+    mat_free (W, N, N);
+    mat_free (dist_mat, N, N);
 }
