@@ -109,17 +109,18 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         objmin_trace << omp_get_wtime()-start_time << " " << objmin << endl;
         // STEP FOUR: stopping criteria
         if (new_cost == last_cost) {
-            cout << "CLUSTERING COST: " << new_cost << endl;
             cout << "Resulted medoids: ";
             for (int c = 0; c < nClusters; c++) 
                 cout << new_medoids[c] << ",";
             cout << endl;
             break;
         } // medoids has been the optimal
-        else {
+        else if (new_cost < last_cost ) {
             last_medoids.clear();
             last_medoids = new_medoids;
             last_cost = new_cost;
+        } else {
+            assert (false);
         }
     }
     for (int i = 0; i < N; i ++) 
