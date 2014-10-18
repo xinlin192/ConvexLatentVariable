@@ -25,7 +25,7 @@ void compute_means (vector<Instance*>& data, vector<int>& assignment, int D, vec
     // compute means
     for (int c = 0; c < nClusters; c ++) 
         for (int j = 0; j < D; j++) 
-            means[c][j] = means[c][j] / means_count[c];
+            means[c][j] =  means[c][j] / means_count[c];
 }
 
 double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func df) {
@@ -34,19 +34,20 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
     // STEP ONE: a. set initial *global* medoid as global mean
     vector< vector<double> > new_means (1, vector<double>(D, 0.0));
     vector<int> assignment (N, 0);
+    vector<int> last_assignment (N, 0);
     compute_means (data, assignment, D, new_means);
     vector< vector<double> > last_means = new_means; 
     double last_cost = INF, new_cost = INF; // compute last cost
     while (true) {
         // STEP TWO: compute dist square to new medoids d_ic
-        std::random_shuffle(data.begin(), data.end());
+        // std::random_shuffle(data.begin(), data.end());
         for (int i = 0; i < N; i ++) {
             int nClusters = new_means.size();
             // cout << "nClusters: " << nClusters << endl;
             vector<double> dist_vec (nClusters, 0.0);
             for (int c = 0; c < nClusters; c ++) {
                 Instance* mean_ins = new Instance (10000+c);
-                // d_ic = || x_i + mu_c ||^2
+                // d_ic = || x_i - mu_c ||^2
                 for (int f = 0; f < D; f++) 
                     mean_ins->fea.push_back(make_pair(f+1, new_means[c][f]));
                 double dist_val = df(mean_ins, data[i], D);
@@ -55,11 +56,20 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
             }
             int min_index = -1;
             double min_value = INF;
-            for (int j = 0; j < nClusters; j++) 
+            for (int j = 0; j < nClusters; j++) {
+            /*
+                if (i == 1129) 
+                    cout << dist_vec[j] << " ";
+                    */
                 if (dist_vec[j] < min_value) {
                     min_index = j;
                     min_value = dist_vec[j];
                 }
+            }
+            /*
+            if (i == 1129) 
+                cout << endl;
+                */
             // cout << "min_value: " << min_value << endl;
             if (min_value <= lambda) 
                 assignment[i] = min_index;
@@ -72,6 +82,7 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
                 new_means.push_back(tmp_mean);
             }
         }
+        // assignment[1129] = 0;
         compute_means (data, assignment, D, new_means);
         // STEP THREE: compute cost
         int nClusters = new_means.size();
@@ -81,20 +92,52 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
             for (int j = 0; j < D; j ++) 
                 means_ins[c]->fea.push_back(make_pair(j+1, new_means[c][j]));
         }
-        new_cost = 0.0;
+        double loss = 0.0;
         for (int i = 0; i < N; i ++) {
             double dist_val = df (means_ins[assignment[i]], data[i], D);
-            new_cost += 0.5 * dist_val * dist_val;
+            loss += 0.5 * dist_val * dist_val;
         }
-        new_cost += lambda * nClusters;
+        double reg = lambda * nClusters;
+        new_cost = loss + reg;
         for (int c = 0; c < nClusters; c++) delete means_ins[c];
-        cout << "CLUSTERING COST: " << new_cost << endl;
-        cout << "c: " << nClusters << endl;
+        cout << "loss: " << loss 
+             << ", reg: " << reg 
+             << ", new_cost: " << new_cost << endl;
         // STEP FOUR: convergence evaluation
-        if (new_cost != last_cost) {
+        if (new_cost == last_cost) break;
+        else if (new_cost < last_cost) {
             last_cost = new_cost;
             last_means = new_means;
-        } else break;
+            last_assignment = assignment;
+        } else {
+            // TODO: DP_MEANS should have monotonic decrease? 
+            cout << "ssssssssssssssssss" << endl;
+            ofstream la_out ("last_assignment");
+            for (int x =0 ; x < N; x ++)
+                la_out << last_assignment[x] <<endl;
+            la_out.close();
+            ofstream a_out ("assignment");
+            for (int x =0 ; x < N; x ++)
+                a_out << assignment[x] <<endl;
+            a_out.close();
+            ofstream lm_out ("last_means");
+            for (int c = 0; c < last_means.size();c++) {
+                for (int j = 0; j < D; j++)
+                    lm_out << last_means[c][j] << " ";
+                lm_out << endl;
+            }
+            lm_out.close();
+            ofstream m_out ("means");
+            for (int c = 0; c < new_means.size();c++) {
+                for (int j = 0; j < D; j++)
+                    m_out << new_means[c][j] << " ";
+                m_out << endl;
+            }
+            m_out.close();
+            // assignment[1129] = 0;
+            continue;
+            assert(false);
+        }
     }
     return last_cost;
 }
@@ -102,7 +145,7 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
 // entry main function
 int main (int argc, char ** argv) {
     if (argc != 3) {
-        cerr << "Usage: DP_MEDOIDS [dataFile] [lambda]" << endl;
+        cerr << "Usage: DP_MEANS [dataFile] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         cerr << "Note: nRuns is the number of running to get global optima" << endl;
         exit(-1);
@@ -117,14 +160,8 @@ int main (int argc, char ** argv) {
     pdata = parser.parseSVM(dataFile, FIX_DIM);
     data = *pdata;
     // explore the data 
-    int D = -1;
+    int D = FIX_DIM;
     int N = data.size(); // data size
-    for (int i = 0; i < N; i++) {
-        vector< pair<int,double> > * f = &(data[i]->fea);
-        int last_index = f->size() - 1;
-        if (f->at(last_index).first > D) 
-            D = f->at(last_index).first;
-    }
     cerr << "D = " << D << endl; // # features
     cerr << "N = " << N << endl; // # instances
     cerr << "lambda = " << lambda << endl;
