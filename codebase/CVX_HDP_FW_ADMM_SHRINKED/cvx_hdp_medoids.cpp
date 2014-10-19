@@ -426,9 +426,9 @@ int main (int argc, char ** argv) {
     compute_dist_mat (data, dist_mat, N, FIX_DIM, df, true);
     //adding perturbation
     for(int i=0;i<N;i++){
-	for(int j=0;j<N;j++){
-		noise_mat[i][j] = NOISE_EPS * ((double)rand()/RAND_MAX);
-	}
+        for(int j=0;j<N;j++){
+            noise_mat[i][j] = NOISE_EPS * ((double)rand()/RAND_MAX);
+        }
     }
 
     ofstream dmat_out ("dist_mat");
@@ -440,6 +440,76 @@ int main (int argc, char ** argv) {
     mat_add( dist_mat, noise_mat, dist_mat, N, N);
     cvx_hdp_medoids (dist_mat, FW_MAX_ITER, LAMBDAs, W, ADMM_MAX_ITER, SS_PERIOD, &lookup_tables);
     mat_sub( dist_mat, noise_mat, dist_mat, N, N); 
+
+   // compute the mean and update objective to compare with DP_MEANS
+    cerr << "==================================================" << endl; 
+    cerr << "Computing the mean of derived group members ..." << endl;
+    vector<int> centroids;
+    get_all_centroids(W, &centroids, N, N);
+    int nCentroids = centroids.size();
+    vector< vector<int> > members (nCentroids, vector<int>());
+    for (int c = 0; c < nCentroids; c++) {
+        int j = centroids[c];
+        // cout << "centroid: " << j << endl;
+        for (int i = 0; i < N; i++) {
+            if (W[i][j] < 1.01 && W[i][j] > 0.99) {
+                members[c].push_back(i);
+               // cout << "member: "<< i << endl;
+            }
+        }
+    }
+    // compute the means
+    vector< vector<double> > means (nCentroids, vector<double>(FIX_DIM, 0.0));
+    for (int c = 0; c < nCentroids; c++) {
+        int numMembers = members[c].size();
+        for (int x = 0; x < numMembers; x ++) {
+            int i = members[c][x];
+            Instance* ins = data[i];
+            int fea_size = ins->fea.size();
+            for (int f = 0; f < fea_size; f++) 
+                means[c][ins->fea[f].first-1] += ins->fea[f].second;
+        }
+        for (int f = 0; f < D; f++) 
+            means[c][f] = means[c][f] / numMembers;
+    }
+    // compute distance
+    double global_reg = LAMBDAs[0] * nCentroids;
+    double local_reg = 0.0;
+    for (int d = 0; d < D; d++) {
+        int begin_i = doc_lookup[d].first;
+        int end_i = doc_lookup[d].second;
+        vector<int> local_centroids;
+        double ** temp_W = mat_init (end_i-begin_i,N);
+        for (int i = begin_i; i < end_i; i++) 
+            for (int j = 0; j < N; j++)
+                temp_W[i-begin_i][j] = W[i][j];
+        get_all_centroids(temp_W, &local_centroids, N, N);
+        int local_nCentroids = local_centroids.size();
+        local_reg += LAMBDAs[1] * local_nCentroids;
+        mat_free(temp_W, end_i-begin_i,N);
+    }
+    double sum_means_loss = 0.0;
+    for (int c = 0; c < nCentroids; c++) {
+        double mean_loss = 0.0;
+        int numMembers = members[c].size();
+        Instance* mean_ins = new Instance(c+100000);
+        for (int f = 0; f < D; f++) 
+            mean_ins->fea.push_back(make_pair(f+1, means[c][f]));
+        for (int x = 0; x < numMembers; x ++) {
+            int i = members[c][x];
+            Instance* ins = data[i];
+            double dist = df(mean_ins, ins, D);
+            mean_loss +=  dist * dist;
+        }
+        delete mean_ins;
+        cerr << "c=" << centroids[c] << ", mean_loss: " << mean_loss << endl;
+        sum_means_loss += mean_loss;
+    }
+    // output distance
+    cerr << "Total_means_loss: " << sum_means_loss
+        << ", Global_reg : " << global_reg
+        << ", Local_reg : " << local_reg << endl;
+    cerr << "Total_Error: " << sum_means_loss + global_reg + local_reg << endl;
 
     /* Output objective */ 
     output_objective (dist_mat, W, &lookup_tables, r, LAMBDAs);
