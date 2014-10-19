@@ -1,0 +1,7 @@
+CVX_HDP
+-------------------------------
+./cvx_hdp_medoids ../../dataset/wholesale/final.wholesale 0.25 0 50 200000
+
+loss: 19.8134, dummy=0, global_lasso=1.75, sum_local_lasso=12, overall=33.5634
+[Overall] iter = 199999, num_active_cols: 7, Loss Error: 33.5634
+
