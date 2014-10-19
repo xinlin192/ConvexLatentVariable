@@ -10,8 +10,16 @@ void compute_means (vector<Instance*>& data, vector<int>& assignment, int D, vec
     // compute number of existing clusters
     int nClusters = means.size();  // for 0-index
     // clear means
-    for (int j = 0; j < nClusters; j++) 
+    for (int j = 0; j < nClusters; j++) {
         std::fill(means[j].begin(), means[j].end(), 0.0);
+        /*
+        for (int i =0; i < means[j].size(); i ++) {
+            cout << means[j][i] << " ";
+            assert ( means[j][i] == 0.0 );
+        }
+        cout << endl;
+        */
+    }
     // compute sums and counts
     vector<int> means_count (nClusters, 0);
     for (int i = 0; i < N; i++) {
@@ -57,19 +65,11 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
             int min_index = -1;
             double min_value = INF;
             for (int j = 0; j < nClusters; j++) {
-            /*
-                if (i == 1129) 
-                    cout << dist_vec[j] << " ";
-                    */
                 if (dist_vec[j] < min_value) {
                     min_index = j;
                     min_value = dist_vec[j];
                 }
             }
-            /*
-            if (i == 1129) 
-                cout << endl;
-                */
             // cout << "min_value: " << min_value << endl;
             if (min_value <= lambda) 
                 assignment[i] = min_index;
@@ -82,7 +82,6 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
                 new_means.push_back(tmp_mean);
             }
         }
-        // assignment[1129] = 0;
         compute_means (data, assignment, D, new_means);
         // STEP THREE: compute cost
         int nClusters = new_means.size();
@@ -110,14 +109,13 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
             last_means = new_means;
             last_assignment = assignment;
         } else {
-            // TODO: DP_MEANS should have monotonic decrease? 
-            cout << "ssssssssssssssssss" << endl;
+            /*
             ofstream la_out ("last_assignment");
-            for (int x =0 ; x < N; x ++)
+            for (int x = 0 ; x < N; x ++)
                 la_out << last_assignment[x] <<endl;
             la_out.close();
             ofstream a_out ("assignment");
-            for (int x =0 ; x < N; x ++)
+            for (int x = 0 ; x < N; x ++)
                 a_out << assignment[x] <<endl;
             a_out.close();
             ofstream lm_out ("last_means");
@@ -128,14 +126,13 @@ double DP_MEANS (vector<Instance*>& data, int N, int D, double lambda, dist_func
             }
             lm_out.close();
             ofstream m_out ("means");
-            for (int c = 0; c < new_means.size();c++) {
+            for (int c = 0; c < new_means.size(); c++) {
                 for (int j = 0; j < D; j++)
                     m_out << new_means[c][j] << " ";
                 m_out << endl;
             }
             m_out.close();
-            // assignment[1129] = 0;
-            continue;
+            */
             assert(false);
         }
     }
