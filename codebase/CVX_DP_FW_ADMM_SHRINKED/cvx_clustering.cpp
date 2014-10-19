@@ -8,9 +8,9 @@ ofstream ss_out ("../obj_vs_time_dp/iris/CVX-DP-MEDOID");
 // #define EXACT_LINE_SEARCH_DUMP
 //#define LAMBDA_K_PLOT
 
-const double NOISE_EPS = 1e-3;
+const double NOISE_EPS = 0.0;
 const double FRANK_WOLFE_TOL = 1e-20;
-const double ADMM_EPS = 0.01;
+const double ADMM_EPS = 0.000001;
 const double SPARSITY_TOL = 1e-5;
 const double r = 10000000.0;
 
@@ -22,7 +22,7 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
     for (int i = 0; i < N; i++) {
         for (set<int>::iterator it=col_active_set.begin();it != col_active_set.end(); ++it) {
             int j = *it;
-            double grad=0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
+            double grad=dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
             if (wone[i][j] > 1e-10) 
                 actives[i].insert(make_pair(j,grad));
             else 
@@ -70,13 +70,13 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
                 } else {
                     w_minus_s = wone[i][it->first];
                 }
-                sum1 += 0.5 * w_minus_s * (dist_mat[i][it->first] -r);
+                sum1 +=  w_minus_s * (dist_mat[i][it->first] -r);
                 sum2 += yone[i][it->first] * w_minus_s;
                 sum3 += rho * w_minus_s * w_minus_z;
                 sum4 += rho * w_minus_s * w_minus_s; 
             }
             if (!isInActives[i]) {
-                sum1 += 0.5 * (-1.0) * (dist_mat[i][s[i].first] - r);
+                sum1 +=  (-1.0) * (dist_mat[i][s[i].first] - r);
                 sum2 += yone[i][it->first] * (-1.0);
                 sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
                 sum4 += rho;
@@ -117,7 +117,7 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
             double new_grad;
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 int j = it->first;
-                new_grad=0.5*dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
+                new_grad=dist_mat[i][j]+yone[i][j]+rho*(wone[i][j]-zone[i][j]); 
                 temp.insert (make_pair(it->first, new_grad));
             }
             actives[i].swap(temp);
@@ -210,7 +210,7 @@ double overall_objective (double ** dist_mat, double lambda, int N, double ** z)
             normSum += z[i][j] * dist_mat[i][j];
         }
     }
-    double loss = 0.5 * (normSum);
+    double loss =  (normSum);
     cout << "loss=" << loss;
     // STEP TWO: compute dummy loss
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
@@ -431,9 +431,9 @@ int main (int argc, char ** argv) {
     compute_dist_mat (data, dist_mat, N, D, df, true); 
     //add noise
     for(int i=0;i<N;i++){
-	for(int j=0;j<N;j++){
-		dist_mat[i][j] += NOISE_EPS* ((double)rand() / RAND_MAX);
-	}
+        for(int j=0;j<N;j++){
+            dist_mat[i][j] += NOISE_EPS* ((double)rand() / RAND_MAX);
+        }
     }
 
     ofstream dmat_out ("dist_mat");
@@ -507,7 +507,7 @@ int main (int argc, char ** argv) {
         for (int x = 0; x < numMembers; x ++) {
             int i = members[c][x];
             Instance* ins = data[i];
-            mean_loss += 0.5 * df(mean_ins, ins, D) * df(mean_ins, ins, D);
+            mean_loss +=  df(mean_ins, ins, D) * df(mean_ins, ins, D);
         }
         delete mean_ins;
         cerr << "c=" << centroids[c] << ", mean_loss: " << mean_loss << endl;

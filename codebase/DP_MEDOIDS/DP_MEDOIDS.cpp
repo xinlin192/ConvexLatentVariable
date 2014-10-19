@@ -42,7 +42,7 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
     init_out.close();
     vector<int> last_medoids (new_medoids);
     // OPTIONAL: write randomized medoids to stdout or external files
-    double last_cost = min_sum, new_cost = min_sum; 
+    double last_cost = min_sum + lambda, new_cost = min_sum + lambda; 
     vector<int> z (N, 0);
     while (true) {
         // STEP TWO: compute dist square to new medoids d_ic
@@ -99,7 +99,7 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
         // STEP THREE: compute cost
         double loss = 0.0; 
         for (int i = 0; i < N; i ++) 
-            loss += 0.5 * dist_mat[i][new_medoids[z[i]]];
+            loss += dist_mat[i][new_medoids[z[i]]];
         double reg = new_medoids.size() * lambda;
         new_cost = loss + reg;
         cout << "loss: " << loss 
@@ -116,7 +116,6 @@ double DP_MEDOIDS (double** dist_mat, int N, double lambda, double** W, vector<i
             break;
         } // medoids has been the optimal
         else if (new_cost < last_cost ) {
-            last_medoids.clear();
             last_medoids = new_medoids;
             last_cost = new_cost;
         } else {
@@ -179,7 +178,6 @@ int main (int argc, char ** argv) {
 
     // pre-compute distance matrix
     dist_func df = L2norm;
-        random_shuffle (data.begin(), data.end());
 
     // Run sparse convex clustering
     double *** W = new double** [nRuns];
@@ -191,12 +189,13 @@ int main (int argc, char ** argv) {
     int min_nMedoids;
     start_time = omp_get_wtime();
     double ** dist_mat = mat_init (N, N);
-    compute_dist_mat (data, dist_mat, N, D, df, true); 
     ofstream dmat_out ("dist_mat");
     dmat_out << mat_toString(dist_mat, N, N);
     dmat_out.close();
     for (int i = 0; i < nRuns; i++) {
         W[i] = mat_init (N, N);
+        random_shuffle (data.begin(), data.end());
+        compute_dist_mat (data, dist_mat, N, D, df, true); 
         // INVOKE algorithm function
         objectives[i] = DP_MEDOIDS (dist_mat, N, lambda, W[i], &(medoids[i]));
         if (objectives[i] < min_obj) {
