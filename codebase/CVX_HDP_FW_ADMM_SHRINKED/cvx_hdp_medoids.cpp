@@ -72,13 +72,13 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
                 } else {
                     w_minus_s = w[i][it->first];
                 }
-                sum1 += 0.5 * w_minus_s * (dist_mat[i][it->first] -r);
+                sum1 += 0.5* w_minus_s * (dist_mat[i][it->first] -r);
                 sum2 += y[i][it->first] * w_minus_s;
                 sum3 += rho * w_minus_s * w_minus_z;
                 sum4 += rho * w_minus_s * w_minus_s; 
             }
             if (!isInActives[i]) {
-                sum1 += 0.5 * (-1.0) * (dist_mat[i][s[i].first] - r);
+                sum1 +=  0.5*(-1.0) * (dist_mat[i][s[i].first] - r);
                 sum2 += y[i][it->first] * (-1.0);
                 sum3 += rho * (-1.0) * (w[i][s[i].first]-z[i][s[i].first]);
                 sum4 += rho;
@@ -214,7 +214,7 @@ double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int
     for (int i = 0; i < R; i ++) 
         for (int j = 0; j < C; j ++) 
             normSum += z[i][j] * dist_mat[i][j];
-    double loss = 0.5 * normSum;
+    double loss =  normSum;
     // STEP TWO: compute dummy loss
     // sum4 = r dot (1 - sum_k w_nk) -> dummy
     double * temp_vec = new double [R];
@@ -232,7 +232,7 @@ double overall_objective (double ** dist_mat, vector<double>& lambda, int R, int
         sum_local_lasso += local_lasso[d];
     }
     double overall = loss + global_lasso + sum_local_lasso + dummy_penalty;
-    cout << "loss: " << loss << ", dummy=" << dummy_penalty
+    cerr << "loss: " << loss << ", dummy=" << dummy_penalty
         << ", global_lasso=" << global_lasso 
         << ", sum_local_lasso=" << sum_local_lasso 
         << ", overall=" << overall
@@ -332,7 +332,7 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
         if ( (iter+1) % SS_PERIOD == 0) {
             cputime += clock() - prev;
             error = overall_objective (dist_mat, lambda, N, N, wone, tables);
-            cout << "[Overall] iter = " << iter 
+            cerr << "[Overall] iter = " << iter 
                 << ", num_active_cols: " << num_active_cols
                 << ", Loss Error: " << error << endl;
             ss_out << cputime << " " << error << endl;
@@ -454,7 +454,7 @@ int main (int argc, char ** argv) {
         for (int i = 0; i < N; i++) {
             if (W[i][j] < 1.01 && W[i][j] > 0.99) {
                 members[c].push_back(i);
-               // cout << "member: "<< i << endl;
+               // cerr << "member: "<< i << endl;
             }
         }
     }
@@ -483,7 +483,7 @@ int main (int argc, char ** argv) {
         for (int i = begin_i; i < end_i; i++) 
             for (int j = 0; j < N; j++)
                 temp_W[i-begin_i][j] = W[i][j];
-        get_all_centroids(temp_W, &local_centroids, N, N);
+        get_all_centroids(temp_W, &local_centroids, end_i-begin_i, N);
         int local_nCentroids = local_centroids.size();
         local_reg += LAMBDAs[1] * local_nCentroids;
         mat_free(temp_W, end_i-begin_i,N);
