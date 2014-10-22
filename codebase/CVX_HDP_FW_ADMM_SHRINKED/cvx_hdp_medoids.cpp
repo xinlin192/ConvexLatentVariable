@@ -24,7 +24,8 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
     for (int i = 0; i < R; i++) {
         for (set<int>::iterator it=col_active_set.begin();it != col_active_set.end(); ++it) {
             int j = *it;
-            double grad=0.5*dist_mat[i][j]+y[i][j]+rho*(w[i][j]-z[i][j]); 
+            // double grad=0.5*dist_mat[i][j]+y[i][j]+rho*(w[i][j]-z[i][j]); 
+            double grad=dist_mat[i][j]+y[i][j]+rho*(w[i][j]-z[i][j]); 
             if (w[i][j] > 1e-10) 
                 actives[i].insert(make_pair(j,grad));
             else 
@@ -72,13 +73,15 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
                 } else {
                     w_minus_s = w[i][it->first];
                 }
-                sum1 += 0.5* w_minus_s * (dist_mat[i][it->first] -r);
+                // sum1 += 0.5* w_minus_s * (dist_mat[i][it->first] -r);
+                sum1 +=  w_minus_s * (dist_mat[i][it->first] -r);
                 sum2 += y[i][it->first] * w_minus_s;
                 sum3 += rho * w_minus_s * w_minus_z;
                 sum4 += rho * w_minus_s * w_minus_s; 
             }
             if (!isInActives[i]) {
-                sum1 +=  0.5*(-1.0) * (dist_mat[i][s[i].first] - r);
+                // sum1 +=  0.5*(-1.0) * (dist_mat[i][s[i].first] - r);
+                sum1 += (-1.0) * (dist_mat[i][s[i].first] - r);
                 sum2 += y[i][it->first] * (-1.0);
                 sum3 += rho * (-1.0) * (w[i][s[i].first]-z[i][s[i].first]);
                 sum4 += rho;
@@ -118,7 +121,8 @@ void frank_wolfe_solver (double ** dist_mat, double ** y, double ** z, double **
             double new_grad;
             for (it=actives[i].begin(); it!=actives[i].end(); ++it) {
                 int j = it->first;
-                new_grad=0.5*dist_mat[i][j]+y[i][j]+rho*(w[i][j]-z[i][j]); 
+                // new_grad=0.5*dist_mat[i][j]+y[i][j]+rho*(w[i][j]-z[i][j]); 
+                new_grad=dist_mat[i][j]+y[i][j]+rho*(w[i][j]-z[i][j]); 
                 temp.insert (make_pair(it->first, new_grad));
             }
             actives[i].swap(temp);

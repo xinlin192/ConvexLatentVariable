@@ -162,6 +162,6 @@ void get_doc_lookup (vector< Instance* > & data, vector<pair<int,int> >& doc_loo
 			last_doc = curr_doc;
 		} 
 	}
-	cerr << "(" << doc_begin << ", " << doc_end << ")" <<endl;
+	cerr << "(" << doc_begin << ", " << N << ")" <<endl;
 	doc_lookup.push_back(make_pair(doc_begin, N));
 }
