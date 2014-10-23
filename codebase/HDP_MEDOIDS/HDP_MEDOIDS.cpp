@@ -1,5 +1,9 @@
 #include "HDP_MEDOIDS.h"
 
+ofstream objmin_trace("../obj_vs_time_dp/wholesale/HDP-MEDOIDS");
+double objmin = 1e300;
+double start_time;
+
 Instance* vec2ins (vector<double> vec) {
     Instance* ins = new Instance (1);
     int DIM = vec.size();
@@ -274,6 +278,8 @@ double HDP_MEDOIDS (vector<Instance*>& data, vector< vector<double> >& means, Lo
 
         // 7. convergence?
         new_cost = compute_cost (data, global_means, k, z, lambdas, tables, df, FIX_DIM);
+        if ( new_cost < objmin ) objmin = new_cost;
+        objmin_trace << omp_get_wtime()-start_time << " " << objmin << endl;
         if (new_cost == last_cost)
             break;
         if (new_cost < last_cost) {
@@ -300,6 +306,8 @@ int main (int argc, char ** argv) {
     vector<double> LAMBDAs (2, 0.0);
     LAMBDAs[0] = atof(argv[3]); // lambda_global
     LAMBDAs[1] = atof(argv[4]); // lambda_local
+
+    objmin_trace << "time objective" << endl;
 
     // read in data
     int FIX_DIM;
@@ -386,4 +394,5 @@ int main (int argc, char ** argv) {
     /* reallocation */
     mat_free (W, N, N);
     mat_free (dist_mat, N, N);
+    objmin_trace.close();
 }
