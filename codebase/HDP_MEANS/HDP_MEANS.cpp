@@ -1,4 +1,7 @@
 #include "HDP_MEANS.h"
+ofstream objmin_trace("../obj_vs_time_dp/wholesale/HDP-MEAN");
+double objmin = 1e300;
+double start_time;
 
 Instance* vec2ins (vector<double> vec) {
     Instance* ins = new Instance (1);
@@ -261,6 +264,9 @@ double HDP_MEANS (vector<Instance*>& data, vector< vector<double> >& means, Look
 
         // 7. convergence?
         new_cost = compute_cost (data, global_means, k, z, lambdas, tables, df, FIX_DIM);
+
+        if ( new_cost < objmin ) objmin = new_cost;
+        objmin_trace << omp_get_wtime()-start_time << " " << objmin << endl;
         if (new_cost == last_cost)
             break;
         if (new_cost < last_cost) {
@@ -287,6 +293,8 @@ int main (int argc, char ** argv) {
     vector<double> LAMBDAs (2, 0.0);
     LAMBDAs[0] = atof(argv[3]); // lambda_global
     LAMBDAs[1] = atof(argv[4]); // lambda_local
+
+    objmin_trace << "time objective" << endl;
 
     // read in data
     int FIX_DIM;
@@ -328,6 +336,7 @@ int main (int argc, char ** argv) {
     dist_mat_out << mat_toString(dist_mat, N, N);
     dist_mat_out.close();
     */
+    start_time = omp_get_wtime();
     double min_obj = INF;
     vector< vector<double> > min_means;
     for (int j = 0; j < nRuns; j ++) {
@@ -352,7 +361,7 @@ int main (int argc, char ** argv) {
         lookup_tables.doc_lookup = &s_doc_lookup;
         double obj = HDP_MEANS (s_data, means, &lookup_tables, LAMBDAs, df, FIX_DIM);
         lookup_tables.doc_lookup = &doc_lookup;
-        cout << "###################################################" << endl;
+        cerr << "###################################################" << endl;
         if (obj < min_obj) {
             min_obj = obj;
             min_means = means;
@@ -378,4 +387,5 @@ int main (int argc, char ** argv) {
     /* reallocation */
     mat_free (W, N, N);
     mat_free (dist_mat, N, N);
+    objmin_trace.close();
 }
