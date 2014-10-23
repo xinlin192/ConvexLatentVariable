@@ -1,5 +1,6 @@
 #include "cvx_hdp_medoids.h"
 #include <string>
+ofstream ss_out ("../obj_vs_time_dp/wholesale/CVX-HDP-MEDOID");
 
 /* algorithmic options */ 
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
@@ -252,10 +253,9 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
     // parameters 
     double alpha = 0.1;
     double rho = 1;
-    ofstream ss_out ("plot_cputime_objective");
     ss_out << "Time Objective" << endl;
-    clock_t cputime = 0;
-    clock_t prev = clock();
+    double cputime = 0;
+    double prev = omp_get_wtime();
     // iterative optimization 
     double error = INF;
     double ** wone = mat_init (N, N);
@@ -271,9 +271,9 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
     for (int i = 0; i < N; i++) 
         col_active_sets.insert(i);
 
-    cputime += clock() - prev;
+    cputime += omp_get_wtime() - prev;
     ss_out << cputime << " " << 0 << endl;
-    prev = clock();
+    prev = omp_get_wtime();
     int iter = 0; 
     bool no_active_element = false, admm_opt_reached = false;
     while ( iter < ADMM_max_iter ) { 
@@ -334,13 +334,13 @@ void cvx_hdp_medoids (double ** dist_mat, int fw_max_iter, vector<double>& lambd
         int num_active_cols = col_active_sets.size();
         // STEP FOUR: trace the objective function
         if ( (iter+1) % SS_PERIOD == 0) {
-            cputime += clock() - prev;
+            cputime += omp_get_wtime() - prev;
             error = overall_objective (dist_mat, lambda, N, N, wone, tables);
             cerr << "[Overall] iter = " << iter 
                 << ", num_active_cols: " << num_active_cols
                 << ", Loss Error: " << error << endl;
             ss_out << cputime << " " << error << endl;
-            prev = clock();
+            prev = omp_get_wtime();
         }
         int num_active_elements=N*num_active_cols;
         // STEP TWO: consider to open all elements to check optimality
@@ -390,7 +390,7 @@ int main (int argc, char ** argv) {
     LAMBDAs[1] = atof(argv[3]); // lambda_local
     int FW_MAX_ITER = atoi(argv[4]);
     int ADMM_MAX_ITER = atoi(argv[5]);
-    int SS_PERIOD = 1;
+    int SS_PERIOD = 20;
 
     // read in data
     int FIX_DIM;

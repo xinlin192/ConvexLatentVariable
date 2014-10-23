@@ -3,6 +3,7 @@
 #include <queue>
 #include <cassert>
 #include <cstring>
+#include <omp.h>
 
 const int FNAME_LEN = 1000;
 typedef struct {

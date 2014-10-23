@@ -1,7 +1,7 @@
 cpps=$(shell ls *.cpp)
 
 all: 
-	g++ -O3 $(cpps) -o cvx_hdp_medoids 
+	g++ -fopenmp -O3 $(cpps) -o cvx_hdp_medoids 
 
 push:
 	git add cvx_hdp_medoids.cpp Makefile cvx_hdp_medoids.h
