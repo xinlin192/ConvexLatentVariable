@@ -7,6 +7,7 @@ Program
 
 which has been submitted to AISTATS 2015 for review. 
 
+
 Turnin Inventories
 --------------------------
 
@@ -26,3 +27,5 @@ Turnin Inventories
         wine.scale.libsvm
         wholesale.scale.libsvm
 
+Every directories under codes/ has one README.md document providing
+brief documentation for how to compile and run the experiments.
