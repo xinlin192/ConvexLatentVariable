@@ -1,4 +1,4 @@
-#include "cvx_clustering.h"
+#include "DP_convex.h"
 
 ofstream ss_out ("../obj_vs_time_dp/glass/CVX-DP-MEDOID");
 
@@ -226,7 +226,7 @@ double overall_objective (double ** dist_mat, double lambda, int N, double ** z)
     cout << ", dummy= " << dummy_penalty;
     // STEP THREE: compute group-lasso regularization
     double * maxn = new double [N]; 
-    for (int i = 0;i < N; i ++) { // Ian: need initial 
+    for (int i = 0;i < N; i ++) { 
         maxn[i] = -INF;
     }
     for (int i = 0; i < N; i ++) {
@@ -274,7 +274,7 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
     cputime += omp_get_wtime() - prev;
     ss_out << cputime << " " << 0 << endl;
     prev = omp_get_wtime();
-    int iter = 0; // Ian: usually we count up (instead of count down)
+    int iter = 0; 
     bool no_active_element = false, admm_opt_reached = false;
     while ( iter < ADMM_max_iter ) { // stopping criteria
 
@@ -390,8 +390,8 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
 // entry main function
 int main (int argc, char ** argv) {
     // exception control: illustrate the usage if get input of wrong format
-    if (argc < 6) {
-        cerr << "Usage: cvx_clustering [dataFile] [fw_max_iter] [ADMM_max_iter] [lambda] [sc_period]" << endl;
+    if (argc < 5) {
+        cerr << "Usage: DP_convex [dataFile] [fw_max_iter] [ADMM_max_iter] [lambda]" << endl;
         cerr << "Note: dataFile must be scaled to [0,1] in advance." << endl;
         exit(-1);
     }
@@ -401,7 +401,8 @@ int main (int argc, char ** argv) {
     int fw_max_iter = atoi(argv[2]);
     int ADMM_max_iter = atoi(argv[3]);
     double lambda_base = atof(argv[4]);
-    int screenshot_period = atoi(argv[5]);
+    // int screenshot_period = atoi(argv[5]);
+    int screenshot_period = 100;
 
     // read in data
     int FIX_DIM;
@@ -424,13 +425,13 @@ int main (int argc, char ** argv) {
     assert (dimensions == FIX_DIM);
 
     int D = dimensions;
-   double lambda = lambda_base;
+    double lambda = lambda_base;
 
     // pre-compute distance matrix
     dist_func df = L2norm;
     double ** dist_mat = mat_init (N, N);
     compute_dist_mat (data, dist_mat, N, D, df, true); 
-    //add noise
+    // add noise to distance matrix
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
             dist_mat[i][j] += NOISE_EPS* ((double)rand() / RAND_MAX);

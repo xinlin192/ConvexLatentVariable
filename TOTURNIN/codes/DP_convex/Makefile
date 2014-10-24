@@ -1,12 +1,12 @@
 cpps=$(shell ls *.cpp)
 
 all: 
-	g++ -fopenmp -O3 $(cpps) -o cvx_clustering 
+	g++ -fopenmp -O3 $(cpps) -o DP_convex
 
 push:
-	git add cvx_clustering.cpp Makefile 
+	git add DP_convex.cpp DP_convex.h Makefile 
 	git commit -m "upgrade"
 	git push
 
 clean:
-	rm -rf cvx_clustering opt* dist_mat w_out plot*
+	rm -rf DP_convex opt* dist_mat w_out plot*

@@ -1,12 +1,12 @@
 cpps=$(shell ls *.cpp)
 
 all: 
-	g++ -fopenmp -O3 $(cpps) -o cvx_hdp_medoids 
+	g++ -fopenmp -O3 $(cpps) -o HDP_convex
 
 push:
-	git add cvx_hdp_medoids.cpp Makefile cvx_hdp_medoids.h
+	git add HDP_convex.cpp Makefile HDP_convex.h
 	git commit -m "upgrade"
 	git push
 
 clean:
-	rm -rf cvx_hdp_medoids opt* dist_mat w_out plot* word2doc 
+	rm -rf HDP_convex opt* dist_mat w_out plot* word2doc 

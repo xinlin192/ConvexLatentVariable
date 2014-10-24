@@ -1,4 +1,4 @@
-#include "cvx_hdp_medoids.h"
+#include "HDP_convex.h"
 
 #include <string>
 
@@ -207,7 +207,6 @@ void group_lasso_solver (double** y, double** z, double** w, double rho, vector<
         skyline (wlocal, wbar, R_start, R_end, C, local_lambda, col_active_sets);
     }
     skyline (w, wlocal, 0, R, C, global_lambda, col_active_sets);
-    //skyline (w, wbar, 0, R, C, global_lambda, col_active_sets);
     
     mat_free (wlocal, R, C);
     mat_free (wbar, R, C);
