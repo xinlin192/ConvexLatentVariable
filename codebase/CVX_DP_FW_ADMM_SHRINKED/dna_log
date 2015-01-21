@@ -1,0 +1,888 @@
+loss=9.83607, dummy= 1.05582e-06, reg=957, overall=966.836
+[Overall] iter = 99, Loss Error: 966.836, cputime: 67.5063
+loss=9.80081, dummy= 1.51767e-06, reg=957, overall=966.801
+[Overall] iter = 199, Loss Error: 966.801, cputime: 135.106
+loss=9.76807, dummy= 1.35225e-06, reg=957, overall=966.768
+[Overall] iter = 299, Loss Error: 966.768, cputime: 202.721
+loss=9.7413, dummy= 1.58651e-06, reg=957, overall=966.741
+[Overall] iter = 399, Loss Error: 966.741, cputime: 270.268
+loss=9.7226, dummy= 1.28231e-06, reg=957, overall=966.723
+[Overall] iter = 499, Loss Error: 966.723, cputime: 337.982
+loss=9.71059, dummy= 1.09579e-06, reg=957, overall=966.711
+[Overall] iter = 599, Loss Error: 966.711, cputime: 405.654
+loss=9.70259, dummy= 9.19265e-07, reg=957, overall=966.703
+[Overall] iter = 699, Loss Error: 966.703, cputime: 473.24
+loss=9.69692, dummy= 7.62723e-07, reg=957, overall=966.697
+[Overall] iter = 799, Loss Error: 966.697, cputime: 541.012
+loss=9.69274, dummy= 7.11653e-07, reg=957, overall=966.693
+[Overall] iter = 899, Loss Error: 966.693, cputime: 608.708
+loss=9.6901, dummy= 7.78266e-07, reg=957, overall=966.69
+[Overall] iter = 999, Loss Error: 966.69, cputime: 676.356
+loss=9.68827, dummy= 1.02252e-06, reg=957, overall=966.688
+[Overall] iter = 1099, Loss Error: 966.688, cputime: 744.003
+loss=9.68665, dummy= 9.75886e-07, reg=957, overall=966.687
+[Overall] iter = 1199, Loss Error: 966.687, cputime: 811.656
+loss=9.68522, dummy= 9.9698e-07, reg=957, overall=966.685
+[Overall] iter = 1299, Loss Error: 966.685, cputime: 879.254
+loss=9.68419, dummy= 1.09579e-06, reg=957, overall=966.684
+[Overall] iter = 1399, Loss Error: 966.684, cputime: 946.799
+loss=9.68333, dummy= 1.17795e-06, reg=957, overall=966.683
+[Overall] iter = 1499, Loss Error: 966.683, cputime: 1014.28
+loss=9.6826, dummy= 1.10578e-06, reg=957, overall=966.683
+[Overall] iter = 1599, Loss Error: 966.683, cputime: 1081.75
+loss=9.68193, dummy= 1.13687e-06, reg=957, overall=966.682
+[Overall] iter = 1699, Loss Error: 966.682, cputime: 1149.25
+loss=9.68127, dummy= 1.06914e-06, reg=957, overall=966.681
+[Overall] iter = 1799, Loss Error: 966.681, cputime: 1216.72
+loss=9.68066, dummy= 1.05582e-06, reg=957, overall=966.681
+[Overall] iter = 1899, Loss Error: 966.681, cputime: 1284.26
+loss=9.6801, dummy= 1.03806e-06, reg=957, overall=966.68
+[Overall] iter = 1999, Loss Error: 966.68, cputime: 1351.8
+loss=9.67955, dummy= 9.08162e-07, reg=957, overall=966.68
+[Overall] iter = 2099, Loss Error: 966.68, cputime: 1419.32
+loss=9.67908, dummy= 8.39329e-07, reg=957, overall=966.679
+[Overall] iter = 2199, Loss Error: 966.679, cputime: 1486.81
+loss=9.67867, dummy= 8.61533e-07, reg=957, overall=966.679
+[Overall] iter = 2299, Loss Error: 966.679, cputime: 1554.26
+loss=9.67833, dummy= 8.9817e-07, reg=957, overall=966.678
+[Overall] iter = 2399, Loss Error: 966.678, cputime: 1621.63
+loss=9.67808, dummy= 9.55902e-07, reg=957, overall=966.678
+[Overall] iter = 2499, Loss Error: 966.678, cputime: 1688.92
+loss=9.67789, dummy= 9.28146e-07, reg=957, overall=966.678
+[Overall] iter = 2599, Loss Error: 966.678, cputime: 1756.12
+loss=9.67776, dummy= 1.11244e-06, reg=957, overall=966.678
+[Overall] iter = 2699, Loss Error: 966.678, cputime: 1823.28
+loss=9.67763, dummy= 1.02918e-06, reg=957, overall=966.678
+[Overall] iter = 2799, Loss Error: 966.678, cputime: 1890.45
+loss=9.6775, dummy= 1.13798e-06, reg=957, overall=966.678
+[Overall] iter = 2899, Loss Error: 966.678, cputime: 1957.63
+loss=9.6774, dummy= 1.21014e-06, reg=957, overall=966.677
+[Overall] iter = 2999, Loss Error: 966.677, cputime: 2024.79
+loss=9.6773, dummy= 1.1835e-06, reg=957, overall=966.677
+[Overall] iter = 3099, Loss Error: 966.677, cputime: 2091.95
+loss=9.67721, dummy= 1.03695e-06, reg=957, overall=966.677
+[Overall] iter = 3199, Loss Error: 966.677, cputime: 2159.11
+loss=9.67712, dummy= 9.19265e-07, reg=957, overall=966.677
+[Overall] iter = 3299, Loss Error: 966.677, cputime: 2226.33
+loss=9.67704, dummy= 9.27036e-07, reg=957, overall=966.677
+[Overall] iter = 3399, Loss Error: 966.677, cputime: 2293.49
+loss=9.67697, dummy= 1.00697e-06, reg=957, overall=966.677
+[Overall] iter = 3499, Loss Error: 966.677, cputime: 2360.64
+loss=9.67689, dummy= 9.40359e-07, reg=957, overall=966.677
+[Overall] iter = 3599, Loss Error: 966.677, cputime: 2427.8
+loss=9.67682, dummy= 8.89289e-07, reg=957, overall=966.677
+[Overall] iter = 3699, Loss Error: 966.677, cputime: 2494.97
+loss=9.67674, dummy= 8.59313e-07, reg=957, overall=966.677
+[Overall] iter = 3799, Loss Error: 966.677, cputime: 2562.14
+loss=9.67667, dummy= 7.00551e-07, reg=957, overall=966.677
+[Overall] iter = 3899, Loss Error: 966.677, cputime: 2629.29
+loss=9.6766, dummy= 7.34968e-07, reg=957, overall=966.677
+[Overall] iter = 3999, Loss Error: 966.677, cputime: 2696.4
+loss=9.67652, dummy= 6.9611e-07, reg=957, overall=966.677
+[Overall] iter = 4099, Loss Error: 966.677, cputime: 2763.53
+loss=9.67645, dummy= 7.76046e-07, reg=957, overall=966.676
+[Overall] iter = 4199, Loss Error: 966.676, cputime: 2830.67
+loss=9.67639, dummy= 7.72715e-07, reg=957, overall=966.676
+[Overall] iter = 4299, Loss Error: 966.676, cputime: 2897.78
+loss=9.67633, dummy= 7.16094e-07, reg=957, overall=966.676
+[Overall] iter = 4399, Loss Error: 966.676, cputime: 2964.89
+loss=9.67627, dummy= 5.9619e-07, reg=957, overall=966.676
+[Overall] iter = 4499, Loss Error: 966.676, cputime: 3032.01
+loss=9.67622, dummy= 6.51701e-07, reg=957, overall=966.676
+[Overall] iter = 4599, Loss Error: 966.676, cputime: 3099.16
+loss=9.67617, dummy= 7.10543e-07, reg=957, overall=966.676
+[Overall] iter = 4699, Loss Error: 966.676, cputime: 3166.28
+loss=9.67613, dummy= 6.78346e-07, reg=957, overall=966.676
+[Overall] iter = 4799, Loss Error: 966.676, cputime: 3233.37
+loss=9.6761, dummy= 7.01661e-07, reg=957, overall=966.676
+[Overall] iter = 4899, Loss Error: 966.676, cputime: 3300.45
+loss=9.67606, dummy= 6.88338e-07, reg=957, overall=966.676
+[Overall] iter = 4999, Loss Error: 966.676, cputime: 3367.54
+loss=9.67602, dummy= 6.86118e-07, reg=957, overall=966.676
+[Overall] iter = 5099, Loss Error: 966.676, cputime: 3434.63
+loss=9.67599, dummy= 6.4504e-07, reg=957, overall=966.676
+[Overall] iter = 5199, Loss Error: 966.676, cputime: 3501.73
+loss=9.67596, dummy= 6.4948e-07, reg=957, overall=966.676
+[Overall] iter = 5299, Loss Error: 966.676, cputime: 3568.81
+loss=9.67595, dummy= 7.80487e-07, reg=957, overall=966.676
+[Overall] iter = 5399, Loss Error: 966.676, cputime: 3635.86
+loss=9.67593, dummy= 6.9611e-07, reg=957, overall=966.676
+[Overall] iter = 5499, Loss Error: 966.676, cputime: 3702.93
+loss=9.67592, dummy= 7.07212e-07, reg=957, overall=966.676
+[Overall] iter = 5599, Loss Error: 966.676, cputime: 3770
+loss=9.6759, dummy= 7.79377e-07, reg=957, overall=966.676
+[Overall] iter = 5699, Loss Error: 966.676, cputime: 3837.08
+loss=9.67589, dummy= 7.03881e-07, reg=957, overall=966.676
+[Overall] iter = 5799, Loss Error: 966.676, cputime: 3904.15
+loss=9.67587, dummy= 6.66134e-07, reg=957, overall=966.676
+[Overall] iter = 5899, Loss Error: 966.676, cputime: 3971.23
+loss=9.67586, dummy= 6.86118e-07, reg=957, overall=966.676
+[Overall] iter = 5999, Loss Error: 966.676, cputime: 4038.35
+loss=9.67584, dummy= 7.36078e-07, reg=957, overall=966.676
+[Overall] iter = 6099, Loss Error: 966.676, cputime: 4105.43
+loss=9.67582, dummy= 7.29417e-07, reg=957, overall=966.676
+[Overall] iter = 6199, Loss Error: 966.676, cputime: 4172.51
+loss=9.67581, dummy= 7.42739e-07, reg=957, overall=966.676
+[Overall] iter = 6299, Loss Error: 966.676, cputime: 4239.59
+loss=9.67579, dummy= 7.51621e-07, reg=957, overall=966.676
+[Overall] iter = 6399, Loss Error: 966.676, cputime: 4306.68
+loss=9.67578, dummy= 7.31637e-07, reg=957, overall=966.676
+[Overall] iter = 6499, Loss Error: 966.676, cputime: 4373.81
+loss=9.67576, dummy= 7.27196e-07, reg=957, overall=966.676
+[Overall] iter = 6599, Loss Error: 966.676, cputime: 4440.9
+loss=9.67575, dummy= 6.13953e-07, reg=957, overall=966.676
+[Overall] iter = 6699, Loss Error: 966.676, cputime: 4507.99
+loss=9.67573, dummy= 5.61773e-07, reg=957, overall=966.676
+[Overall] iter = 6799, Loss Error: 966.676, cputime: 4575.08
+loss=9.67572, dummy= 4.91829e-07, reg=957, overall=966.676
+[Overall] iter = 6899, Loss Error: 966.676, cputime: 4642.18
+loss=9.6757, dummy= 4.22995e-07, reg=957, overall=966.676
+[Overall] iter = 6999, Loss Error: 966.676, cputime: 4709.27
+loss=9.67569, dummy= 4.38538e-07, reg=957, overall=966.676
+[Overall] iter = 7099, Loss Error: 966.676, cputime: 4776.41
+loss=9.67567, dummy= 4.50751e-07, reg=957, overall=966.676
+[Overall] iter = 7199, Loss Error: 966.676, cputime: 4843.51
+loss=9.67566, dummy= 4.81837e-07, reg=957, overall=966.676
+[Overall] iter = 7299, Loss Error: 966.676, cputime: 4910.68
+loss=9.67565, dummy= 4.79616e-07, reg=957, overall=966.676
+[Overall] iter = 7399, Loss Error: 966.676, cputime: 4977.8
+loss=9.67564, dummy= 4.9738e-07, reg=957, overall=966.676
+[Overall] iter = 7499, Loss Error: 966.676, cputime: 5044.88
+loss=9.67563, dummy= 4.37428e-07, reg=957, overall=966.676
+[Overall] iter = 7599, Loss Error: 966.676, cputime: 5111.93
+loss=9.67562, dummy= 4.79616e-07, reg=957, overall=966.676
+[Overall] iter = 7699, Loss Error: 966.676, cputime: 5179.01
+loss=9.67562, dummy= 4.64073e-07, reg=957, overall=966.676
+[Overall] iter = 7799, Loss Error: 966.676, cputime: 5246.08
+loss=9.67561, dummy= 3.76366e-07, reg=957, overall=966.676
+[Overall] iter = 7899, Loss Error: 966.676, cputime: 5313.17
+loss=9.6756, dummy= 3.21965e-07, reg=957, overall=966.676
+[Overall] iter = 7999, Loss Error: 966.676, cputime: 5380.23
+loss=9.67559, dummy= 3.4639e-07, reg=957, overall=966.676
+[Overall] iter = 8099, Loss Error: 966.676, cputime: 5447.3
+loss=9.67559, dummy= 3.25295e-07, reg=957, overall=966.676
+[Overall] iter = 8199, Loss Error: 966.676, cputime: 5514.38
+loss=9.67558, dummy= 3.36398e-07, reg=957, overall=966.676
+[Overall] iter = 8299, Loss Error: 966.676, cputime: 5581.45
+loss=9.67557, dummy= 3.475e-07, reg=957, overall=966.676
+[Overall] iter = 8399, Loss Error: 966.676, cputime: 5648.53
+loss=9.67557, dummy= 3.13083e-07, reg=957, overall=966.676
+[Overall] iter = 8499, Loss Error: 966.676, cputime: 5715.61
+loss=9.67556, dummy= 3.04201e-07, reg=957, overall=966.676
+[Overall] iter = 8599, Loss Error: 966.676, cputime: 5782.71
+loss=9.67556, dummy= 3.13083e-07, reg=957, overall=966.676
+[Overall] iter = 8699, Loss Error: 966.676, cputime: 5849.82
+loss=9.67555, dummy= 3.0087e-07, reg=957, overall=966.676
+[Overall] iter = 8799, Loss Error: 966.676, cputime: 5916.91
+loss=9.67555, dummy= 2.15383e-07, reg=957, overall=966.676
+[Overall] iter = 8899, Loss Error: 966.676, cputime: 5984
+loss=9.67554, dummy= 1.54321e-07, reg=957, overall=966.676
+[Overall] iter = 8999, Loss Error: 966.676, cputime: 6051.09
+loss=9.67554, dummy= 1.4877e-07, reg=957, overall=966.676
+[Overall] iter = 9099, Loss Error: 966.676, cputime: 6118.19
+loss=9.67553, dummy= 1.15463e-07, reg=957, overall=966.676
+[Overall] iter = 9199, Loss Error: 966.676, cputime: 6185.31
+loss=9.67553, dummy= 6.55032e-08, reg=957, overall=966.676
+[Overall] iter = 9299, Loss Error: 966.676, cputime: 6252.39
+loss=9.67552, dummy= 1.25455e-07, reg=957, overall=966.676
+[Overall] iter = 9399, Loss Error: 966.676, cputime: 6319.48
+loss=9.67552, dummy= 1.42109e-07, reg=957, overall=966.676
+[Overall] iter = 9499, Loss Error: 966.676, cputime: 6386.58
+loss=9.67551, dummy= 4.66294e-08, reg=957, overall=966.676
+[Overall] iter = 9599, Loss Error: 966.676, cputime: 6453.67
+loss=9.67551, dummy= 4.77396e-08, reg=957, overall=966.676
+[Overall] iter = 9699, Loss Error: 966.676, cputime: 6520.75
+loss=9.67551, dummy= 2.44249e-08, reg=957, overall=966.676
+[Overall] iter = 9799, Loss Error: 966.676, cputime: 6587.82
+loss=9.6755, dummy= 5.21805e-08, reg=957, overall=966.676
+[Overall] iter = 9899, Loss Error: 966.676, cputime: 6654.86
+loss=9.6755, dummy= 5.77316e-08, reg=957, overall=966.675
+[Overall] iter = 9999, Loss Error: 966.675, cputime: 6721.97
+loss=9.83789, dummy= 1.29896e-06, reg=1531.2, overall=1541.04
+[Overall] iter = 99, Loss Error: 1541.04, cputime: 67.285
+loss=9.80261, dummy= 1.38667e-06, reg=1531.2, overall=1541
+[Overall] iter = 199, Loss Error: 1541, cputime: 134.691
+loss=9.76958, dummy= 1.71974e-06, reg=1531.2, overall=1540.97
+[Overall] iter = 299, Loss Error: 1540.97, cputime: 202.088
+loss=9.74238, dummy= 1.5965e-06, reg=1531.2, overall=1540.94
+[Overall] iter = 399, Loss Error: 1540.94, cputime: 269.445
+loss=9.72339, dummy= 1.49436e-06, reg=1531.2, overall=1540.92
+[Overall] iter = 499, Loss Error: 1540.92, cputime: 336.977
+loss=9.7111, dummy= 1.34337e-06, reg=1531.2, overall=1540.91
+[Overall] iter = 599, Loss Error: 1540.91, cputime: 404.39
+loss=9.70293, dummy= 1.55542e-06, reg=1531.2, overall=1540.9
+[Overall] iter = 699, Loss Error: 1540.9, cputime: 471.702
+loss=9.69717, dummy= 1.40443e-06, reg=1531.2, overall=1540.9
+[Overall] iter = 799, Loss Error: 1540.9, cputime: 539.218
+loss=9.69292, dummy= 1.47327e-06, reg=1531.2, overall=1540.89
+[Overall] iter = 899, Loss Error: 1540.89, cputime: 606.664
+loss=9.6902, dummy= 1.2168e-06, reg=1531.2, overall=1540.89
+[Overall] iter = 999, Loss Error: 1540.89, cputime: 674.004
+loss=9.68836, dummy= 1.17129e-06, reg=1531.2, overall=1540.89
+[Overall] iter = 1099, Loss Error: 1540.89, cputime: 741.338
+loss=9.68673, dummy= 1.03695e-06, reg=1531.2, overall=1540.89
+[Overall] iter = 1199, Loss Error: 1540.89, cputime: 808.644
+loss=9.68528, dummy= 1.1402e-06, reg=1531.2, overall=1540.89
+[Overall] iter = 1299, Loss Error: 1540.89, cputime: 875.988
+loss=9.68423, dummy= 8.13793e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 1399, Loss Error: 1540.88, cputime: 943.235
+loss=9.68337, dummy= 8.51541e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 1499, Loss Error: 1540.88, cputime: 1010.39
+loss=9.68264, dummy= 1.05915e-06, reg=1531.2, overall=1540.88
+[Overall] iter = 1599, Loss Error: 1540.88, cputime: 1077.52
+loss=9.68196, dummy= 9.22595e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 1699, Loss Error: 1540.88, cputime: 1144.65
+loss=9.6813, dummy= 8.73746e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 1799, Loss Error: 1540.88, cputime: 1211.78
+loss=9.68069, dummy= 8.4821e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 1899, Loss Error: 1540.88, cputime: 1278.94
+loss=9.68013, dummy= 8.84848e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 1999, Loss Error: 1540.88, cputime: 1346.09
+loss=9.67958, dummy= 9.67004e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2099, Loss Error: 1540.88, cputime: 1413.25
+loss=9.67911, dummy= 7.74936e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2199, Loss Error: 1540.88, cputime: 1480.37
+loss=9.67869, dummy= 7.66054e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2299, Loss Error: 1540.88, cputime: 1547.44
+loss=9.67834, dummy= 7.26086e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2399, Loss Error: 1540.88, cputime: 1614.46
+loss=9.67809, dummy= 5.52891e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2499, Loss Error: 1540.88, cputime: 1681.36
+loss=9.6779, dummy= 4.28546e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2599, Loss Error: 1540.88, cputime: 1748.21
+loss=9.67776, dummy= 5.30687e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2699, Loss Error: 1540.88, cputime: 1815.03
+loss=9.67763, dummy= 5.15143e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2799, Loss Error: 1540.88, cputime: 1881.8
+loss=9.67751, dummy= 5.42899e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2899, Loss Error: 1540.88, cputime: 1948.57
+loss=9.6774, dummy= 5.14033e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 2999, Loss Error: 1540.88, cputime: 2015.32
+loss=9.67731, dummy= 6.09512e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3099, Loss Error: 1540.88, cputime: 2082.07
+loss=9.67722, dummy= 7.01661e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3199, Loss Error: 1540.88, cputime: 2148.83
+loss=9.67712, dummy= 6.30607e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3299, Loss Error: 1540.88, cputime: 2215.58
+loss=9.67705, dummy= 5.65104e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3399, Loss Error: 1540.88, cputime: 2282.32
+loss=9.67697, dummy= 5.9841e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3499, Loss Error: 1540.88, cputime: 2349.08
+loss=9.6769, dummy= 4.36318e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3599, Loss Error: 1540.88, cputime: 2415.82
+loss=9.67682, dummy= 3.86358e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3699, Loss Error: 1540.88, cputime: 2482.57
+loss=9.67675, dummy= 3.39728e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3799, Loss Error: 1540.88, cputime: 2549.31
+loss=9.67667, dummy= 3.57492e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3899, Loss Error: 1540.88, cputime: 2616
+loss=9.6766, dummy= 4.00791e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 3999, Loss Error: 1540.88, cputime: 2682.75
+loss=9.67653, dummy= 3.25295e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 4099, Loss Error: 1540.88, cputime: 2749.42
+loss=9.67646, dummy= 2.56462e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 4199, Loss Error: 1540.88, cputime: 2816.09
+loss=9.67639, dummy= 2.9643e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 4299, Loss Error: 1540.88, cputime: 2882.76
+loss=9.67633, dummy= 3.54161e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 4399, Loss Error: 1540.88, cputime: 2949.44
+loss=9.67627, dummy= 3.15303e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 4499, Loss Error: 1540.88, cputime: 3016.12
+loss=9.67622, dummy= 2.91989e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 4599, Loss Error: 1540.88, cputime: 3082.8
+loss=9.67618, dummy= 1.86517e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 4699, Loss Error: 1540.88, cputime: 3149.44
+loss=9.67614, dummy= 2.05391e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 4799, Loss Error: 1540.88, cputime: 3216.07
+loss=9.6761, dummy= 1.63203e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 4899, Loss Error: 1540.88, cputime: 3282.71
+loss=9.67606, dummy= 9.99201e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 4999, Loss Error: 1540.88, cputime: 3349.32
+loss=9.67602, dummy= 6.21725e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 5099, Loss Error: 1540.88, cputime: 3415.95
+loss=9.67599, dummy= 4.10783e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 5199, Loss Error: 1540.88, cputime: 3482.57
+loss=9.67596, dummy= 8.77076e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 5299, Loss Error: 1540.88, cputime: 3549.21
+loss=9.67595, dummy= 1.37668e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 5399, Loss Error: 1540.88, cputime: 3615.84
+loss=9.67593, dummy= 2.9865e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 5499, Loss Error: 1540.88, cputime: 3682.43
+loss=9.67592, dummy= 2.72005e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 5599, Loss Error: 1540.88, cputime: 3749.02
+loss=9.6759, dummy= 2.42029e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 5699, Loss Error: 1540.88, cputime: 3815.61
+loss=9.67589, dummy= 2.53131e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 5799, Loss Error: 1540.88, cputime: 3882.2
+loss=9.67587, dummy= 2.9976e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 5899, Loss Error: 1540.88, cputime: 3948.81
+loss=9.67586, dummy= 3.13083e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 5999, Loss Error: 1540.88, cputime: 4015.4
+loss=9.67584, dummy= 2.73115e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 6099, Loss Error: 1540.88, cputime: 4081.98
+loss=9.67583, dummy= 2.75335e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 6199, Loss Error: 1540.88, cputime: 4148.59
+loss=9.67581, dummy= 2.53131e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 6299, Loss Error: 1540.88, cputime: 4215.18
+loss=9.67579, dummy= 2.02061e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 6399, Loss Error: 1540.88, cputime: 4281.77
+loss=9.67578, dummy= 2.56462e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 6499, Loss Error: 1540.88, cputime: 4348.37
+loss=9.67576, dummy= 2.28706e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 6599, Loss Error: 1540.88, cputime: 4414.95
+loss=9.67575, dummy= 1.11022e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 6699, Loss Error: 1540.88, cputime: 4481.6
+loss=9.67573, dummy= 4.88498e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 6799, Loss Error: 1540.88, cputime: 4548.19
+loss=9.67572, dummy= 7.43849e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 6899, Loss Error: 1540.88, cputime: 4614.78
+loss=9.6757, dummy= 4.77396e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 6999, Loss Error: 1540.88, cputime: 4681.37
+loss=9.67569, dummy= 6.21725e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 7099, Loss Error: 1540.88, cputime: 4747.98
+loss=9.67567, dummy= 9.99201e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 7199, Loss Error: 1540.88, cputime: 4814.57
+loss=9.67566, dummy= 1.14353e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 7299, Loss Error: 1540.88, cputime: 4881.17
+loss=9.67565, dummy= 9.65894e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 7399, Loss Error: 1540.88, cputime: 4947.75
+loss=9.67564, dummy= 9.32587e-08, reg=1531.2, overall=1540.88
+[Overall] iter = 7499, Loss Error: 1540.88, cputime: 5014.32
+loss=9.67563, dummy= 1.09912e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 7599, Loss Error: 1540.88, cputime: 5080.88
+loss=9.67562, dummy= 1.66533e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 7699, Loss Error: 1540.88, cputime: 5147.45
+loss=9.67562, dummy= 1.37668e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 7799, Loss Error: 1540.88, cputime: 5214.04
+loss=9.67561, dummy= 1.12133e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 7899, Loss Error: 1540.88, cputime: 5280.61
+loss=9.6756, dummy= 1.11022e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 7999, Loss Error: 1540.88, cputime: 5347.23
+loss=9.67559, dummy= 1.4766e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8099, Loss Error: 1540.88, cputime: 5413.85
+loss=9.67559, dummy= 1.88738e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8199, Loss Error: 1540.88, cputime: 5480.44
+loss=9.67558, dummy= 1.78746e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8299, Loss Error: 1540.88, cputime: 5546.99
+loss=9.67557, dummy= 2.54241e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8399, Loss Error: 1540.88, cputime: 5613.52
+loss=9.67557, dummy= 2.15383e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8499, Loss Error: 1540.88, cputime: 5680.07
+loss=9.67556, dummy= 2.25375e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8599, Loss Error: 1540.88, cputime: 5746.62
+loss=9.67556, dummy= 2.70894e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8699, Loss Error: 1540.88, cputime: 5813.27
+loss=9.67555, dummy= 2.5091e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8799, Loss Error: 1540.88, cputime: 5879.9
+loss=9.67555, dummy= 2.78666e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8899, Loss Error: 1540.88, cputime: 5946.53
+loss=9.67554, dummy= 3.23075e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 8999, Loss Error: 1540.88, cputime: 6013.16
+loss=9.67554, dummy= 2.84217e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9099, Loss Error: 1540.88, cputime: 6079.79
+loss=9.67553, dummy= 2.79776e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9199, Loss Error: 1540.88, cputime: 6146.41
+loss=9.67553, dummy= 3.0087e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9299, Loss Error: 1540.88, cputime: 6213.02
+loss=9.67552, dummy= 2.70894e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9399, Loss Error: 1540.88, cputime: 6279.68
+loss=9.67552, dummy= 3.4972e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9499, Loss Error: 1540.88, cputime: 6346.28
+loss=9.67551, dummy= 3.21965e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9599, Loss Error: 1540.88, cputime: 6412.87
+loss=9.67551, dummy= 4.13003e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9699, Loss Error: 1540.88, cputime: 6479.45
+loss=9.67551, dummy= 4.38538e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9799, Loss Error: 1540.88, cputime: 6546.04
+loss=9.6755, dummy= 4.87388e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9899, Loss Error: 1540.88, cputime: 6612.61
+loss=9.6755, dummy= 5.02931e-07, reg=1531.2, overall=1540.88
+[Overall] iter = 9999, Loss Error: 1540.88, cputime: 6679.2
+loss=11.4518, dummy= 8.90399e-07, reg=1912.39, overall=1923.84
+[Overall] iter = 99, Loss Error: 1923.84, cputime: 68.7154
+loss=11.532, dummy= 1.31783e-06, reg=1912.27, overall=1923.8
+[Overall] iter = 199, Loss Error: 1923.8, cputime: 137.583
+loss=11.5493, dummy= 1.48104e-06, reg=1912.22, overall=1923.77
+[Overall] iter = 299, Loss Error: 1923.77, cputime: 206.44
+loss=11.542, dummy= 1.72196e-06, reg=1912.2, overall=1923.74
+[Overall] iter = 399, Loss Error: 1923.74, cputime: 275.206
+loss=11.5094, dummy= 1.55764e-06, reg=1912.21, overall=1923.72
+[Overall] iter = 499, Loss Error: 1923.72, cputime: 344.141
+loss=11.5017, dummy= 1.75415e-06, reg=1912.2, overall=1923.71
+[Overall] iter = 599, Loss Error: 1923.71, cputime: 412.977
+loss=11.5025, dummy= 1.66422e-06, reg=1912.19, overall=1923.7
+[Overall] iter = 699, Loss Error: 1923.7, cputime: 481.742
+loss=11.5173, dummy= 1.49103e-06, reg=1912.17, overall=1923.69
+[Overall] iter = 799, Loss Error: 1923.69, cputime: 550.682
+loss=11.5457, dummy= 1.05027e-06, reg=1912.14, overall=1923.69
+[Overall] iter = 899, Loss Error: 1923.69, cputime: 619.523
+loss=11.5799, dummy= 8.88178e-07, reg=1912.1, overall=1923.68
+[Overall] iter = 999, Loss Error: 1923.68, cputime: 688.253
+loss=11.6151, dummy= 8.87068e-07, reg=1912.07, overall=1923.68
+[Overall] iter = 1099, Loss Error: 1923.68, cputime: 756.979
+loss=11.6534, dummy= 8.24896e-07, reg=1912.03, overall=1923.68
+[Overall] iter = 1199, Loss Error: 1923.68, cputime: 825.686
+loss=11.6728, dummy= 7.42739e-07, reg=1912, overall=1923.68
+[Overall] iter = 1299, Loss Error: 1923.68, cputime: 894.357
+loss=11.6751, dummy= 8.12683e-07, reg=1912, overall=1923.68
+[Overall] iter = 1399, Loss Error: 1923.68, cputime: 962.949
+loss=11.6751, dummy= 8.9706e-07, reg=1912, overall=1923.68
+[Overall] iter = 1499, Loss Error: 1923.68, cputime: 1031.46
+loss=11.6745, dummy= 9.31477e-07, reg=1912, overall=1923.67
+[Overall] iter = 1599, Loss Error: 1923.67, cputime: 1099.96
+loss=11.6738, dummy= 9.69225e-07, reg=1912, overall=1923.67
+[Overall] iter = 1699, Loss Error: 1923.67, cputime: 1168.39
+loss=11.6731, dummy= 8.29337e-07, reg=1912, overall=1923.67
+[Overall] iter = 1799, Loss Error: 1923.67, cputime: 1236.83
+loss=11.6725, dummy= 9.39249e-07, reg=1912, overall=1923.67
+[Overall] iter = 1899, Loss Error: 1923.67, cputime: 1305.24
+loss=11.6719, dummy= 1.03473e-06, reg=1912, overall=1923.67
+[Overall] iter = 1999, Loss Error: 1923.67, cputime: 1373.67
+loss=11.6713, dummy= 1.09246e-06, reg=1912, overall=1923.67
+[Overall] iter = 2099, Loss Error: 1923.67, cputime: 1442.14
+loss=11.6708, dummy= 9.21485e-07, reg=1912, overall=1923.67
+[Overall] iter = 2199, Loss Error: 1923.67, cputime: 1510.54
+loss=11.6704, dummy= 7.66054e-07, reg=1912, overall=1923.67
+[Overall] iter = 2299, Loss Error: 1923.67, cputime: 1578.9
+loss=11.67, dummy= 9.14824e-07, reg=1912, overall=1923.67
+[Overall] iter = 2399, Loss Error: 1923.67, cputime: 1647.18
+loss=11.6698, dummy= 7.89369e-07, reg=1912, overall=1923.67
+[Overall] iter = 2499, Loss Error: 1923.67, cputime: 1715.38
+loss=11.6696, dummy= 6.38378e-07, reg=1912, overall=1923.67
+[Overall] iter = 2599, Loss Error: 1923.67, cputime: 1783.5
+loss=11.6695, dummy= 6.59472e-07, reg=1912, overall=1923.67
+[Overall] iter = 2699, Loss Error: 1923.67, cputime: 1851.53
+loss=11.6694, dummy= 6.4615e-07, reg=1912, overall=1923.67
+[Overall] iter = 2799, Loss Error: 1923.67, cputime: 1919.53
+loss=11.6692, dummy= 7.33857e-07, reg=1912, overall=1923.67
+[Overall] iter = 2899, Loss Error: 1923.67, cputime: 1987.57
+loss=11.6691, dummy= 7.43849e-07, reg=1912, overall=1923.67
+[Overall] iter = 2999, Loss Error: 1923.67, cputime: 2055.58
+loss=11.6691, dummy= 8.07132e-07, reg=1912, overall=1923.67
+[Overall] iter = 3099, Loss Error: 1923.67, cputime: 2123.61
+loss=11.669, dummy= 6.11733e-07, reg=1912, overall=1923.67
+[Overall] iter = 3199, Loss Error: 1923.67, cputime: 2191.63
+loss=11.6689, dummy= 5.62883e-07, reg=1912, overall=1923.67
+[Overall] iter = 3299, Loss Error: 1923.67, cputime: 2259.68
+loss=11.6688, dummy= 5.20695e-07, reg=1912, overall=1923.67
+[Overall] iter = 3399, Loss Error: 1923.67, cputime: 2327.74
+loss=11.6688, dummy= 5.9952e-07, reg=1912, overall=1923.67
+[Overall] iter = 3499, Loss Error: 1923.67, cputime: 2395.75
+loss=11.6687, dummy= 4.74065e-07, reg=1912, overall=1923.67
+[Overall] iter = 3599, Loss Error: 1923.67, cputime: 2463.77
+loss=11.6686, dummy= 5.9508e-07, reg=1912, overall=1923.67
+[Overall] iter = 3699, Loss Error: 1923.67, cputime: 2531.79
+loss=11.6686, dummy= 6.15064e-07, reg=1912, overall=1923.67
+[Overall] iter = 3799, Loss Error: 1923.67, cputime: 2599.81
+loss=11.6685, dummy= 6.40599e-07, reg=1912, overall=1923.67
+[Overall] iter = 3899, Loss Error: 1923.67, cputime: 2667.8
+loss=11.6684, dummy= 6.72795e-07, reg=1912, overall=1923.67
+[Overall] iter = 3999, Loss Error: 1923.67, cputime: 2735.78
+loss=11.6684, dummy= 6.12843e-07, reg=1912, overall=1923.67
+[Overall] iter = 4099, Loss Error: 1923.67, cputime: 2803.74
+loss=11.6683, dummy= 5.9952e-07, reg=1912, overall=1923.67
+[Overall] iter = 4199, Loss Error: 1923.67, cputime: 2871.73
+loss=11.6682, dummy= 5.16254e-07, reg=1912, overall=1923.67
+[Overall] iter = 4299, Loss Error: 1923.67, cputime: 2939.71
+loss=11.6682, dummy= 4.68514e-07, reg=1912, overall=1923.67
+[Overall] iter = 4399, Loss Error: 1923.67, cputime: 3007.67
+loss=11.6681, dummy= 4.9738e-07, reg=1912, overall=1923.67
+[Overall] iter = 4499, Loss Error: 1923.67, cputime: 3075.66
+loss=11.6681, dummy= 5.34017e-07, reg=1912, overall=1923.67
+[Overall] iter = 4599, Loss Error: 1923.67, cputime: 3143.58
+loss=11.6681, dummy= 5.35127e-07, reg=1912, overall=1923.67
+[Overall] iter = 4699, Loss Error: 1923.67, cputime: 3211.57
+loss=11.668, dummy= 6.02851e-07, reg=1912, overall=1923.67
+[Overall] iter = 4799, Loss Error: 1923.67, cputime: 3279.52
+loss=11.668, dummy= 4.18554e-07, reg=1912, overall=1923.67
+[Overall] iter = 4899, Loss Error: 1923.67, cputime: 3347.48
+loss=11.668, dummy= 3.73035e-07, reg=1912, overall=1923.67
+[Overall] iter = 4999, Loss Error: 1923.67, cputime: 3415.43
+loss=11.6679, dummy= 3.59712e-07, reg=1912, overall=1923.67
+[Overall] iter = 5099, Loss Error: 1923.67, cputime: 3483.39
+loss=11.6679, dummy= 4.31877e-07, reg=1912, overall=1923.67
+[Overall] iter = 5199, Loss Error: 1923.67, cputime: 3551.39
+loss=11.6679, dummy= 4.21885e-07, reg=1912, overall=1923.67
+[Overall] iter = 5299, Loss Error: 1923.67, cputime: 3619.39
+loss=11.6678, dummy= 5.69544e-07, reg=1912, overall=1923.67
+[Overall] iter = 5399, Loss Error: 1923.67, cputime: 3687.34
+loss=11.6678, dummy= 4.75175e-07, reg=1912, overall=1923.67
+[Overall] iter = 5499, Loss Error: 1923.67, cputime: 3755.29
+loss=11.6678, dummy= 4.77396e-07, reg=1912, overall=1923.67
+[Overall] iter = 5599, Loss Error: 1923.67, cputime: 3823.24
+loss=11.6678, dummy= 4.68514e-07, reg=1912, overall=1923.67
+[Overall] iter = 5699, Loss Error: 1923.67, cputime: 3891.19
+loss=11.6678, dummy= 3.93019e-07, reg=1912, overall=1923.67
+[Overall] iter = 5799, Loss Error: 1923.67, cputime: 3959.14
+loss=11.6678, dummy= 3.9857e-07, reg=1912, overall=1923.67
+[Overall] iter = 5899, Loss Error: 1923.67, cputime: 4027.09
+loss=11.6677, dummy= 4.10783e-07, reg=1912, overall=1923.67
+[Overall] iter = 5999, Loss Error: 1923.67, cputime: 4095.09
+loss=11.6677, dummy= 4.79616e-07, reg=1912, overall=1923.67
+[Overall] iter = 6099, Loss Error: 1923.67, cputime: 4163.04
+loss=11.6677, dummy= 4.85167e-07, reg=1912, overall=1923.67
+[Overall] iter = 6199, Loss Error: 1923.67, cputime: 4231
+loss=11.6677, dummy= 5.21805e-07, reg=1912, overall=1923.67
+[Overall] iter = 6299, Loss Error: 1923.67, cputime: 4298.94
+loss=11.6677, dummy= 4.85167e-07, reg=1912, overall=1923.67
+[Overall] iter = 6399, Loss Error: 1923.67, cputime: 4366.91
+loss=11.6677, dummy= 4.27436e-07, reg=1912, overall=1923.67
+[Overall] iter = 6499, Loss Error: 1923.67, cputime: 4434.87
+loss=11.6677, dummy= 4.4631e-07, reg=1912, overall=1923.67
+[Overall] iter = 6599, Loss Error: 1923.67, cputime: 4502.84
+loss=11.6676, dummy= 3.9746e-07, reg=1912, overall=1923.67
+[Overall] iter = 6699, Loss Error: 1923.67, cputime: 4570.8
+loss=11.6676, dummy= 2.89768e-07, reg=1912, overall=1923.67
+[Overall] iter = 6799, Loss Error: 1923.67, cputime: 4638.76
+loss=11.6676, dummy= 3.25295e-07, reg=1912, overall=1923.67
+[Overall] iter = 6899, Loss Error: 1923.67, cputime: 4706.73
+loss=11.6676, dummy= 2.63123e-07, reg=1912, overall=1923.67
+[Overall] iter = 6999, Loss Error: 1923.67, cputime: 4774.67
+loss=11.6676, dummy= 2.73115e-07, reg=1912, overall=1923.67
+[Overall] iter = 7099, Loss Error: 1923.67, cputime: 4842.63
+loss=11.6676, dummy= 3.19744e-07, reg=1912, overall=1923.67
+[Overall] iter = 7199, Loss Error: 1923.67, cputime: 4910.56
+loss=11.6676, dummy= 3.34177e-07, reg=1912, overall=1923.67
+[Overall] iter = 7299, Loss Error: 1923.67, cputime: 4978.52
+loss=11.6675, dummy= 3.21965e-07, reg=1912, overall=1923.67
+[Overall] iter = 7399, Loss Error: 1923.67, cputime: 5046.46
+loss=11.6675, dummy= 2.9865e-07, reg=1912, overall=1923.67
+[Overall] iter = 7499, Loss Error: 1923.67, cputime: 5114.38
+loss=11.6675, dummy= 3.475e-07, reg=1912, overall=1923.67
+[Overall] iter = 7599, Loss Error: 1923.67, cputime: 5182.29
+loss=11.6675, dummy= 4.28546e-07, reg=1912, overall=1923.67
+[Overall] iter = 7699, Loss Error: 1923.67, cputime: 5250.2
+loss=11.6675, dummy= 4.28546e-07, reg=1912, overall=1923.67
+[Overall] iter = 7799, Loss Error: 1923.67, cputime: 5318.12
+loss=11.6675, dummy= 4.4853e-07, reg=1912, overall=1923.67
+[Overall] iter = 7899, Loss Error: 1923.67, cputime: 5386.06
+loss=11.6675, dummy= 4.67404e-07, reg=1912, overall=1923.67
+[Overall] iter = 7999, Loss Error: 1923.67, cputime: 5453.97
+loss=11.6675, dummy= 4.58522e-07, reg=1912, overall=1923.67
+[Overall] iter = 8099, Loss Error: 1923.67, cputime: 5521.87
+loss=11.6675, dummy= 4.45199e-07, reg=1912, overall=1923.67
+[Overall] iter = 8199, Loss Error: 1923.67, cputime: 5589.79
+loss=11.6675, dummy= 3.89688e-07, reg=1912, overall=1923.67
+[Overall] iter = 8299, Loss Error: 1923.67, cputime: 5657.69
+loss=11.6675, dummy= 3.59712e-07, reg=1912, overall=1923.67
+[Overall] iter = 8399, Loss Error: 1923.67, cputime: 5725.62
+loss=11.6675, dummy= 3.68594e-07, reg=1912, overall=1923.67
+[Overall] iter = 8499, Loss Error: 1923.67, cputime: 5793.52
+loss=11.6675, dummy= 3.53051e-07, reg=1912, overall=1923.67
+[Overall] iter = 8599, Loss Error: 1923.67, cputime: 5861.45
+loss=11.6675, dummy= 3.475e-07, reg=1912, overall=1923.67
+[Overall] iter = 8699, Loss Error: 1923.67, cputime: 5929.41
+loss=11.6674, dummy= 3.84137e-07, reg=1912, overall=1923.67
+[Overall] iter = 8799, Loss Error: 1923.67, cputime: 5997.31
+loss=11.6674, dummy= 3.94129e-07, reg=1912, overall=1923.67
+[Overall] iter = 8899, Loss Error: 1923.67, cputime: 6065.22
+loss=11.6674, dummy= 3.67484e-07, reg=1912, overall=1923.67
+[Overall] iter = 8999, Loss Error: 1923.67, cputime: 6133.11
+loss=11.6674, dummy= 3.33067e-07, reg=1912, overall=1923.67
+[Overall] iter = 9099, Loss Error: 1923.67, cputime: 6201.02
+loss=11.6674, dummy= 3.9635e-07, reg=1912, overall=1923.67
+[Overall] iter = 9199, Loss Error: 1923.67, cputime: 6268.94
+loss=11.6674, dummy= 4.31877e-07, reg=1912, overall=1923.67
+[Overall] iter = 9299, Loss Error: 1923.67, cputime: 6336.84
+loss=11.6674, dummy= 4.21885e-07, reg=1912, overall=1923.67
+[Overall] iter = 9399, Loss Error: 1923.67, cputime: 6404.73
+loss=11.6674, dummy= 5.04041e-07, reg=1912, overall=1923.67
+[Overall] iter = 9499, Loss Error: 1923.67, cputime: 6472.65
+loss=11.6674, dummy= 5.27356e-07, reg=1912, overall=1923.67
+[Overall] iter = 9599, Loss Error: 1923.67, cputime: 6540.55
+loss=11.6674, dummy= 5.06262e-07, reg=1912, overall=1923.67
+[Overall] iter = 9699, Loss Error: 1923.67, cputime: 6608.45
+loss=11.6674, dummy= 5.18474e-07, reg=1912, overall=1923.67
+[Overall] iter = 9799, Loss Error: 1923.67, cputime: 6676.35
+loss=11.6674, dummy= 5.30687e-07, reg=1912, overall=1923.67
+[Overall] iter = 9899, Loss Error: 1923.67, cputime: 6744.25
+loss=11.6674, dummy= 5.16254e-07, reg=1912, overall=1923.67
+[Overall] iter = 9999, Loss Error: 1923.67, cputime: 6812.21
+loss=13.8314, dummy= 6.95e-07, reg=2292.01, overall=2305.84
+[Overall] iter = 99, Loss Error: 2305.84, cputime: 67.9553
+loss=13.8032, dummy= 1.08025e-06, reg=2292, overall=2305.81
+[Overall] iter = 199, Loss Error: 2305.81, cputime: 136.091
+loss=13.7717, dummy= 1.16795e-06, reg=2292, overall=2305.77
+[Overall] iter = 299, Loss Error: 2305.77, cputime: 204.225
+loss=13.7451, dummy= 1.11688e-06, reg=2292, overall=2305.75
+[Overall] iter = 399, Loss Error: 2305.75, cputime: 272.383
+loss=13.7252, dummy= 1.07137e-06, reg=2292, overall=2305.73
+[Overall] iter = 499, Loss Error: 2305.73, cputime: 340.7
+loss=13.7118, dummy= 8.60423e-07, reg=2292, overall=2305.71
+[Overall] iter = 599, Loss Error: 2305.71, cputime: 408.925
+loss=13.7027, dummy= 1.01141e-06, reg=2292, overall=2305.7
+[Overall] iter = 699, Loss Error: 2305.7, cputime: 476.978
+loss=13.6967, dummy= 8.9817e-07, reg=2292, overall=2305.7
+[Overall] iter = 799, Loss Error: 2305.7, cputime: 545.226
+loss=13.6922, dummy= 8.71525e-07, reg=2292, overall=2305.69
+[Overall] iter = 899, Loss Error: 2305.69, cputime: 613.395
+loss=13.6893, dummy= 9.448e-07, reg=2292, overall=2305.69
+[Overall] iter = 999, Loss Error: 2305.69, cputime: 681.46
+loss=13.6872, dummy= 1.17462e-06, reg=2292, overall=2305.69
+[Overall] iter = 1099, Loss Error: 2305.69, cputime: 749.566
+loss=13.6853, dummy= 1.11022e-06, reg=2292, overall=2305.69
+[Overall] iter = 1199, Loss Error: 2305.69, cputime: 817.651
+loss=13.6836, dummy= 1.15685e-06, reg=2292, overall=2305.68
+[Overall] iter = 1299, Loss Error: 2305.68, cputime: 885.765
+loss=13.6823, dummy= 1.19016e-06, reg=2292, overall=2305.68
+[Overall] iter = 1399, Loss Error: 2305.68, cputime: 953.758
+loss=13.6812, dummy= 1.249e-06, reg=2292, overall=2305.68
+[Overall] iter = 1499, Loss Error: 2305.68, cputime: 1021.62
+loss=13.6802, dummy= 1.34448e-06, reg=2292, overall=2305.68
+[Overall] iter = 1599, Loss Error: 2305.68, cputime: 1089.46
+loss=13.6795, dummy= 1.16573e-06, reg=2292, overall=2305.68
+[Overall] iter = 1699, Loss Error: 2305.68, cputime: 1157.33
+loss=13.6787, dummy= 1.14797e-06, reg=2292, overall=2305.68
+[Overall] iter = 1799, Loss Error: 2305.68, cputime: 1225.19
+loss=13.678, dummy= 1.10245e-06, reg=2292, overall=2305.68
+[Overall] iter = 1899, Loss Error: 2305.68, cputime: 1293.05
+loss=13.6773, dummy= 1.07803e-06, reg=2292, overall=2305.68
+[Overall] iter = 1999, Loss Error: 2305.68, cputime: 1360.89
+loss=13.6767, dummy= 1.00919e-06, reg=2292, overall=2305.68
+[Overall] iter = 2099, Loss Error: 2305.68, cputime: 1428.75
+loss=13.6761, dummy= 8.37108e-07, reg=2292, overall=2305.68
+[Overall] iter = 2199, Loss Error: 2305.68, cputime: 1496.58
+loss=13.6756, dummy= 8.37108e-07, reg=2292, overall=2305.68
+[Overall] iter = 2299, Loss Error: 2305.68, cputime: 1564.34
+loss=13.6752, dummy= 7.66054e-07, reg=2292, overall=2305.68
+[Overall] iter = 2399, Loss Error: 2305.68, cputime: 1632.01
+loss=13.6749, dummy= 6.69464e-07, reg=2292, overall=2305.67
+[Overall] iter = 2499, Loss Error: 2305.67, cputime: 1699.6
+loss=13.6747, dummy= 7.42739e-07, reg=2292, overall=2305.67
+[Overall] iter = 2599, Loss Error: 2305.67, cputime: 1767.11
+loss=13.6746, dummy= 7.72715e-07, reg=2292, overall=2305.67
+[Overall] iter = 2699, Loss Error: 2305.67, cputime: 1834.5
+loss=13.6744, dummy= 8.71525e-07, reg=2292, overall=2305.67
+[Overall] iter = 2799, Loss Error: 2305.67, cputime: 1901.86
+loss=13.6743, dummy= 7.13873e-07, reg=2292, overall=2305.67
+[Overall] iter = 2899, Loss Error: 2305.67, cputime: 1969.22
+loss=13.6743, dummy= 6.87228e-07, reg=2292, overall=2305.67
+[Overall] iter = 2999, Loss Error: 2305.67, cputime: 2036.58
+loss=13.6742, dummy= 6.23945e-07, reg=2292, overall=2305.67
+[Overall] iter = 3099, Loss Error: 2305.67, cputime: 2103.95
+loss=13.6741, dummy= 6.55032e-07, reg=2292, overall=2305.67
+[Overall] iter = 3199, Loss Error: 2305.67, cputime: 2171.37
+loss=13.6741, dummy= 6.13953e-07, reg=2292, overall=2305.67
+[Overall] iter = 3299, Loss Error: 2305.67, cputime: 2238.73
+loss=13.674, dummy= 6.02851e-07, reg=2292, overall=2305.67
+[Overall] iter = 3399, Loss Error: 2305.67, cputime: 2306.04
+loss=13.674, dummy= 5.88418e-07, reg=2292, overall=2305.67
+[Overall] iter = 3499, Loss Error: 2305.67, cputime: 2373.43
+loss=13.6739, dummy= 5.4623e-07, reg=2292, overall=2305.67
+[Overall] iter = 3599, Loss Error: 2305.67, cputime: 2440.76
+loss=13.6739, dummy= 6.03961e-07, reg=2292, overall=2305.67
+[Overall] iter = 3699, Loss Error: 2305.67, cputime: 2508.11
+loss=13.6738, dummy= 4.20775e-07, reg=2292, overall=2305.67
+[Overall] iter = 3799, Loss Error: 2305.67, cputime: 2575.43
+loss=13.6738, dummy= 4.35207e-07, reg=2292, overall=2305.67
+[Overall] iter = 3899, Loss Error: 2305.67, cputime: 2642.75
+loss=13.6737, dummy= 3.65263e-07, reg=2292, overall=2305.67
+[Overall] iter = 3999, Loss Error: 2305.67, cputime: 2711.78
+loss=13.6737, dummy= 3.475e-07, reg=2292, overall=2305.67
+[Overall] iter = 4099, Loss Error: 2305.67, cputime: 2783.39
+loss=13.6736, dummy= 2.91989e-07, reg=2292, overall=2305.67
+[Overall] iter = 4199, Loss Error: 2305.67, cputime: 2853.01
+loss=13.6736, dummy= 2.54241e-07, reg=2292, overall=2305.67
+[Overall] iter = 4299, Loss Error: 2305.67, cputime: 2922.82
+loss=13.6735, dummy= 2.12053e-07, reg=2292, overall=2305.67
+[Overall] iter = 4399, Loss Error: 2305.67, cputime: 2990.45
+loss=13.6735, dummy= 2.03171e-07, reg=2292, overall=2305.67
+[Overall] iter = 4499, Loss Error: 2305.67, cputime: 3061.9
+loss=13.6735, dummy= 8.32667e-08, reg=2292, overall=2305.67
+[Overall] iter = 4599, Loss Error: 2305.67, cputime: 3132.12
+loss=13.6734, dummy= 5.55112e-08, reg=2292, overall=2305.67
+[Overall] iter = 4699, Loss Error: 2305.67, cputime: 3202.6
+loss=13.6734, dummy= 2.9976e-08, reg=2292, overall=2305.67
+[Overall] iter = 4799, Loss Error: 2305.67, cputime: 3275.46
+loss=13.6733, dummy= 7.10543e-08, reg=2292, overall=2305.67
+[Overall] iter = 4899, Loss Error: 2305.67, cputime: 3346.5
+loss=13.6733, dummy= 9.99201e-08, reg=2292, overall=2305.67
+[Overall] iter = 4999, Loss Error: 2305.67, cputime: 3413.84
+loss=13.6733, dummy= 1.43219e-07, reg=2292, overall=2305.67
+[Overall] iter = 5099, Loss Error: 2305.67, cputime: 3481.15
+loss=13.6732, dummy= 8.21565e-08, reg=2292, overall=2305.67
+[Overall] iter = 5199, Loss Error: 2305.67, cputime: 3548.47
+loss=13.6732, dummy= 7.32747e-08, reg=2292, overall=2305.67
+[Overall] iter = 5299, Loss Error: 2305.67, cputime: 3615.82
+loss=13.6732, dummy= 8.77076e-08, reg=2292, overall=2305.67
+[Overall] iter = 5399, Loss Error: 2305.67, cputime: 3683.1
+loss=13.6732, dummy= 8.77076e-08, reg=2292, overall=2305.67
+[Overall] iter = 5499, Loss Error: 2305.67, cputime: 3750.37
+loss=13.6732, dummy= 1.07692e-07, reg=2292, overall=2305.67
+[Overall] iter = 5599, Loss Error: 2305.67, cputime: 3817.64
+loss=13.6731, dummy= 1.26565e-07, reg=2292, overall=2305.67
+[Overall] iter = 5699, Loss Error: 2305.67, cputime: 3884.94
+loss=13.6731, dummy= 1.42109e-07, reg=2292, overall=2305.67
+[Overall] iter = 5799, Loss Error: 2305.67, cputime: 3952.25
+loss=13.6731, dummy= 1.68754e-07, reg=2292, overall=2305.67
+[Overall] iter = 5899, Loss Error: 2305.67, cputime: 4019.53
+loss=13.6731, dummy= 1.5099e-07, reg=2292, overall=2305.67
+[Overall] iter = 5999, Loss Error: 2305.67, cputime: 4086.79
+loss=13.6731, dummy= 1.88738e-07, reg=2292, overall=2305.67
+[Overall] iter = 6099, Loss Error: 2305.67, cputime: 4154.09
+loss=13.6731, dummy= 1.79856e-07, reg=2292, overall=2305.67
+[Overall] iter = 6199, Loss Error: 2305.67, cputime: 4221.36
+loss=13.6731, dummy= 2.30926e-07, reg=2292, overall=2305.67
+[Overall] iter = 6299, Loss Error: 2305.67, cputime: 4288.63
+loss=13.673, dummy= 2.14273e-07, reg=2292, overall=2305.67
+[Overall] iter = 6399, Loss Error: 2305.67, cputime: 4355.91
+loss=13.673, dummy= 2.65343e-07, reg=2292, overall=2305.67
+[Overall] iter = 6499, Loss Error: 2305.67, cputime: 4423.18
+loss=13.673, dummy= 1.86517e-07, reg=2292, overall=2305.67
+[Overall] iter = 6599, Loss Error: 2305.67, cputime: 4490.53
+loss=13.673, dummy= 1.27676e-07, reg=2292, overall=2305.67
+[Overall] iter = 6699, Loss Error: 2305.67, cputime: 4557.8
+loss=13.673, dummy= 7.77156e-08, reg=2292, overall=2305.67
+[Overall] iter = 6799, Loss Error: 2305.67, cputime: 4625.08
+loss=13.673, dummy= 1.09912e-07, reg=2292, overall=2305.67
+[Overall] iter = 6899, Loss Error: 2305.67, cputime: 4692.35
+loss=13.6729, dummy= 1.59872e-07, reg=2292, overall=2305.67
+[Overall] iter = 6999, Loss Error: 2305.67, cputime: 4759.63
+loss=13.6729, dummy= 2.22045e-07, reg=2292, overall=2305.67
+[Overall] iter = 7099, Loss Error: 2305.67, cputime: 4826.92
+loss=13.6729, dummy= 2.4758e-07, reg=2292, overall=2305.67
+[Overall] iter = 7199, Loss Error: 2305.67, cputime: 4894.2
+loss=13.6729, dummy= 2.42029e-07, reg=2292, overall=2305.67
+[Overall] iter = 7299, Loss Error: 2305.67, cputime: 4961.47
+loss=13.6729, dummy= 2.75335e-07, reg=2292, overall=2305.67
+[Overall] iter = 7399, Loss Error: 2305.67, cputime: 5028.74
+loss=13.6729, dummy= 2.66454e-07, reg=2292, overall=2305.67
+[Overall] iter = 7499, Loss Error: 2305.67, cputime: 5096.02
+loss=13.6729, dummy= 2.66454e-07, reg=2292, overall=2305.67
+[Overall] iter = 7599, Loss Error: 2305.67, cputime: 5163.26
+loss=13.6729, dummy= 2.45359e-07, reg=2292, overall=2305.67
+[Overall] iter = 7699, Loss Error: 2305.67, cputime: 5230.51
+loss=13.6729, dummy= 2.69784e-07, reg=2292, overall=2305.67
+[Overall] iter = 7799, Loss Error: 2305.67, cputime: 5297.75
+loss=13.6729, dummy= 2.59792e-07, reg=2292, overall=2305.67
+[Overall] iter = 7899, Loss Error: 2305.67, cputime: 5365.04
+loss=13.6728, dummy= 2.62013e-07, reg=2292, overall=2305.67
+[Overall] iter = 7999, Loss Error: 2305.67, cputime: 5432.3
+loss=13.6728, dummy= 1.70974e-07, reg=2292, overall=2305.67
+[Overall] iter = 8099, Loss Error: 2305.67, cputime: 5499.56
+loss=13.6728, dummy= 1.76525e-07, reg=2292, overall=2305.67
+[Overall] iter = 8199, Loss Error: 2305.67, cputime: 5566.8
+loss=13.6728, dummy= 1.5099e-07, reg=2292, overall=2305.67
+[Overall] iter = 8299, Loss Error: 2305.67, cputime: 5634.05
+loss=13.6728, dummy= 1.32117e-07, reg=2292, overall=2305.67
+[Overall] iter = 8399, Loss Error: 2305.67, cputime: 5701.31
+loss=13.6728, dummy= 1.28786e-07, reg=2292, overall=2305.67
+[Overall] iter = 8499, Loss Error: 2305.67, cputime: 5768.6
+loss=13.6728, dummy= 1.53211e-07, reg=2292, overall=2305.67
+[Overall] iter = 8599, Loss Error: 2305.67, cputime: 5835.84
+loss=13.6728, dummy= 1.43219e-07, reg=2292, overall=2305.67
+[Overall] iter = 8699, Loss Error: 2305.67, cputime: 5903.08
+loss=13.6728, dummy= 1.33227e-07, reg=2292, overall=2305.67
+[Overall] iter = 8799, Loss Error: 2305.67, cputime: 5970.35
+loss=13.6728, dummy= 1.13243e-07, reg=2292, overall=2305.67
+[Overall] iter = 8899, Loss Error: 2305.67, cputime: 6037.61
+loss=13.6728, dummy= 1.28786e-07, reg=2292, overall=2305.67
+[Overall] iter = 8999, Loss Error: 2305.67, cputime: 6104.88
+loss=13.6728, dummy= 1.60982e-07, reg=2292, overall=2305.67
+[Overall] iter = 9099, Loss Error: 2305.67, cputime: 6172.13
+loss=13.6728, dummy= 1.5099e-07, reg=2292, overall=2305.67
+[Overall] iter = 9199, Loss Error: 2305.67, cputime: 6239.42
+loss=13.6728, dummy= 1.65423e-07, reg=2292, overall=2305.67
+[Overall] iter = 9299, Loss Error: 2305.67, cputime: 6306.74
+loss=13.6728, dummy= 1.60982e-07, reg=2292, overall=2305.67
+[Overall] iter = 9399, Loss Error: 2305.67, cputime: 6374
+loss=13.6728, dummy= 1.60982e-07, reg=2292, overall=2305.67
+[Overall] iter = 9499, Loss Error: 2305.67, cputime: 6441.25
+loss=13.6728, dummy= 8.77076e-08, reg=2292, overall=2305.67
+[Overall] iter = 9599, Loss Error: 2305.67, cputime: 6508.5
+loss=13.6728, dummy= 5.77316e-08, reg=2292, overall=2305.67
+[Overall] iter = 9699, Loss Error: 2305.67, cputime: 6575.76
+loss=13.6727, dummy= 1.66533e-08, reg=2292, overall=2305.67
+[Overall] iter = 9799, Loss Error: 2305.67, cputime: 6643.03
+loss=13.6727, dummy= 0, reg=2292, overall=2305.67
+[Overall] iter = 9899, Loss Error: 2305.67, cputime: 6710.27
+loss=13.6727, dummy= 0, reg=2292, overall=2305.67
+[Overall] iter = 9999, Loss Error: 2305.67, cputime: 6777.51
+loss=13.8334, dummy= 1.05915e-06, reg=2865.01, overall=2878.85
+[Overall] iter = 99, Loss Error: 2878.85, cputime: 68.1702
+loss=13.8054, dummy= 1.45217e-06, reg=2865, overall=2878.81
+[Overall] iter = 199, Loss Error: 2878.81, cputime: 136.554
+loss=13.7735, dummy= 1.78524e-06, reg=2865, overall=2878.78
+[Overall] iter = 299, Loss Error: 2878.78, cputime: 204.931
+loss=13.7467, dummy= 1.69309e-06, reg=2865, overall=2878.75
+[Overall] iter = 399, Loss Error: 2878.75, cputime: 273.282
+loss=13.7262, dummy= 1.662e-06, reg=2865, overall=2878.73
+[Overall] iter = 499, Loss Error: 2878.73, cputime: 341.781
+loss=13.7125, dummy= 1.53433e-06, reg=2865, overall=2878.71
+[Overall] iter = 599, Loss Error: 2878.71, cputime: 410.283
+loss=13.7031, dummy= 1.48881e-06, reg=2865, overall=2878.7
+[Overall] iter = 699, Loss Error: 2878.7, cputime: 478.59
+loss=13.6971, dummy= 1.31894e-06, reg=2865, overall=2878.7
+[Overall] iter = 799, Loss Error: 2878.7, cputime: 547.087
+loss=13.6925, dummy= 1.52545e-06, reg=2865, overall=2878.69
+[Overall] iter = 899, Loss Error: 2878.69, cputime: 615.501
+loss=13.6894, dummy= 1.22347e-06, reg=2865, overall=2878.69
+[Overall] iter = 999, Loss Error: 2878.69, cputime: 683.838
+loss=13.6873, dummy= 1.24678e-06, reg=2865, overall=2878.69
+[Overall] iter = 1099, Loss Error: 2878.69, cputime: 752.201
+loss=13.6854, dummy= 1.1624e-06, reg=2865, overall=2878.69
+[Overall] iter = 1199, Loss Error: 2878.69, cputime: 820.566
+loss=13.6837, dummy= 1.19238e-06, reg=2865, overall=2878.68
+[Overall] iter = 1299, Loss Error: 2878.68, cputime: 888.867
+loss=13.6824, dummy= 1.10134e-06, reg=2865, overall=2878.68
+[Overall] iter = 1399, Loss Error: 2878.68, cputime: 957.108
+loss=13.6813, dummy= 1.0647e-06, reg=2865, overall=2878.68
+[Overall] iter = 1499, Loss Error: 2878.68, cputime: 1025.21
+loss=13.6803, dummy= 1.16351e-06, reg=2865, overall=2878.68
+[Overall] iter = 1599, Loss Error: 2878.68, cputime: 1093.3
+loss=13.6795, dummy= 1.13132e-06, reg=2865, overall=2878.68
+[Overall] iter = 1699, Loss Error: 2878.68, cputime: 1161.4
+loss=13.6787, dummy= 1.19349e-06, reg=2865, overall=2878.68
+[Overall] iter = 1799, Loss Error: 2878.68, cputime: 1229.49
+loss=13.678, dummy= 1.18017e-06, reg=2865, overall=2878.68
+[Overall] iter = 1899, Loss Error: 2878.68, cputime: 1297.61
+loss=13.6774, dummy= 1.1624e-06, reg=2865, overall=2878.68
+[Overall] iter = 1999, Loss Error: 2878.68, cputime: 1365.71
+loss=13.6767, dummy= 1.37557e-06, reg=2865, overall=2878.68
+[Overall] iter = 2099, Loss Error: 2878.68, cputime: 1433.8
+loss=13.6761, dummy= 1.29785e-06, reg=2865, overall=2878.68
+[Overall] iter = 2199, Loss Error: 2878.68, cputime: 1501.86
+loss=13.6756, dummy= 1.36002e-06, reg=2865, overall=2878.68
+[Overall] iter = 2299, Loss Error: 2878.68, cputime: 1569.91
+loss=13.6752, dummy= 1.22014e-06, reg=2865, overall=2878.68
+[Overall] iter = 2399, Loss Error: 2878.68, cputime: 1637.87
+loss=13.6749, dummy= 1.07359e-06, reg=2865, overall=2878.67
+[Overall] iter = 2499, Loss Error: 2878.67, cputime: 1705.75
+loss=13.6747, dummy= 1.14686e-06, reg=2865, overall=2878.67
+[Overall] iter = 2599, Loss Error: 2878.67, cputime: 1773.49
+loss=13.6746, dummy= 1.3034e-06, reg=2865, overall=2878.67
+[Overall] iter = 2699, Loss Error: 2878.67, cputime: 1841.14
+loss=13.6745, dummy= 1.34226e-06, reg=2865, overall=2878.67
+[Overall] iter = 2799, Loss Error: 2878.67, cputime: 1908.78
+loss=13.6744, dummy= 1.3145e-06, reg=2865, overall=2878.67
+[Overall] iter = 2899, Loss Error: 2878.67, cputime: 1976.39
+loss=13.6743, dummy= 1.25788e-06, reg=2865, overall=2878.67
+[Overall] iter = 2999, Loss Error: 2878.67, cputime: 2043.97
+loss=13.6742, dummy= 1.249e-06, reg=2865, overall=2878.67
+[Overall] iter = 3099, Loss Error: 2878.67, cputime: 2111.53
+loss=13.6741, dummy= 1.3034e-06, reg=2865, overall=2878.67
+[Overall] iter = 3199, Loss Error: 2878.67, cputime: 2179.12
+loss=13.6741, dummy= 1.28453e-06, reg=2865, overall=2878.67
+[Overall] iter = 3299, Loss Error: 2878.67, cputime: 2246.72
+loss=13.674, dummy= 1.21902e-06, reg=2865, overall=2878.67
+[Overall] iter = 3399, Loss Error: 2878.67, cputime: 2314.28
+loss=13.674, dummy= 1.30562e-06, reg=2865, overall=2878.67
+[Overall] iter = 3499, Loss Error: 2878.67, cputime: 2381.83
+loss=13.6739, dummy= 1.39444e-06, reg=2865, overall=2878.67
+[Overall] iter = 3599, Loss Error: 2878.67, cputime: 2449.4
+loss=13.6739, dummy= 1.44773e-06, reg=2865, overall=2878.67
+[Overall] iter = 3699, Loss Error: 2878.67, cputime: 2516.97
+loss=13.6738, dummy= 1.47993e-06, reg=2865, overall=2878.67
+[Overall] iter = 3799, Loss Error: 2878.67, cputime: 2584.58
+loss=13.6738, dummy= 1.18017e-06, reg=2865, overall=2878.67
+[Overall] iter = 3899, Loss Error: 2878.67, cputime: 2652.11
+loss=13.6737, dummy= 1.19793e-06, reg=2865, overall=2878.67
+[Overall] iter = 3999, Loss Error: 2878.67, cputime: 2719.64
+loss=13.6737, dummy= 1.2701e-06, reg=2865, overall=2878.67
+[Overall] iter = 4099, Loss Error: 2878.67, cputime: 2787.19
+loss=13.6736, dummy= 1.31894e-06, reg=2865, overall=2878.67
+[Overall] iter = 4199, Loss Error: 2878.67, cputime: 2854.73
+loss=13.6736, dummy= 1.30784e-06, reg=2865, overall=2878.67
+[Overall] iter = 4299, Loss Error: 2878.67, cputime: 2922.28
+loss=13.6735, dummy= 1.27565e-06, reg=2865, overall=2878.67
+[Overall] iter = 4399, Loss Error: 2878.67, cputime: 2989.91

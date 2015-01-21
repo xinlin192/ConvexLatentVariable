@@ -1,16 +1,19 @@
 #include "cvx_clustering.h"
-ofstream ss_out ("../obj_vs_time_dp/iris/CVX-DP-MEDOID");
+ofstream ss_out ("../obj_vs_time_dp/dna-CVX-DP-MEDOID");
 
 /* algorithmic options */ 
 #define EXACT_LINE_SEARCH  // comment this to use inexact search
 
 /* dumping options */
 // #define EXACT_LINE_SEARCH_DUMP
-//#define LAMBDA_K_PLOT
+#define LAMBDA_K_PLOT
+#ifdef LAMBDA_K_PLOT
+    ofstream lambdaK_out ("dna_lambda_vs_K_dp");
+#endif
 
-const double NOISE_EPS = 0.0;
+const double NOISE_EPS = 10e-3;
 const double FRANK_WOLFE_TOL = 1e-20;
-const double ADMM_EPS = 0.000001;
+const double ADMM_EPS = 10e-5;
 const double SPARSITY_TOL = 1e-5;
 const double r = 10000000.0;
 
@@ -70,13 +73,13 @@ void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, dou
                 } else {
                     w_minus_s = wone[i][it->first];
                 }
-                sum1 +=  w_minus_s * (dist_mat[i][it->first] -r);
+                sum1 += w_minus_s * (dist_mat[i][it->first] -r);
                 sum2 += yone[i][it->first] * w_minus_s;
                 sum3 += rho * w_minus_s * w_minus_z;
                 sum4 += rho * w_minus_s * w_minus_s; 
             }
             if (!isInActives[i]) {
-                sum1 +=  (-1.0) * (dist_mat[i][s[i].first] - r);
+                sum1 += (-1.0) * (dist_mat[i][s[i].first] - r);
                 sum2 += yone[i][it->first] * (-1.0);
                 sum3 += rho * (-1.0) * (wone[i][s[i].first]-zone[i][s[i].first]);
                 sum4 += rho;
@@ -249,7 +252,7 @@ double overall_objective (double ** dist_mat, double lambda, int N, double ** z)
 
 void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double lambda, double ** W, int ADMM_max_iter, int SS_PERIOD) {
     // parameters 
-    double alpha = 0.2;
+    double alpha = 0.1;
     double rho = 1;
     ss_out << "Time Objective" << endl;
     double cputime = 0;
@@ -300,7 +303,8 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
             cputime += (omp_get_wtime() - prev);
             error = overall_objective (dist_mat, lambda, N, wone);
             cout << "[Overall] iter = " << iter 
-                << ", Loss Error: " << error << endl;
+                << ", Loss Error: " << error
+	       << ", cputime: " << cputime << endl;
             // NOTE: here is just for plotting
             if (error >= last_cost) error = last_cost;
             else last_cost = error;
@@ -530,6 +534,7 @@ int main (int argc, char ** argv) {
 	    lambda_list.push_back(temp);	
 	}
 	fin.close();
+    lambdaK_out << "lambda K fractional" << endl;
     for (int i = 0; i < lambda_list.size(); i ++) { 
         double temp_lambda = lambda_list[i];
     cerr << "D = " << D << endl; // # features
@@ -541,7 +546,7 @@ int main (int argc, char ** argv) {
     srand (seed);
     cerr << "seed = " << seed << endl;
     cerr << "==================================================" << endl; 
- 
+    lambda = temp_lambda;
         double ** wtemp = mat_init (N, N);
         cvx_clustering (dist_mat, fw_max_iter, D, N, temp_lambda, wtemp, ADMM_max_iter, screenshot_period);
         vector<int> centroids;
@@ -555,13 +560,9 @@ int main (int argc, char ** argv) {
         else 
             fraction.push_back(false);
         mat_free(wtemp, N, N);
-    }
-    ofstream lambdaK_out ("lambda_vs_K_dp");
-    assert (lambda_list.size() == K_list.size());
-    lambdaK_out << "lambda K fractional" << endl;
-    for (int i =0 ; i < K_list.size(); i ++) 
         lambdaK_out << lambda_list[i] << " " <<  K_list[i]
             << " " << (fraction[i]?1:0) <<endl;
+    }
     lambdaK_out.close();
 
     // =====================================================
