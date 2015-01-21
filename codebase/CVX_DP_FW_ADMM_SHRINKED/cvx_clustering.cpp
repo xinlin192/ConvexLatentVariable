@@ -14,6 +14,7 @@ const double ADMM_EPS = 0.000001;
 const double SPARSITY_TOL = 1e-5;
 const double r = 10000000.0;
 
+
 void frank_wolfe_solver (double ** dist_mat, double ** yone, double ** zone, double ** wone, double rho, int N, int K, set<int>& col_active_set) {
     // cout << "within frank_wolfe_solver" << endl;
     // STEP ONE: compute gradient mat initially
@@ -300,7 +301,8 @@ void cvx_clustering (double ** dist_mat, int fw_max_iter, int D, int N, double l
             cputime += (omp_get_wtime() - prev);
             error = overall_objective (dist_mat, lambda, N, wone);
             cout << "[Overall] iter = " << iter 
-                << ", Loss Error: " << error << endl;
+                << ", Loss Error: " << error
+                << ", cputime: " << cputime << endl;
             // NOTE: here is just for plotting
             if (error >= last_cost) error = last_cost;
             else last_cost = error;
@@ -453,6 +455,7 @@ int main (int argc, char ** argv) {
     cerr << "seed = " << seed << endl;
     cerr << "==================================================" << endl; 
  
+    
     double ** W = mat_init (N, N);
     cvx_clustering (dist_mat, fw_max_iter, D, N, lambda, W, ADMM_max_iter, screenshot_period);
 
